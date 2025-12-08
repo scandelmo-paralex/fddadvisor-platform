@@ -313,9 +313,8 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
   }
 
   const hasSignedItem23 = (lead: Lead) => {
-    // In production, this would check lead.item23SignedAt timestamp
-    // For now, we'll simulate based on whether disclosure has expired
-    return lead.item23SignedAt !== undefined
+    // Check if Item 23 receipt has been signed
+    return lead.item23SignedAt != null  // Using != to check for both null and undefined
   }
 
   const handleSendFDD = (lead: Lead) => {
