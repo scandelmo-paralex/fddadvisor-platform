@@ -3,7 +3,7 @@ import { NextResponse } from "next/server"
 
 export async function GET() {
   try {
-    const supabase = getSupabaseRouteClient()
+    const supabase = await getSupabaseRouteClient()
 
     if (!supabase) {
       return NextResponse.json({ error: "Database not available" }, { status: 500 })
