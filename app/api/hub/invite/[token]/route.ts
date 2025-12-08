@@ -1,7 +1,8 @@
 import { createClient } from "@supabase/supabase-js"
 import { NextResponse } from "next/server"
 
-export async function GET(request: Request, { params }: { params: { token: string } }) {
+export async function GET(request: Request, context: { params: Promise<{ token: string }> }) {
+  const params = await context.params
   const debugMode = new URL(request.url).searchParams.get("debug") === "true"
   const debugInfo: any = {
     routeHit: true,
