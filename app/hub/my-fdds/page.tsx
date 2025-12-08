@@ -79,7 +79,7 @@ export default function MyFDDsPage() {
       const { data: profile, error: profileError } = await supabase
         .from("buyer_profiles")
         .select(
-          "id, profile_completed_at, fico_score_range, liquid_assets_range, net_worth_range, funding_plan, no_felony_attestation, no_bankruptcy_attestation, first_name, last_name, phone",
+          "id, profile_completed_at, fico_score_range, liquid_assets_range, net_worth_range, funding_plans, no_felony_attestation, no_bankruptcy_attestation, first_name, last_name, phone",
         )
         .eq("user_id", user.id)
         .single()
@@ -98,7 +98,9 @@ export default function MyFDDsPage() {
           profile.fico_score_range &&
           profile.liquid_assets_range &&
           profile.net_worth_range &&
-          profile.funding_plan &&
+          profile.funding_plans &&
+          Array.isArray(profile.funding_plans) &&
+          profile.funding_plans.length > 0 &&
           profile.no_felony_attestation &&
           profile.no_bankruptcy_attestation)
       )
@@ -285,7 +287,7 @@ export default function MyFDDsPage() {
               Complete My Profile
             </Button>
             <p className="text-xs text-center text-muted-foreground">
-              This only takes a few minutes and is required by FTC regulations.
+              This only takes a few minutes to complete.
             </p>
           </CardContent>
         </Card>
