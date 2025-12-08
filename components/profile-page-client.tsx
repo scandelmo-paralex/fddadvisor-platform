@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { createBrowserClient } from "@/lib/supabase/client"
 import { ProfileSettings } from "@/components/profile-settings-cleaned"
 import { Header } from "@/components/header"
@@ -12,6 +13,7 @@ interface ProfilePageClientProps {
 }
 
 export function ProfilePageClient({ userId, userEmail }: ProfilePageClientProps) {
+  const router = useRouter()
   const [profile, setProfile] = useState<BuyerProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -184,17 +186,15 @@ export function ProfilePageClient({ userId, userEmail }: ProfilePageClientProps)
     }
   }
 
-  const user = { id: userId, email: userEmail }
-
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
         <Header
-          user={user}
-          currentView="profile-settings"
+          currentView="buyer-profile"
           onViewChange={() => {}}
-          onBack={() => {}}
+          onBack={() => router.push("/hub/my-fdds")}
           onNavigate={() => {}}
+          hideSearch={true}
         />
         <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           <div className="text-center">Loading profile...</div>
@@ -207,11 +207,11 @@ export function ProfilePageClient({ userId, userEmail }: ProfilePageClientProps)
     return (
       <div className="min-h-screen bg-background">
         <Header
-          user={user}
-          currentView="profile-settings"
+          currentView="buyer-profile"
           onViewChange={() => {}}
-          onBack={() => {}}
+          onBack={() => router.push("/hub/my-fdds")}
           onNavigate={() => {}}
+          hideSearch={true}
         />
         <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           <div className="rounded-lg border border-destructive bg-destructive/10 p-6">
@@ -230,11 +230,11 @@ export function ProfilePageClient({ userId, userEmail }: ProfilePageClientProps)
   return (
     <div className="min-h-screen bg-background" suppressHydrationWarning>
       <Header
-        user={user}
-        currentView="profile-settings"
+        currentView="buyer-profile"
         onViewChange={() => {}}
-        onBack={() => {}}
+        onBack={() => router.push("/hub/my-fdds")}
         onNavigate={() => {}}
+        hideSearch={true}
       />
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8" suppressHydrationWarning>
         <ProfileSettings profile={profile} onUpdateProfile={handleUpdateProfile} />
