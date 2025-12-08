@@ -225,7 +225,7 @@ export function ProfilePageClient({ userId, userEmail }: ProfilePageClientProps)
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background" suppressHydrationWarning>
       <Header
         user={user}
         currentView="profile-settings"
@@ -233,7 +233,7 @@ export function ProfilePageClient({ userId, userEmail }: ProfilePageClientProps)
         onBack={() => {}}
         onNavigate={() => {}}
       />
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8" suppressHydrationWarning>
         <ProfileSettings profile={profile} onUpdateProfile={handleUpdateProfile} />
       </main>
     </div>
