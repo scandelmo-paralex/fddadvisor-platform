@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { ArrowLeft, Search, Bell, User, X, LogOut, Settings } from 'lucide-react'
+import { ArrowLeft, Search, Bell, User, X, LogOut } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
@@ -143,47 +143,6 @@ export function Header({
               </h1>
             </div>
 
-            {currentView !== "fdd-viewer" && (
-              <nav className="hidden md:flex items-center gap-2 ml-6">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onViewChange("buyer-dashboard")}
-                  className={`font-medium transition-all duration-200 ${
-                    currentView.startsWith("buyer") ||
-                    currentView === "discovery" ||
-                    currentView === "upload" ||
-                    currentView === "fdd-viewer" ||
-                    currentView === "comparison"
-                      ? "bg-cta/10 text-cta hover:bg-cta/20"
-                      : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
-                  }`}
-                >
-                  Buyer
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onViewChange("franchisor-dashboard")}
-                  className={`font-medium transition-all duration-200 ${
-                    currentView === "franchisor-dashboard"
-                      ? "bg-cta/10 text-cta hover:bg-cta/20"
-                      : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
-                  }`}
-                >
-                  Franchisor
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => router.push("/admin/fdd-processing")}
-                  className="font-medium transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-accent/50 gap-2"
-                >
-                  <Settings className="h-4 w-4" />
-                  Admin
-                </Button>
-              </nav>
-            )}
 
             {!hideSearch && (
               <div className="hidden lg:flex items-center flex-1 max-w-md ml-6" ref={searchRef}>
