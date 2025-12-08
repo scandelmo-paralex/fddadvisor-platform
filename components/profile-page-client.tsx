@@ -129,7 +129,7 @@ export function ProfilePageClient({ userId, userEmail }: ProfilePageClientProps)
       const supabase = createBrowserClient()
 
       const updateData = {
-        user_id: userId,
+        // Don't include user_id - it's the filter column
         first_name: updatedProfile.personalInfo.firstName,
         last_name: updatedProfile.personalInfo.lastName,
         email: updatedProfile.personalInfo.email,
@@ -158,13 +158,16 @@ export function ProfilePageClient({ userId, userEmail }: ProfilePageClientProps)
         no_bankruptcy_attestation: updatedProfile.backgroundAttestations?.noBankruptcyAttestation,
         no_felony_attestation: updatedProfile.backgroundAttestations?.noFelonyAttestation,
         background_attested_at: updatedProfile.backgroundAttestations?.attestedAt,
+        
+        // Mark profile as completed
+        profile_completed_at: new Date().toISOString(),
       }
 
       console.log("[Profile] Update data:", updateData)
 
       const { error } = await supabase
         .from("buyer_profiles")
-        .upsert(updateData)
+        .update(updateData)
         .eq("user_id", userId)
 
       if (error) {
