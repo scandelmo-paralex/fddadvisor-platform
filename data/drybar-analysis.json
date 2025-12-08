@@ -1,0 +1,137 @@
+{
+  "franchise_name": "Drybar",
+  "fdd_year": 2025,
+  "investment_breakdown": {
+    "total_investment": {
+      "low": 637589,
+      "high": 1386465
+    },
+    "initial_franchise_fee": {
+      "low": 50000,
+      "high": 50000
+    },
+    "working_capital": {
+      "low": 40000,
+      "high": 80000
+    },
+    "royalty_fee": "7%",
+    "marketing_fee": "1.5%"
+  },
+  "revenue_data": {
+    "outlets_analyzed": 138,
+    "time_period": "January 1, 2024 - December 31, 2024",
+    "tables": [
+      {
+        "table_name": "Table 1 Avg. Revenue",
+        "metric": "2024 Average Revenue",
+        "average": 667541,
+        "median": 658250,
+        "high": 1300000,
+        "low": 250000,
+        "percent_achieving": 48,
+        "bottom_25_percent": 450000,
+        "second_quartile": 600000,
+        "third_quartile": 850000
+      },
+      {
+        "table_name": "Table 1 Median Revenue",
+        "metric": "2024 Median Revenue",
+        "average": 658250,
+        "median": 658250,
+        "high": 1300000,
+        "low": 250000,
+        "percent_achieving": 50,
+        "bottom_25_percent": 450000,
+        "second_quartile": 600000,
+        "third_quartile": 850000
+      },
+      {
+        "table_name": "Table 1 Avg. Non Member Visits",
+        "metric": "2024 Average Non-Member Visits",
+        "average": 7541,
+        "median": 7200,
+        "high": 15000,
+        "low": 3000,
+        "percent_achieving": 45,
+        "bottom_25_percent": 5000,
+        "second_quartile": 7000,
+        "third_quartile": 9500
+      },
+      {
+        "table_name": "Table 1 Median Non Member Visits",
+        "metric": "2024 Median Non-Member Visits",
+        "average": 7200,
+        "median": 7200,
+        "high": 15000,
+        "low": 3000,
+        "percent_achieving": 50,
+        "bottom_25_percent": 5000,
+        "second_quartile": 7000,
+        "third_quartile": 9500
+      },
+      {
+        "table_name": "Table 1 Avg. Conversions",
+        "metric": "2024 Average Conversion %",
+        "average": 4.2,
+        "median": 4.0,
+        "high": 8.5,
+        "low": 1.5,
+        "percent_achieving": 42,
+        "bottom_25_percent": 2.5,
+        "second_quartile": 3.8,
+        "third_quartile": 5.5
+      },
+      {
+        "table_name": "Table 1 Median Conversions",
+        "metric": "2024 Median Conversion %",
+        "average": 4.0,
+        "median": 4.0,
+        "high": 8.5,
+        "low": 1.5,
+        "percent_achieving": 50,
+        "bottom_25_percent": 2.5,
+        "second_quartile": 3.8,
+        "third_quartile": 5.5
+      },
+      {
+        "table_name": "Table 1 Avg. Members",
+        "metric": "Average Number of Members as of December 31, 2024",
+        "average": 385,
+        "median": 360,
+        "high": 850,
+        "low": 120,
+        "percent_achieving": 46,
+        "bottom_25_percent": 250,
+        "second_quartile": 350,
+        "third_quartile": 500
+      },
+      {
+        "table_name": "Table 1 Median Members",
+        "metric": "2024 Median Ending Members",
+        "average": 360,
+        "median": 360,
+        "high": 850,
+        "low": 120,
+        "percent_achieving": 50,
+        "bottom_25_percent": 250,
+        "second_quartile": 350,
+        "third_quartile": 500
+      }
+    ]
+  },
+  "litigation_count": 2,
+  "bankruptcy_count": 0,
+  "year_founded": 2010,
+  "franchising_since": 2012,
+  "category": "Beauty & Wellness",
+  "headquarters": "Denver, CO",
+  "ceo": "John Heffner",
+  "parent_company": "WellBiz Brands, Inc.",
+  "term_of_agreement": "10 years",
+  "renewal_fee": "$5,000",
+  "territory_description": "Protected territory based on population density",
+  "training_provided": "Initial training program + ongoing support",
+  "obligations": "Must participate in the day-to-day operation",
+  "financial_assistance": "Third-party financing available",
+  "estimated_initial_investment": "$637,589 - $1,386,465"
+}
