@@ -166,8 +166,23 @@ export function ProfileSettings({ profile, onUpdateProfile }: ProfileSettingsPro
     }
   }
 
+  // Check if profile is complete WITHOUT setting state (safe to call during render)
   const isProfileComplete = () => {
-    return validateRequiredFields()
+    if (!editedProfile.personalInfo.firstName?.trim()) return false
+    if (!editedProfile.personalInfo.lastName?.trim()) return false
+    if (!editedProfile.personalInfo.phone?.trim()) return false
+    if (!editedProfile.personalInfo.city?.trim()) return false
+    if (!editedProfile.personalInfo.state?.trim()) return false
+    if (!editedProfile.personalInfo.desiredTerritories?.trim()) return false
+    if (!editedProfile.businessExperience?.yearsOfExperience || editedProfile.businessExperience.yearsOfExperience < 0) return false
+    if (!editedProfile.businessExperience?.currentEmploymentStatus) return false
+    if (!editedProfile.financialQualification?.ficoScoreRange) return false
+    if (!editedProfile.financialQualification?.liquidAssetsRange) return false
+    if (!editedProfile.financialQualification?.netWorthRange) return false
+    if (!selectedFundingPlans.length) return false
+    if (!editedProfile.backgroundAttestations?.noBankruptcyAttestation) return false
+    if (!editedProfile.backgroundAttestations?.noFelonyAttestation) return false
+    return true
   }
 
   const completionPercentage = () => {
