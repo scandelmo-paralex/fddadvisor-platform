@@ -22,6 +22,7 @@ import {
   Plus,
   X,
   Pencil,
+  Info,
 } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -1206,23 +1207,34 @@ export function FDDViewer({
   const franchiseScoreTab = (
     <div className="h-full overflow-y-auto bg-slate-50 dark:bg-slate-900/30">
       <div className="max-w-4xl mx-auto p-6 space-y-6">
-        {/* Header with logo */}
-        <div className="flex items-center gap-4">
-          {franchise.logoUrl ? (
-            <img
-              src={franchise.logoUrl || "/placeholder.svg"}
-              alt={`${franchise.name} logo`}
-              className="h-16 w-14 object-contain rounded-lg border border-border/50 bg-white dark:bg-slate-900 p-2 shadow-sm"
-            />
-          ) : (
-            <div className="h-16 w-14 rounded-lg border-2 border-dashed border-border/50 bg-muted/30 flex items-center justify-center">
-              <Upload className="h-6 w-6 text-muted-foreground" />
+        {/* Header with logo and Disclaimer link */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            {franchise.logoUrl ? (
+              <img
+                src={franchise.logoUrl || "/placeholder.svg"}
+                alt={`${franchise.name} logo`}
+                className="h-16 w-14 object-contain rounded-lg border border-border/50 bg-white dark:bg-slate-900 p-2 shadow-sm"
+              />
+            ) : (
+              <div className="h-16 w-14 rounded-lg border-2 border-dashed border-border/50 bg-muted/30 flex items-center justify-center">
+                <Upload className="h-6 w-6 text-muted-foreground" />
+              </div>
+            )}
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight">{franchise.name}</h1>
+              {franchise.industry && <p className="text-sm text-muted-foreground">{franchise.industry}</p>}
             </div>
-          )}
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">{franchise.name}</h1>
-            {franchise.industry && <p className="text-sm text-muted-foreground">{franchise.industry}</p>}
           </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowConsentModal(true)}
+            className="text-sm text-muted-foreground hover:text-foreground"
+          >
+            <Info className="h-4 w-4 mr-1.5" />
+            Disclaimer
+          </Button>
         </div>
 
         {franchise.franchiseScore?.overall || franchise.franchise_score ? (
