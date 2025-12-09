@@ -5,8 +5,9 @@ import { useRouter } from 'next/navigation'
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input" // Added Input component
-import { User, Building2, Mail, Phone, Globe, Upload, FileText, ArrowLeft, CheckCircle2, Calendar, Bell } from 'lucide-react'
+import { Input } from "@/components/ui/input"
+import { User, Building2, Mail, Phone, Globe, Upload, FileText, ArrowLeft, CheckCircle2, Calendar, Bell, Loader2, AlertCircle } from 'lucide-react'
+import { createBrowserClient } from "@supabase/ssr"
 
 export function CompanySettingsContent({
   user,
@@ -35,12 +36,50 @@ export function CompanySettingsContent({
   })
 
   const [showSuccessToast, setShowSuccessToast] = useState(false)
+  const [showErrorToast, setShowErrorToast] = useState(false)
+  const [errorMessage, setErrorMessage] = useState("")
+  const [isSaving, setIsSaving] = useState(false)
 
   const handleSave = async () => {
-    // TODO: Save to database
-    console.log("[v0] Saving profile:", editedProfile)
-    setShowSuccessToast(true)
-    setTimeout(() => setShowSuccessToast(false), 3000)
+    setIsSaving(true)
+    setShowErrorToast(false)
+    
+    try {
+      const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      )
+
+      const { error } = await supabase
+        .from("franchisor_profiles")
+        .update({
+          contact_name: editedProfile.name,
+          email: editedProfile.email,
+          phone: editedProfile.phone,
+          company_name: editedProfile.companyName,
+          website: editedProfile.website,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("user_id", user.id)
+
+      if (error) {
+        console.error("[Company Settings] Save error:", error)
+        setErrorMessage(error.message || "Failed to save settings")
+        setShowErrorToast(true)
+        setTimeout(() => setShowErrorToast(false), 5000)
+      } else {
+        console.log("[Company Settings] Saved successfully")
+        setShowSuccessToast(true)
+        setTimeout(() => setShowSuccessToast(false), 3000)
+      }
+    } catch (err) {
+      console.error("[Company Settings] Unexpected error:", err)
+      setErrorMessage("An unexpected error occurred")
+      setShowErrorToast(true)
+      setTimeout(() => setShowErrorToast(false), 5000)
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   const handleUploadFDD = async (franchiseId: string, file: File) => {
@@ -334,8 +373,19 @@ export function CompanySettingsContent({
         <Button variant="outline" onClick={() => router.push("/dashboard")} className="h-11 px-6">
           Cancel
         </Button>
-        <Button onClick={handleSave} className="bg-cta hover:bg-cta/90 text-cta-foreground h-11 px-6 shadow-sm">
-          Save Changes
+        <Button 
+          onClick={handleSave} 
+          disabled={isSaving}
+          className="bg-cta hover:bg-cta/90 text-cta-foreground h-11 px-6 shadow-sm"
+        >
+          {isSaving ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Saving...
+            </>
+          ) : (
+            "Save Changes"
+          )}
         </Button>
       </div>
 
@@ -346,6 +396,18 @@ export function CompanySettingsContent({
             <div className="flex items-center gap-3">
               <CheckCircle2 className="h-5 w-5 text-emerald-600" />
               <p className="font-medium text-emerald-600">Settings saved successfully</p>
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {/* Error Toast */}
+      {showErrorToast && (
+        <div className="fixed bottom-4 right-4 z-50 animate-in slide-in-from-bottom-5">
+          <Card className="p-4 bg-red-500/10 border-red-500/20 shadow-lg">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="h-5 w-5 text-red-600" />
+              <p className="font-medium text-red-600">{errorMessage || "Failed to save settings"}</p>
             </div>
           </Card>
         </div>
