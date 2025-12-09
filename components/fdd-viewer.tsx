@@ -40,6 +40,7 @@ import type { WhiteLabelSettings } from "@/lib/types/database"
 import { FDDCoverOverlay } from "@/components/fdd-cover-overlay"
 import { useSearchParams } from "next/navigation"
 import { FranchiseScoreConsentModal } from "@/components/franchisescore-consent-modal"
+import { FranchiseScoreDisclaimerModal } from "@/components/franchisescore-disclaimer-modal"
 import { FranchiseScore } from "@/components/franchise-score" // Import the new FranchiseScore component
 
 const pdfModules: {
@@ -169,6 +170,7 @@ export function FDDViewer({
 
   const [franchiseScoreConsent, setFranchiseScoreConsent] = useState<boolean | null>(null)
   const [showConsentModal, setShowConsentModal] = useState(false)
+  const [showDisclaimerModal, setShowDisclaimerModal] = useState(false)
   const [consentLoading, setConsentLoading] = useState(false)
   const [pdfLoadError, setPdfLoadError] = useState<string | null>(null) // Track PDF module load errors
 
@@ -1229,7 +1231,7 @@ export function FDDViewer({
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setShowConsentModal(true)}
+            onClick={() => setShowDisclaimerModal(true)}
             className="text-sm text-muted-foreground hover:text-foreground"
           >
             <Info className="h-4 w-4 mr-1.5" />
@@ -1921,6 +1923,12 @@ export function FDDViewer({
         onAccept={handleConsentComplete}
         onDecline={() => setShowConsentModal(false)}
         fddId={franchise?.slug || ""}
+        franchiseName={franchise?.name}
+      />
+
+      <FranchiseScoreDisclaimerModal
+        open={showDisclaimerModal}
+        onClose={() => setShowDisclaimerModal(false)}
         franchiseName={franchise?.name}
       />
 
