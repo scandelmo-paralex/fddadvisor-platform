@@ -57,7 +57,7 @@ export function FDDAIChat({
     if (isOpen && messages.length === 0) {
       setTimeout(() => {
         addBotMessage(
-          `Hi! I'm here to help you understand ${franchise.name}. I can answer questions about their FDD using semantic search. If I can't find an answer, toggle Vision Mode to analyze the current page directly!`,
+          `Hi! I'm here to help you understand the ${franchise.name} FDD. Ask me anything about their investment requirements, training, fees, territory rights, or financial performance disclosures.\n\n⚠️ This assistant is AI-powered and can make mistakes. Responses are based solely on FDD content and are not affiliated with ${franchise.name}. Always verify information and consult with professional advisors before making investment decisions.`,
         )
       }, 500)
     }
@@ -211,12 +211,20 @@ export function FDDAIChat({
         <Card className="fixed bottom-6 right-24 w-[380px] h-[560px] flex flex-col shadow-2xl border-border/60 bg-white dark:bg-slate-900 z-50 rounded-2xl overflow-hidden">
           <div className="flex items-center justify-between p-4 border-b border-border/60 bg-gradient-to-r from-blue-600 to-indigo-600">
             <div className="flex items-center gap-2.5">
-              <div className="h-9 w-9 rounded-full bg-white/20 backdrop-blur flex items-center justify-center border-2 border-white/30">
-                <span className="text-white font-bold text-sm">P</span>
+              <div className="h-9 w-9 rounded-full bg-white/20 backdrop-blur flex items-center justify-center border border-white/30 p-1.5">
+                <svg viewBox="0 0 1000 1000" className="h-full w-full">
+                  <circle cx="287.3" cy="500" r="25.58" fill="#fff" />
+                  <circle cx="389.64" cy="500" r="38.38" fill="#fff" />
+                  <circle cx="632.7" cy="699.41" r="25.58" fill="#fff" />
+                  <circle cx="581.53" cy="610.78" r="38.38" fill="#fff" />
+                  <circle cx="632.7" cy="300.58" r="25.58" fill="#fff" />
+                  <circle cx="581.53" cy="389.21" r="38.38" fill="#fff" />
+                  <circle cx="517.57" cy="500" r="51.17" fill="#fff" />
+                </svg>
               </div>
               <div>
-                <h3 className="font-bold text-sm text-white">FDD Assistant</h3>
-                <p className="text-xs text-blue-100">{franchise.name}</p>
+                <h3 className="font-bold text-sm text-white">FDDHub Assistant</h3>
+                <p className="text-xs text-blue-100">Powered by Paralex</p>
               </div>
             </div>
             <div className="flex items-center gap-1">
