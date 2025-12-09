@@ -1241,6 +1241,7 @@ export function FDDViewer({
 
         {franchise.franchiseScore?.overall || franchise.franchise_score ? (
           <FranchiseScore
+            fddYear={franchise.fdd_year || franchise.fddYear || 2025}
             score={
               // If franchiseScore is already a properly structured object, use it directly
               typeof franchise.franchiseScore === "object" && franchise.franchiseScore?.overall
@@ -1858,6 +1859,11 @@ export function FDDViewer({
 
   const handleTabClick = (tab: "document" | "franchisescore") => {
     if (tab === "franchisescore") {
+      // Franchisors can access FranchiseScore directly without consent
+      if (mode === "hub-franchisor") {
+        setActiveTab(tab)
+        return
+      }
       if (franchiseScoreConsent === null) {
         // Still loading consent status
         return

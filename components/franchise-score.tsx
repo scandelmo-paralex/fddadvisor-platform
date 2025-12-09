@@ -30,9 +30,10 @@ interface FranchiseScoreProps {
       }
     }
   }
+  fddYear?: number | string
 }
 
-export function FranchiseScore({ score }: FranchiseScoreProps) {
+export function FranchiseScore({ score, fddYear }: FranchiseScoreProps) {
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
 
   useEffect(() => {
@@ -148,6 +149,11 @@ export function FranchiseScore({ score }: FranchiseScoreProps) {
                   {score.industryPercentile}% overall score
                 </span>
               </div>
+              {fddYear && (
+                <p className="text-xs text-muted-foreground mt-2">
+                  FDD Year: {fddYear}
+                </p>
+              )}
             </div>
           </div>
 
