@@ -1666,7 +1666,7 @@ export function FDDViewer({
       </div>
 
       {/* My Notes - takes remaining space */}
-      {mode !== "hub-lead" && onAddNote && onUpdateNote && onDeleteNote && (
+      {onAddNote && onUpdateNote && onDeleteNote && (
         <div
           className={`min-h-[450px] max-h-[600px] overflow-hidden ${isPdfVisible ? "px-4 pb-4" : "mx-auto w-full max-w-5xl px-4 pb-4"}`}
         >
