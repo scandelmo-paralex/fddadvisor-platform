@@ -200,12 +200,12 @@ export function FDDAIChat({
       {!isOpen && (
         <Button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-20 right-24 h-16 w-16 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 shadow-xl hover:shadow-2xl hover:scale-105 transition-all z-50 border-2 border-blue-400/20"
+          className="fixed bottom-20 right-24 h-20 w-20 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 shadow-xl hover:shadow-2xl hover:scale-105 transition-all z-50 border-2 border-blue-400/20"
           size="icon"
           title="Ask AI Assistant"
         >
-          {/* Paralex Logo Icon */}
-          <svg viewBox="0 0 1000 1000" className="h-12 w-12">
+          {/* Paralex Logo Icon - Enlarged */}
+          <svg viewBox="0 0 1000 1000" className="h-14 w-14">
             <circle cx="287.3" cy="500" r="25.58" fill="#fff" />
             <circle cx="389.64" cy="500" r="38.38" fill="#fff" />
             <circle cx="632.7" cy="699.41" r="25.58" fill="#fff" />
