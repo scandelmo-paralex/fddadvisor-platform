@@ -22,7 +22,7 @@ export function CompanySettingsContent({
 
   const [editedProfile, setEditedProfile] = useState({
     name: franchisorProfile?.contact_name || "",
-    title: "",
+    title: franchisorProfile?.title || "",
     email: franchisorProfile?.email || user.email || "",
     phone: franchisorProfile?.phone || "",
     companyName: franchisorProfile?.company_name || "",
@@ -54,6 +54,7 @@ export function CompanySettingsContent({
         .from("franchisor_profiles")
         .update({
           contact_name: editedProfile.name,
+          title: editedProfile.title,
           email: editedProfile.email,
           phone: editedProfile.phone,
           company_name: editedProfile.companyName,
