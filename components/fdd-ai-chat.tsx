@@ -205,7 +205,7 @@ export function FDDAIChat({
           title="Ask AI Assistant"
         >
           {/* Paralex Logo Icon */}
-          <svg viewBox="0 0 1000 1000" className="h-8 w-8">
+          <svg viewBox="0 0 1000 1000" className="h-12 w-12">
             <circle cx="287.3" cy="500" r="25.58" fill="#fff" />
             <circle cx="389.64" cy="500" r="38.38" fill="#fff" />
             <circle cx="632.7" cy="699.41" r="25.58" fill="#fff" />
