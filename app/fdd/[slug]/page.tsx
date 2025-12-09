@@ -20,6 +20,7 @@ export default function FDDPage() {
   const [franchise, setFranchise] = useState<Franchise | null>(null)
   const [franchiseLoading, setFranchiseLoading] = useState(true)
   const [activeModal, setActiveModal] = useState<string | null>(null)
+  const [isFranchisorViewing, setIsFranchisorViewing] = useState(false)
 
   const isAuthDisabled = true
 
@@ -236,6 +237,36 @@ export default function FDDPage() {
 
   useEffect(() => {
     const checkAuth = async () => {
+      const supabase = createBrowserClient()
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+
+      // Check if user is a franchisor viewing their own franchise (regardless of auth disabled)
+      if (session) {
+        try {
+          const { data: franchisorProfile } = await supabase
+            .from("franchisor_profiles")
+            .select("id, franchises(slug)")
+            .eq("user_id", session.user.id)
+            .single()
+
+          if (franchisorProfile?.franchises) {
+            const franchiseSlugs = Array.isArray(franchisorProfile.franchises)
+              ? franchisorProfile.franchises.map((f: any) => f.slug)
+              : [franchisorProfile.franchises.slug]
+            
+            if (franchiseSlugs.includes(franchiseSlug)) {
+              console.log("[v0] Franchisor viewing their own franchise")
+              setIsFranchisorViewing(true)
+            }
+          }
+        } catch (franchisorError) {
+          // Not a franchisor or no profile - that's fine
+          console.log("[v0] User is not a franchisor or has no profile")
+        }
+      }
+
       if (isAuthDisabled) {
         console.log("[v0] Auth disabled for FDDAdvisor preview/testing")
         setIsAuthenticated(true)
@@ -244,11 +275,6 @@ export default function FDDPage() {
       }
 
       try {
-        const supabase = createBrowserClient()
-        const {
-          data: { session },
-        } = await supabase.auth.getSession()
-
         if (!session) {
           setIsAuthenticated(false)
           setIsLoading(false)
@@ -372,6 +398,7 @@ export default function FDDPage() {
         <FDDViewer
           franchiseId={franchise.id}
           franchise={franchise}
+          mode={isFranchisorViewing ? "hub-franchisor" : "advisor"}
           onOpenModal={handleOpenModal}
           notes={notes}
           onAddNote={handleAddNote}
