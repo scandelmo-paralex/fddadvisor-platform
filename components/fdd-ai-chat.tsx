@@ -200,7 +200,7 @@ export function FDDAIChat({
       {!isOpen && (
         <Button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-24 h-16 w-16 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 shadow-xl hover:shadow-2xl hover:scale-105 transition-all z-50 border-2 border-blue-400/20"
+          className="fixed bottom-20 right-24 h-16 w-16 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 shadow-xl hover:shadow-2xl hover:scale-105 transition-all z-50 border-2 border-blue-400/20"
           size="icon"
         >
           <MessageCircle className="h-7 w-7 text-white" />
@@ -208,7 +208,7 @@ export function FDDAIChat({
       )}
 
       {isOpen && (
-        <Card className="fixed bottom-6 right-24 w-[380px] h-[560px] flex flex-col shadow-2xl border-border/60 bg-white dark:bg-slate-900 z-50 rounded-2xl overflow-hidden">
+        <Card className="fixed bottom-20 right-24 w-[380px] h-[560px] flex flex-col shadow-2xl border-border/60 bg-white dark:bg-slate-900 z-50 rounded-2xl overflow-hidden">
           <div className="flex items-center justify-between p-4 border-b border-border/60 bg-gradient-to-r from-blue-600 to-indigo-600">
             <div className="flex items-center gap-2.5">
               <div className="h-9 w-9 rounded-full bg-white/20 backdrop-blur flex items-center justify-center border border-white/30 p-1.5">
