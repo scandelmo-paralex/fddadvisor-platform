@@ -254,7 +254,7 @@ export function FDDViewer({
       }
     }
     setPreviousNotesCount(propNotes.length)
-  }, [propNotes.length])
+  }, [propNotes, propNotes.length, previousNotesCount, editingNoteId])
 
   const [isMounted, setIsMounted] = useState(false)
   const [pdfComponents, setPdfComponents] = useState<{
@@ -1699,7 +1699,16 @@ export function FDDViewer({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => onAddNote({ content: "", pageNumber })}
+                onClick={() => {
+                  console.log("[v0] Add Note button clicked")
+                  console.log("[v0] onAddNote function exists:", !!onAddNote)
+                  console.log("[v0] Current pageNumber:", pageNumber)
+                  if (onAddNote) {
+                    onAddNote({ content: "", pageNumber })
+                  } else {
+                    console.error("[v0] onAddNote is undefined!")
+                  }
+                }}
                 className="text-xs h-7"
               >
                 <Plus className="h-3 w-3 mr-1" />

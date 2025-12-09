@@ -67,10 +67,35 @@ export default function WhiteLabelFDDPage() {
     }
   }, [])
 
-  // Add a new note
-  const handleAddNote = useCallback(async (pageNumber: number, content: string) => {
+  // Add a new note - accepts object from fdd-viewer.tsx
+  const handleAddNote = useCallback(async (noteData: { content: string; pageNumber: number; franchiseId?: string }) => {
+    console.log("[v0] handleAddNote called with:", noteData)
+    console.log("[v0] Current fddId:", fddId)
+    
     if (!fddId) {
+      console.error("[v0] handleAddNote - fddId is null!")
       toast.error("Cannot save note - FDD not loaded")
+      return
+    }
+
+    const { content, pageNumber } = noteData
+    console.log("[v0] Creating note - content:", content, "pageNumber:", pageNumber)
+    
+    // If content is empty, this is just initializing the UI - don't save yet
+    if (!content || content.trim() === "") {
+      // Create a temporary note for UI editing
+      const tempNote: Note = {
+        id: `temp-${Date.now()}`,
+        pageNumber: pageNumber || 1,
+        content: "",
+        createdAt: new Date().toISOString(),
+      }
+      console.log("[v0] Creating temp note:", tempNote)
+      setNotes(prev => {
+        console.log("[v0] Previous notes count:", prev.length)
+        return [tempNote, ...prev]
+      })
+      console.log("[v0] Temporary note created for editing")
       return
     }
     
@@ -108,8 +133,56 @@ export default function WhiteLabelFDDPage() {
     }
   }, [fddId])
 
-  // Update an existing note
-  const handleUpdateNote = useCallback(async (noteId: string, content: string) => {
+  // Update an existing note - signature matches fdd-viewer.tsx: (noteId, title, content)
+  const handleUpdateNote = useCallback(async (noteId: string, _title: string, content: string) => {
+    // Handle temp notes - replace with real saved note
+    if (noteId.startsWith('temp-')) {
+      // This is a temp note being saved for the first time
+      if (!fddId) {
+        toast.error("Cannot save note - FDD not loaded")
+        return
+      }
+      
+      try {
+        const response = await fetch("/api/notes", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fddId,
+            pageNumber: notes.find(n => n.id === noteId)?.pageNumber || 1,
+            content,
+          }),
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.error || "Failed to save note")
+        }
+
+        const data = await response.json()
+        const newNote: Note = {
+          id: data.note.id,
+          pageNumber: data.note.pageNumber || 1,
+          content: data.note.content,
+          createdAt: data.note.createdAt,
+          updatedAt: data.note.updatedAt,
+        }
+
+        // Replace temp note with real note
+        setNotes(prev => prev.map(note => 
+          note.id === noteId ? newNote : note
+        ))
+        toast.success("Note saved")
+        console.log("[v0] Temp note saved as:", newNote.id)
+        return
+      } catch (err: any) {
+        console.error("[v0] Error saving temp note:", err)
+        toast.error(err.message || "Failed to save note")
+        return
+      }
+    }
+    
+    // Regular update for existing notes
     try {
       const response = await fetch(`/api/notes/${noteId}`, {
         method: "PATCH",
@@ -134,7 +207,7 @@ export default function WhiteLabelFDDPage() {
       console.error("[v0] Error updating note:", err)
       toast.error(err.message || "Failed to update note")
     }
-  }, [])
+  }, [fddId, notes])
 
   // Delete a note
   const handleDeleteNote = useCallback(async (noteId: string) => {
