@@ -202,8 +202,18 @@ export function FDDAIChat({
           onClick={() => setIsOpen(true)}
           className="fixed bottom-20 right-24 h-16 w-16 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 shadow-xl hover:shadow-2xl hover:scale-105 transition-all z-50 border-2 border-blue-400/20"
           size="icon"
+          title="Ask AI Assistant"
         >
-          <MessageCircle className="h-7 w-7 text-white" />
+          {/* Paralex Logo Icon */}
+          <svg viewBox="0 0 1000 1000" className="h-8 w-8">
+            <circle cx="287.3" cy="500" r="25.58" fill="#fff" />
+            <circle cx="389.64" cy="500" r="38.38" fill="#fff" />
+            <circle cx="632.7" cy="699.41" r="25.58" fill="#fff" />
+            <circle cx="581.53" cy="610.78" r="38.38" fill="#fff" />
+            <circle cx="632.7" cy="300.58" r="25.58" fill="#fff" />
+            <circle cx="581.53" cy="389.21" r="38.38" fill="#fff" />
+            <circle cx="517.57" cy="500" r="51.17" fill="#fff" />
+          </svg>
         </Button>
       )}
 
