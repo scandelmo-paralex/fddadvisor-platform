@@ -150,7 +150,7 @@ export async function GET() {
           invitationSentDate: invitation?.sent_at ? new Date(invitation.sent_at).toLocaleDateString() : "",
           fddAccessDate: access.created_at ? new Date(access.created_at).toLocaleDateString() : "",
           expiresAt: invitation?.expires_at || null,
-          source: buyer?.signup_source || invitation?.source || "Direct",
+          source: invitation?.source || buyer?.signup_source || "FDDHub",
           timeline: buyerTimeline,
           intent: engagement ? (engagement.questions_asked > 3 ? "High" : "Medium") : "Low",
           isNew: false,
