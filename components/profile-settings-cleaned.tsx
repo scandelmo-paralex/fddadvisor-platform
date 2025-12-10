@@ -66,6 +66,59 @@ export function ProfileSettings({ profile, onUpdateProfile }: ProfileSettingsPro
     profile.financialQualification?.fundingPlans || []
   )
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
+  
+  // Local string state for comma-separated inputs (prevents comma from being stripped while typing)
+  const [industryExperienceText, setIndustryExperienceText] = useState<string>(
+    profile.businessExperience?.industryExperience?.join(", ") || ""
+  )
+  const [relevantSkillsText, setRelevantSkillsText] = useState<string>(
+    profile.businessExperience?.relevantSkills?.join(", ") || ""
+  )
+
+  // Parse comma-separated text into array (used on blur)
+  const parseCommaSeparated = (text: string): string[] => {
+    return text.split(",").map(s => s.trim()).filter(Boolean)
+  }
+
+  // Update profile with parsed industry experience
+  const handleIndustryExperienceBlur = () => {
+    const parsed = parseCommaSeparated(industryExperienceText)
+    setEditedProfile({
+      ...editedProfile,
+      businessExperience: {
+        ...editedProfile.businessExperience,
+        yearsOfExperience: editedProfile.businessExperience?.yearsOfExperience || 0,
+        industryExperience: parsed,
+        hasOwnedBusiness: editedProfile.businessExperience?.hasOwnedBusiness || false,
+        managementExperience: editedProfile.businessExperience?.managementExperience || false,
+        currentEmploymentStatus: editedProfile.businessExperience?.currentEmploymentStatus || "Employed Full-Time",
+        relevantSkills: editedProfile.businessExperience?.relevantSkills || [],
+      },
+    })
+  }
+
+  // Update profile with parsed relevant skills
+  const handleRelevantSkillsBlur = () => {
+    const parsed = parseCommaSeparated(relevantSkillsText)
+    setEditedProfile({
+      ...editedProfile,
+      businessExperience: {
+        ...editedProfile.businessExperience,
+        yearsOfExperience: editedProfile.businessExperience?.yearsOfExperience || 0,
+        industryExperience: editedProfile.businessExperience?.industryExperience || [],
+        hasOwnedBusiness: editedProfile.businessExperience?.hasOwnedBusiness || false,
+        managementExperience: editedProfile.businessExperience?.managementExperience || false,
+        currentEmploymentStatus: editedProfile.businessExperience?.currentEmploymentStatus || "Employed Full-Time",
+        relevantSkills: parsed,
+      },
+    })
+  }
+
+  // Sync local text state when profile prop changes
+  useEffect(() => {
+    setIndustryExperienceText(profile.businessExperience?.industryExperience?.join(", ") || "")
+    setRelevantSkillsText(profile.businessExperience?.relevantSkills?.join(", ") || "")
+  }, [profile])
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -158,7 +211,20 @@ export function ProfileSettings({ profile, onUpdateProfile }: ProfileSettingsPro
 
   const handleSave = () => {
     if (validateRequiredFields()) {
-      onUpdateProfile(editedProfile)
+      // Ensure comma-separated text inputs are parsed before saving
+      const profileToSave: BuyerProfile = {
+        ...editedProfile,
+        businessExperience: {
+          ...editedProfile.businessExperience,
+          yearsOfExperience: editedProfile.businessExperience?.yearsOfExperience || 0,
+          industryExperience: parseCommaSeparated(industryExperienceText),
+          hasOwnedBusiness: editedProfile.businessExperience?.hasOwnedBusiness || false,
+          managementExperience: editedProfile.businessExperience?.managementExperience || false,
+          currentEmploymentStatus: editedProfile.businessExperience?.currentEmploymentStatus || "Employed Full-Time",
+          relevantSkills: parseCommaSeparated(relevantSkillsText),
+        },
+      }
+      onUpdateProfile(profileToSave)
     } else {
       // Scroll to first error
       const firstErrorElement = document.querySelector('[data-error="true"]')
@@ -624,25 +690,9 @@ export function ProfileSettings({ profile, onUpdateProfile }: ProfileSettingsPro
             <Input
               id="industryExperience"
               placeholder="e.g., Retail, Healthcare, Technology (comma-separated)"
-              value={editedProfile.businessExperience?.industryExperience?.join(", ") || ""}
-              onChange={(e) =>
-                setEditedProfile({
-                  ...editedProfile,
-                  businessExperience: {
-                    ...editedProfile.businessExperience,
-                    yearsOfExperience: editedProfile.businessExperience?.yearsOfExperience || 0,
-                    industryExperience: e.target.value
-                      .split(",")
-                      .map((s) => s.trim())
-                      .filter(Boolean),
-                    hasOwnedBusiness: editedProfile.businessExperience?.hasOwnedBusiness || false,
-                    managementExperience: editedProfile.businessExperience?.managementExperience || false,
-                    currentEmploymentStatus:
-                      editedProfile.businessExperience?.currentEmploymentStatus || "Employed Full-Time",
-                    relevantSkills: editedProfile.businessExperience?.relevantSkills || [],
-                  },
-                })
-              }
+              value={industryExperienceText}
+              onChange={(e) => setIndustryExperienceText(e.target.value)}
+              onBlur={handleIndustryExperienceBlur}
               className="h-11"
             />
             <p className="text-sm text-muted-foreground">
@@ -657,25 +707,9 @@ export function ProfileSettings({ profile, onUpdateProfile }: ProfileSettingsPro
             <Input
               id="relevantSkills"
               placeholder="e.g., Sales, Operations, Marketing, Finance (comma-separated)"
-              value={editedProfile.businessExperience?.relevantSkills?.join(", ") || ""}
-              onChange={(e) =>
-                setEditedProfile({
-                  ...editedProfile,
-                  businessExperience: {
-                    ...editedProfile.businessExperience,
-                    yearsOfExperience: editedProfile.businessExperience?.yearsOfExperience || 0,
-                    industryExperience: editedProfile.businessExperience?.industryExperience || [],
-                    hasOwnedBusiness: editedProfile.businessExperience?.hasOwnedBusiness || false,
-                    managementExperience: editedProfile.businessExperience?.managementExperience || false,
-                    currentEmploymentStatus:
-                      editedProfile.businessExperience?.currentEmploymentStatus || "Employed Full-Time",
-                    relevantSkills: e.target.value
-                      .split(",")
-                      .map((s) => s.trim())
-                      .filter(Boolean),
-                  },
-                })
-              }
+              value={relevantSkillsText}
+              onChange={(e) => setRelevantSkillsText(e.target.value)}
+              onBlur={handleRelevantSkillsBlur}
               className="h-11"
             />
             <p className="text-sm text-muted-foreground">
