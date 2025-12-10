@@ -1,6 +1,6 @@
 "use client"
 
-import { X, Info, CheckCircle2, Clock, Radio, User, Linkedin } from "lucide-react"
+import { X, Info, CheckCircle2, Clock, Radio, User, Linkedin, AlertTriangle, TrendingUp, Target, MessageSquare, RefreshCw } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -94,12 +94,83 @@ const getEngagementTierConfig = (tier: string | undefined) => {
   }
 }
 
+// Financial Fit Badge Configuration
+function getFinancialFitConfig(status: string | undefined) {
+  switch (status) {
+    case "qualified":
+      return {
+        label: "✅ FINANCIALLY QUALIFIED",
+        color: "text-emerald-700",
+        bgColor: "bg-emerald-50",
+        borderColor: "border-emerald-300",
+        icon: "✅",
+      }
+    case "borderline":
+      return {
+        label: "⚠️ BORDERLINE FINANCIAL FIT",
+        color: "text-amber-700",
+        bgColor: "bg-amber-50",
+        borderColor: "border-amber-300",
+        icon: "⚠️",
+      }
+    case "not_qualified":
+      return {
+        label: "❌ DOES NOT MEET REQUIREMENTS",
+        color: "text-red-700",
+        bgColor: "bg-red-50",
+        borderColor: "border-red-300",
+        icon: "❌",
+      }
+    default:
+      return {
+        label: "❓ FINANCIAL STATUS UNKNOWN",
+        color: "text-gray-600",
+        bgColor: "bg-gray-50",
+        borderColor: "border-gray-300",
+        icon: "❓",
+      }
+  }
+}
+
+// Candidate Fit Rating Configuration
+function getCandidateFitConfig(rating: string | undefined) {
+  switch (rating) {
+    case "Excellent":
+      return { color: "text-emerald-600", bgColor: "bg-emerald-100" }
+    case "Good":
+      return { color: "text-blue-600", bgColor: "bg-blue-100" }
+    case "Fair":
+      return { color: "text-amber-600", bgColor: "bg-amber-100" }
+    case "Poor":
+      return { color: "text-red-600", bgColor: "bg-red-100" }
+    case "Not Qualified":
+      return { color: "text-red-700", bgColor: "bg-red-200" }
+    default:
+      return { color: "text-gray-600", bgColor: "bg-gray-100" }
+  }
+}
+
+// Criteria Score Badge
+function getCriteriaScoreConfig(score: string | undefined) {
+  switch (score) {
+    case "Strong Match":
+      return { label: "Strong Match", color: "text-emerald-700", bgColor: "bg-emerald-100", icon: "✓" }
+    case "Partial Match":
+      return { label: "Partial Match", color: "text-amber-700", bgColor: "bg-amber-100", icon: "~" }
+    case "Weak Match":
+      return { label: "Weak Match", color: "text-red-700", bgColor: "bg-red-100", icon: "✗" }
+    default:
+      return { label: "Unknown", color: "text-gray-600", bgColor: "bg-gray-100", icon: "?" }
+  }
+}
+
 export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps) {
   const [liveLeadData, setLiveLeadData] = useState<any>(null)
   const [isLive, setIsLive] = useState(false)
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
   const [updatedFields, setUpdatedFields] = useState<Set<string>>(new Set())
   const [engagementData, setEngagementData] = useState<any>(null)
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
   useEffect(() => {
     if (!isOpen || type !== "lead-intelligence" || !leadId) return
@@ -213,6 +284,32 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
     }
   }, [isOpen, type, leadId])
 
+  // Manual refresh function
+  const handleRefresh = async () => {
+    if (!leadId) return
+    setIsRefreshing(true)
+    try {
+      // Fetch fresh lead data
+      const leadResponse = await fetch(`/api/leads?lead_id=${leadId}`)
+      if (leadResponse.ok) {
+        const data = await leadResponse.json()
+        const leadData = Array.isArray(data) ? data[0] : data
+        setLiveLeadData(leadData)
+      }
+      // Fetch fresh engagement data
+      const engagementResponse = await fetch(`/api/leads/engagement?lead_id=${leadId}`)
+      if (engagementResponse.ok) {
+        const data = await engagementResponse.json()
+        setEngagementData(data)
+      }
+      setLastUpdate(new Date())
+    } catch (error) {
+      console.error("[v0] Error refreshing data:", error)
+    } finally {
+      setIsRefreshing(false)
+    }
+  }
+
   if (!isOpen) return null
 
   const lead = liveLeadData || (leadId ? leads.find((l) => l.id === leadId) : null)
@@ -264,6 +361,17 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
           <div className="flex items-center gap-3">
             {type === "lead-intelligence" && lastUpdate && (
               <span className="text-xs text-muted-foreground">Updated {lastUpdate.toLocaleTimeString()}</span>
+            )}
+            {type === "lead-intelligence" && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleRefresh}
+                disabled={isRefreshing}
+                className="h-8 w-8 p-0"
+              >
+                <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              </Button>
             )}
             <Button variant="ghost" size="sm" onClick={onClose}>
               <X className="h-5 w-5" />
@@ -591,7 +699,7 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
                     {/* Funding Plan */}
                     <div className="rounded-lg border p-4 bg-muted/20">
                       <p className="text-sm text-muted-foreground mb-1">Funding Plan</p>
-                      <p className="text-lg font-bold">{engagementData.buyerQualification.fundingPlan || "—"}</p>
+                      <p className="text-lg font-bold">{engagementData.buyerQualification.fundingPlans ? (Array.isArray(engagementData.buyerQualification.fundingPlans) ? engagementData.buyerQualification.fundingPlans.join(", ") : engagementData.buyerQualification.fundingPlans) : "—"}</p>
                     </div>
                   </div>
 
@@ -601,10 +709,10 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
                     <div className="rounded-lg border p-4">
                       <p className="text-sm text-muted-foreground mb-2">Business Experience</p>
                       <div className="space-y-1">
-                        {engagementData.buyerQualification.businessExperienceYears !== undefined && (
+                        {engagementData.buyerQualification.yearsOfExperience !== undefined && (
                           <p className="text-sm">
                             <span className="font-medium">
-                              {engagementData.buyerQualification.businessExperienceYears}
+                              {engagementData.buyerQualification.yearsOfExperience}
                             </span>{" "}
                             years experience
                           </p>
@@ -615,15 +723,20 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
                             Management experience
                           </div>
                         )}
-                        {engagementData.buyerQualification.hasFranchiseExperience && (
+                        {engagementData.buyerQualification.hasOwnedBusiness && (
                           <div className="flex items-center gap-1 text-sm text-emerald-600">
                             <CheckCircle2 className="h-3.5 w-3.5" />
                             Previous business owner
                           </div>
                         )}
-                        {engagementData.buyerQualification.industries?.length > 0 && (
+                        {engagementData.buyerQualification.industryExperience && engagementData.buyerQualification.industryExperience.length > 0 && (
                           <p className="text-sm text-muted-foreground">
-                            Industries: {engagementData.buyerQualification.industries.join(", ")}
+                            Industries: {Array.isArray(engagementData.buyerQualification.industryExperience) ? engagementData.buyerQualification.industryExperience.join(", ") : engagementData.buyerQualification.industryExperience}
+                          </p>
+                        )}
+                        {engagementData.buyerQualification.relevantSkills && engagementData.buyerQualification.relevantSkills.length > 0 && (
+                          <p className="text-sm text-muted-foreground">
+                            Skills: {Array.isArray(engagementData.buyerQualification.relevantSkills) ? engagementData.buyerQualification.relevantSkills.join(", ") : engagementData.buyerQualification.relevantSkills}
                           </p>
                         )}
                       </div>
@@ -772,7 +885,16 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
 
                     <div className="rounded-lg border p-4">
                       <p className="text-sm text-muted-foreground mb-1">Liquid Capital</p>
-                      {displayLead.financialQualification.liquidCapital.source === "Verified" ? (
+                      {displayLead.financialQualification.liquidCapital.range ? (
+                        <>
+                          <p className="text-2xl font-bold mb-1">
+                            {displayLead.financialQualification.liquidCapital.range}
+                          </p>
+                          <p className="text-xs text-muted-foreground italic">
+                            {displayLead.financialQualification.liquidCapital.source}
+                          </p>
+                        </>
+                      ) : displayLead.financialQualification.liquidCapital.source === "Verified" ? (
                         <>
                           <p className="text-2xl font-bold mb-1">
                             ${displayLead.financialQualification.liquidCapital.amount.toLocaleString()}
@@ -796,7 +918,16 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
 
                     <div className="rounded-lg border p-4">
                       <p className="text-sm text-muted-foreground mb-1">Net Worth</p>
-                      {displayLead.financialQualification.netWorth.source === "Verified" ? (
+                      {displayLead.financialQualification.netWorth.range ? (
+                        <>
+                          <p className="text-2xl font-bold mb-1">
+                            {displayLead.financialQualification.netWorth.range}
+                          </p>
+                          <p className="text-xs text-muted-foreground italic">
+                            {displayLead.financialQualification.netWorth.source}
+                          </p>
+                        </>
+                      ) : displayLead.financialQualification.netWorth.source === "Verified" ? (
                         <>
                           <p className="text-2xl font-bold mb-1">
                             ${displayLead.financialQualification.netWorth.amount.toLocaleString()}
@@ -849,27 +980,274 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
                 </div>
               )}
 
+              {/* AI-POWERED SALES INTELLIGENCE */}
               {displayLead.aiInsights &&
                 displayLead.aiInsights.summary &&
                 displayLead.aiInsights.summary !== "No engagement data available yet." && (
                   <div className="space-y-4">
-                    <h3 className="font-bold text-lg">AI-Powered Lead Intelligence</h3>
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-bold text-lg flex items-center gap-2">
+                        <Target className="h-5 w-5 text-purple-600" />
+                        AI-Powered Sales Intelligence
+                      </h3>
+                    </div>
+
+                    {/* FINANCIAL QUALIFICATION BADGE - Most prominent */}
+                    {displayLead.aiInsights.candidateFit?.financialFit && (
+                      <div className={`rounded-lg border-2 p-4 ${getFinancialFitConfig(displayLead.aiInsights.candidateFit.financialFit.status || displayLead.aiInsights.candidateFit.financialFit.preCalculated?.overallFit).bgColor} ${getFinancialFitConfig(displayLead.aiInsights.candidateFit.financialFit.status || displayLead.aiInsights.candidateFit.financialFit.preCalculated?.overallFit).borderColor}`}>
+                        <div className="flex items-center justify-between mb-3">
+                          <h4 className={`font-bold text-lg ${getFinancialFitConfig(displayLead.aiInsights.candidateFit.financialFit.status || displayLead.aiInsights.candidateFit.financialFit.preCalculated?.overallFit).color}`}>
+                            {getFinancialFitConfig(displayLead.aiInsights.candidateFit.financialFit.status || displayLead.aiInsights.candidateFit.financialFit.preCalculated?.overallFit).label}
+                          </h4>
+                          {displayLead.aiInsights.candidateFit.financialFit.score !== undefined && (
+                            <Badge className={`${getFinancialFitConfig(displayLead.aiInsights.candidateFit.financialFit.status || displayLead.aiInsights.candidateFit.financialFit.preCalculated?.overallFit).bgColor} ${getFinancialFitConfig(displayLead.aiInsights.candidateFit.financialFit.status || displayLead.aiInsights.candidateFit.financialFit.preCalculated?.overallFit).color} border-0`}>
+                              Score: {displayLead.aiInsights.candidateFit.financialFit.score}/100
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="grid gap-2 sm:grid-cols-2">
+                          {(displayLead.aiInsights.candidateFit.financialFit.liquidCapitalAssessment || displayLead.aiInsights.candidateFit.financialFit.preCalculated?.liquidCapitalAssessment) && (
+                            <div className="text-sm">
+                              <span className="font-medium">Liquid Capital: </span>
+                              <span>{displayLead.aiInsights.candidateFit.financialFit.liquidCapitalAssessment || displayLead.aiInsights.candidateFit.financialFit.preCalculated?.liquidCapitalAssessment}</span>
+                            </div>
+                          )}
+                          {(displayLead.aiInsights.candidateFit.financialFit.netWorthAssessment || displayLead.aiInsights.candidateFit.financialFit.preCalculated?.netWorthAssessment) && (
+                            <div className="text-sm">
+                              <span className="font-medium">Net Worth: </span>
+                              <span>{displayLead.aiInsights.candidateFit.financialFit.netWorthAssessment || displayLead.aiInsights.candidateFit.financialFit.preCalculated?.netWorthAssessment}</span>
+                            </div>
+                          )}
+                        </div>
+                        {displayLead.aiInsights.candidateFit.financialFit.fundingPlanNotes && (
+                          <p className="text-sm mt-2 text-gray-700">
+                            <span className="font-medium">Funding: </span>
+                            {displayLead.aiInsights.candidateFit.financialFit.fundingPlanNotes}
+                          </p>
+                        )}
+                        {displayLead.aiInsights.candidateFit.financialFit.recommendation && (
+                          <p className="text-sm mt-2 font-medium">
+                            → {displayLead.aiInsights.candidateFit.financialFit.recommendation}
+                          </p>
+                        )}
+                      </div>
+                    )}
 
                     {/* AI Summary */}
                     <div className="rounded-lg bg-gradient-to-br from-purple-50 to-blue-50 border border-purple-200 p-5">
-                      <div className="flex items-start gap-3 mb-3">
+                      <div className="flex items-start gap-3">
                         <div className="h-8 w-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center flex-shrink-0">
                           <span className="text-sm font-bold text-white">AI</span>
                         </div>
                         <div className="flex-1">
-                          <h4 className="font-semibold text-purple-900 mb-1">Engagement Analysis</h4>
+                          <h4 className="font-semibold text-purple-900 mb-1">Executive Summary</h4>
                           <p className="text-sm text-purple-800 leading-relaxed">{displayLead.aiInsights.summary}</p>
                         </div>
                       </div>
                     </div>
 
-                    {/* Key Findings */}
-                    {displayLead.aiInsights.keyFindings && displayLead.aiInsights.keyFindings.length > 0 && (
+                    {/* CANDIDATE FIT SCORE CARD */}
+                    {displayLead.aiInsights.candidateFit && displayLead.aiInsights.candidateFit.overallScore !== undefined && (
+                      <div className="rounded-lg border p-4">
+                        <div className="flex items-center justify-between mb-4">
+                          <h4 className="font-semibold flex items-center gap-2">
+                            <TrendingUp className="h-4 w-4 text-blue-600" />
+                            Candidate Fit Assessment
+                          </h4>
+                          <div className="flex items-center gap-2">
+                            <span className="text-2xl font-bold">{displayLead.aiInsights.candidateFit.overallScore}</span>
+                            <span className="text-gray-500">/100</span>
+                            <Badge className={`${getCandidateFitConfig(displayLead.aiInsights.candidateFit.overallRating).bgColor} ${getCandidateFitConfig(displayLead.aiInsights.candidateFit.overallRating).color} border-0`}>
+                              {displayLead.aiInsights.candidateFit.overallRating}
+                            </Badge>
+                          </div>
+                        </div>
+
+                        {/* Criteria Scores */}
+                        {displayLead.aiInsights.candidateFit.criteriaScores && displayLead.aiInsights.candidateFit.criteriaScores.length > 0 && (
+                          <div className="space-y-2">
+                            <h5 className="text-sm font-medium text-gray-600 mb-2">Scoring Against Ideal Candidate Criteria:</h5>
+                            {displayLead.aiInsights.candidateFit.criteriaScores.map((criteria: any, idx: number) => (
+                              <div key={idx} className="flex items-start justify-between p-2 rounded bg-gray-50">
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-medium text-sm">{criteria.criterion}</span>
+                                    <span className="text-xs text-gray-500">({criteria.weight}%)</span>
+                                  </div>
+                                  {criteria.evidence && criteria.evidence.length > 0 && (
+                                    <p className="text-xs text-emerald-700 mt-0.5">✓ {criteria.evidence.join(", ")}</p>
+                                  )}
+                                  {criteria.gaps && criteria.gaps.length > 0 && (
+                                    <p className="text-xs text-amber-600 mt-0.5">Gap: {criteria.gaps.join(", ")}</p>
+                                  )}
+                                </div>
+                                <Badge className={`${getCriteriaScoreConfig(criteria.score).bgColor} ${getCriteriaScoreConfig(criteria.score).color} border-0 text-xs`}>
+                                  {getCriteriaScoreConfig(criteria.score).icon} {criteria.score}
+                                </Badge>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Experience & Engagement Fit */}
+                        <div className="grid gap-3 sm:grid-cols-2 mt-4">
+                          {displayLead.aiInsights.candidateFit.experienceFit && (
+                            <div className="p-3 rounded bg-blue-50">
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="text-sm font-medium text-blue-900">Experience Fit</span>
+                                <span className="text-sm font-bold text-blue-700">{displayLead.aiInsights.candidateFit.experienceFit.score}/100</span>
+                              </div>
+                              <p className="text-xs text-blue-800">{displayLead.aiInsights.candidateFit.experienceFit.assessment}</p>
+                            </div>
+                          )}
+                          {displayLead.aiInsights.candidateFit.engagementFit && (
+                            <div className="p-3 rounded bg-purple-50">
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="text-sm font-medium text-purple-900">Engagement Fit</span>
+                                <span className="text-sm font-bold text-purple-700">{displayLead.aiInsights.candidateFit.engagementFit.score}/100</span>
+                              </div>
+                              <p className="text-xs text-purple-800">{displayLead.aiInsights.candidateFit.engagementFit.assessment}</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SALES STRATEGY */}
+                    {displayLead.aiInsights.salesStrategy && (
+                      <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <h4 className="font-semibold text-emerald-900 flex items-center gap-2">
+                            <MessageSquare className="h-4 w-4" />
+                            Sales Strategy
+                          </h4>
+                          <Badge className="bg-emerald-100 text-emerald-800 border-0">
+                            {displayLead.aiInsights.salesStrategy.recommendedApproach} Approach
+                          </Badge>
+                        </div>
+                        {displayLead.aiInsights.salesStrategy.approachRationale && (
+                          <p className="text-sm text-emerald-800 mb-3 italic">
+                            {displayLead.aiInsights.salesStrategy.approachRationale}
+                          </p>
+                        )}
+
+                        {/* Talking Points */}
+                        {displayLead.aiInsights.salesStrategy.talkingPoints && displayLead.aiInsights.salesStrategy.talkingPoints.length > 0 && (
+                          <div className="mb-3">
+                            <h5 className="text-sm font-medium text-emerald-900 mb-2">💬 Talking Points:</h5>
+                            <ul className="space-y-1">
+                              {displayLead.aiInsights.salesStrategy.talkingPoints.map((point: string, idx: number) => (
+                                <li key={idx} className="text-sm flex items-start gap-2">
+                                  <span className="text-emerald-600 mt-0.5">→</span>
+                                  <span className="text-emerald-900">{point}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {/* Conversation Starters */}
+                        {displayLead.aiInsights.salesStrategy.conversationStarters && displayLead.aiInsights.salesStrategy.conversationStarters.length > 0 && (
+                          <div className="mb-3">
+                            <h5 className="text-sm font-medium text-emerald-900 mb-2">🎯 Conversation Starters:</h5>
+                            <ul className="space-y-1">
+                              {displayLead.aiInsights.salesStrategy.conversationStarters.map((starter: string, idx: number) => (
+                                <li key={idx} className="text-sm text-emerald-800 bg-white/50 rounded p-2">
+                                  "{starter}"
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {/* Questions to Ask */}
+                        {displayLead.aiInsights.salesStrategy.questionsToAsk && displayLead.aiInsights.salesStrategy.questionsToAsk.length > 0 && (
+                          <div>
+                            <h5 className="text-sm font-medium text-emerald-900 mb-2">❓ Questions to Ask:</h5>
+                            <ul className="space-y-1">
+                              {displayLead.aiInsights.salesStrategy.questionsToAsk.map((question: string, idx: number) => (
+                                <li key={idx} className="text-sm flex items-start gap-2">
+                                  <span className="text-emerald-600 mt-0.5">{idx + 1}.</span>
+                                  <span className="text-emerald-900">{question}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* ANTICIPATED OBJECTIONS */}
+                    {displayLead.aiInsights.salesStrategy?.anticipatedObjections && displayLead.aiInsights.salesStrategy.anticipatedObjections.length > 0 && (
+                      <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
+                        <h4 className="font-semibold mb-3 flex items-center gap-2 text-amber-900">
+                          <AlertTriangle className="h-4 w-4" />
+                          Anticipated Objections & Responses
+                        </h4>
+                        <div className="space-y-3">
+                          {displayLead.aiInsights.salesStrategy.anticipatedObjections.map((item: any, idx: number) => (
+                            <div key={idx} className="bg-white/60 rounded p-3">
+                              <p className="text-sm font-medium text-amber-900 mb-1">
+                                🤔 "{item.objection}"
+                              </p>
+                              <p className="text-sm text-amber-800 pl-4 border-l-2 border-amber-300">
+                                ↳ {item.response}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* NEXT ACTIONS */}
+                    {displayLead.aiInsights.nextActions && (
+                      <div className="rounded-lg border p-4">
+                        <h4 className="font-semibold mb-3 flex items-center gap-2">
+                          ⚡ Next Actions
+                        </h4>
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          {displayLead.aiInsights.nextActions.immediate && displayLead.aiInsights.nextActions.immediate.length > 0 && (
+                            <div className="p-3 rounded bg-red-50">
+                              <h5 className="text-sm font-medium text-red-900 mb-2">🔥 Immediate (Today)</h5>
+                              <ul className="space-y-1">
+                                {displayLead.aiInsights.nextActions.immediate.map((action: string, idx: number) => (
+                                  <li key={idx} className="text-sm text-red-800 flex items-start gap-1">
+                                    <span>•</span> {action}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                          {displayLead.aiInsights.nextActions.thisWeek && displayLead.aiInsights.nextActions.thisWeek.length > 0 && (
+                            <div className="p-3 rounded bg-blue-50">
+                              <h5 className="text-sm font-medium text-blue-900 mb-2">📅 This Week</h5>
+                              <ul className="space-y-1">
+                                {displayLead.aiInsights.nextActions.thisWeek.map((action: string, idx: number) => (
+                                  <li key={idx} className="text-sm text-blue-800 flex items-start gap-1">
+                                    <span>•</span> {action}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                        {displayLead.aiInsights.nextActions.greenLights && displayLead.aiInsights.nextActions.greenLights.length > 0 && (
+                          <div className="mt-3 p-2 bg-emerald-50 rounded">
+                            <span className="text-xs font-medium text-emerald-800">✅ Green Lights: </span>
+                            <span className="text-xs text-emerald-700">{displayLead.aiInsights.nextActions.greenLights.join(" | ")}</span>
+                          </div>
+                        )}
+                        {displayLead.aiInsights.nextActions.redFlags && displayLead.aiInsights.nextActions.redFlags.length > 0 && (
+                          <div className="mt-2 p-2 bg-red-50 rounded">
+                            <span className="text-xs font-medium text-red-800">🚩 Watch For: </span>
+                            <span className="text-xs text-red-700">{displayLead.aiInsights.nextActions.redFlags.join(" | ")}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* KEY FINDINGS (Legacy fallback) */}
+                    {displayLead.aiInsights.keyFindings && displayLead.aiInsights.keyFindings.length > 0 && !displayLead.aiInsights.candidateFit && (
                       <div className="rounded-lg border p-4">
                         <h4 className="font-semibold mb-3 flex items-center gap-2">
                           <span className="text-blue-600">🔍</span> Key Findings
@@ -885,8 +1263,8 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
                       </div>
                     )}
 
-                    {/* Sales Recommendations */}
-                    {displayLead.aiInsights.recommendations && displayLead.aiInsights.recommendations.length > 0 && (
+                    {/* RECOMMENDATIONS (Legacy fallback) */}
+                    {displayLead.aiInsights.recommendations && displayLead.aiInsights.recommendations.length > 0 && !displayLead.aiInsights.salesStrategy && (
                       <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
                         <h4 className="font-semibold mb-3 flex items-center gap-2 text-emerald-900">
                           <span className="text-emerald-600">💡</span> Recommended Sales Approach
@@ -902,8 +1280,8 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
                       </div>
                     )}
 
-                    {/* Next Steps */}
-                    {displayLead.aiInsights.nextSteps && displayLead.aiInsights.nextSteps.length > 0 && (
+                    {/* NEXT STEPS (Legacy fallback) */}
+                    {displayLead.aiInsights.nextSteps && displayLead.aiInsights.nextSteps.length > 0 && !displayLead.aiInsights.nextActions && (
                       <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
                         <h4 className="font-semibold mb-3 flex items-center gap-2 text-amber-900">
                           <span className="text-amber-600">⚡</span> Recommended Next Steps
