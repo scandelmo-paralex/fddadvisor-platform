@@ -13,6 +13,210 @@ function getEngagementTier(totalTimeSeconds: number, sessionCount: number): Enga
   return "high"
 }
 
+// Topic categories for question/engagement analysis
+interface TopicCategory {
+  name: string
+  icon: string
+  keywords: string[]
+  fddItems: string[]
+}
+
+const TOPIC_CATEGORIES: TopicCategory[] = [
+  {
+    name: "Financial Performance",
+    icon: "📊",
+    keywords: ["item 19", "profit", "revenue", "earnings", "roi", "income", "performance"],
+    fddItems: ["19"],
+  },
+  {
+    name: "Investment & Costs",
+    icon: "💰",
+    keywords: ["item 7", "item 5", "item 6", "investment", "cost", "fee", "royalty", "franchise fee"],
+    fddItems: ["5", "6", "7"],
+  },
+  {
+    name: "Territory Protection",
+    icon: "🗺️",
+    keywords: ["item 12", "territory", "exclusive", "protected", "area", "location"],
+    fddItems: ["12"],
+  },
+  {
+    name: "Training & Support",
+    icon: "🎓",
+    keywords: ["item 11", "training", "support", "assistance", "program"],
+    fddItems: ["11"],
+  },
+  {
+    name: "System & Brand",
+    icon: "🏢",
+    keywords: ["item 20", "outlets", "locations", "system", "growth", "brand"],
+    fddItems: ["20"],
+  },
+  {
+    name: "Obligations & Restrictions",
+    icon: "📋",
+    keywords: ["item 8", "item 9", "restrictions", "requirements", "obligation", "sources", "products"],
+    fddItems: ["8", "9"],
+  },
+  {
+    name: "Franchisor Background",
+    icon: "👥",
+    keywords: ["item 1", "item 2", "item 3", "item 4", "management", "background", "litigation", "bankruptcy"],
+    fddItems: ["1", "2", "3", "4"],
+  },
+  {
+    name: "Renewal & Termination",
+    icon: "📝",
+    keywords: ["item 17", "renewal", "termination", "transfer", "exit"],
+    fddItems: ["17"],
+  },
+]
+
+interface QuestionInsights {
+  totalQuestions: number
+  topicsExplored: { name: string; icon: string; count: number }[]
+  narrativeSummary: string
+  engagementSignals: string[]
+}
+
+function generateQuestionInsights(
+  engagements: any[] | null,
+  sectionsViewed: string[],
+  itemsViewed: string[],
+  totalQuestionsAsked: number,
+  franchiseName: string
+): QuestionInsights {
+  // Track which topics were explored based on sections/items viewed and engagement data
+  const topicCounts = new Map<string, { name: string; icon: string; count: number }>()
+
+  // Check engagement flags
+  const viewedItem19 = engagements?.some((e) => e.viewed_item19) || false
+  const viewedItem7 = engagements?.some((e) => e.viewed_item7) || false
+  const hasSignificantTime = engagements?.some((e) => e.spent_significant_time) || false
+
+  // Process sections and items viewed to determine topics
+  const allViewed = [...sectionsViewed, ...itemsViewed].map(s => s.toLowerCase())
+
+  for (const category of TOPIC_CATEGORIES) {
+    let count = 0
+
+    // Check if any keywords match viewed sections
+    for (const keyword of category.keywords) {
+      if (allViewed.some(v => v.includes(keyword))) {
+        count++
+      }
+    }
+
+    // Check if specific FDD items match
+    for (const item of category.fddItems) {
+      if (itemsViewed.some(v => v.includes(item) || v === `Item ${item}`)) {
+        count++
+      }
+    }
+
+    // Add engagement flag bonuses
+    if (category.name === "Financial Performance" && viewedItem19) count += 2
+    if (category.name === "Investment & Costs" && viewedItem7) count += 2
+
+    if (count > 0) {
+      topicCounts.set(category.name, {
+        name: category.name,
+        icon: category.icon,
+        count: Math.min(count, 5), // Cap at 5 for display purposes
+      })
+    }
+  }
+
+  // Sort by count (highest first) and take top topics
+  const topicsExplored = Array.from(topicCounts.values())
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5)
+
+  // Generate narrative summary based on topics
+  const narrativeSummary = generateTopicNarrative(
+    topicsExplored,
+    totalQuestionsAsked,
+    franchiseName,
+    hasSignificantTime
+  )
+
+  // Generate engagement signals
+  const engagementSignals: string[] = []
+  if (viewedItem19) {
+    engagementSignals.push("Focused on financial performance data - likely evaluating ROI potential")
+  }
+  if (viewedItem7) {
+    engagementSignals.push("Reviewed initial investment details - assessing affordability")
+  }
+  if (topicsExplored.some(t => t.name === "Territory Protection")) {
+    engagementSignals.push("Explored territory information - interested in market exclusivity")
+  }
+  if (topicsExplored.some(t => t.name === "Training & Support")) {
+    engagementSignals.push("Reviewed training programs - evaluating support structure")
+  }
+  if (hasSignificantTime) {
+    engagementSignals.push("Spent significant time in due diligence - serious consideration")
+  }
+
+  return {
+    totalQuestions: totalQuestionsAsked,
+    topicsExplored,
+    narrativeSummary,
+    engagementSignals,
+  }
+}
+
+function generateTopicNarrative(
+  topics: { name: string; icon: string; count: number }[],
+  totalQuestions: number,
+  franchiseName: string,
+  hasSignificantTime: boolean
+): string {
+  if (topics.length === 0 && totalQuestions === 0) {
+    return "This prospect has not yet asked questions through the AI assistant or explored specific FDD sections in depth."
+  }
+
+  const topTopics = topics.slice(0, 3).map(t => t.name.toLowerCase())
+  const questionContext = totalQuestions > 0 
+    ? `asked ${totalQuestions} question${totalQuestions !== 1 ? "s" : ""}` 
+    : "explored content"
+
+  let narrative = `This prospect has ${questionContext} focusing primarily on `
+
+  if (topTopics.length === 1) {
+    narrative += `**${topTopics[0]}**`
+  } else if (topTopics.length === 2) {
+    narrative += `**${topTopics[0]}** and **${topTopics[1]}**`
+  } else if (topTopics.length >= 3) {
+    narrative += `**${topTopics[0]}**, **${topTopics[1]}**, and **${topTopics[2]}**`
+  }
+
+  narrative += "."
+
+  // Add interpretation based on topic combination
+  const hasFinancial = topics.some(t => t.name === "Financial Performance" || t.name === "Investment & Costs")
+  const hasOperational = topics.some(t => t.name === "Training & Support" || t.name === "Obligations & Restrictions")
+  const hasTerritory = topics.some(t => t.name === "Territory Protection")
+
+  if (hasFinancial && hasOperational) {
+    narrative += " Their interest in both financial returns and operational details suggests they're in **active due diligence** and evaluating whether this franchise fits their goals and capabilities."
+  } else if (hasFinancial && hasTerritory) {
+    narrative += " Their focus on financials combined with territory questions indicates they're **evaluating market opportunity** and investment potential in their area."
+  } else if (hasFinancial) {
+    narrative += " This financial focus suggests they're **ROI-oriented** and will likely want concrete data on franchisee performance."
+  } else if (hasOperational) {
+    narrative += " Their operational focus suggests they're **planning-minded** and want to understand day-to-day requirements before committing."
+  } else if (hasTerritory) {
+    narrative += " Their territory interest suggests they have a **specific location in mind** and want to ensure market protection."
+  }
+
+  if (hasSignificantTime && totalQuestions >= 5) {
+    narrative += " The depth of their engagement indicates a **serious prospect** worth prioritizing."
+  }
+
+  return narrative
+}
+
 // Helper to parse financial ranges into numeric values for comparison
 function parseFinancialRange(range: string | null): { min: number; max: number } | null {
   if (!range) return null
@@ -264,7 +468,12 @@ export async function GET(request: NextRequest) {
         totalTimeSpent: "0m",
         totalTimeSpentSeconds: 0,
         sectionsViewed: [],
-        questionsAsked: [],
+        questionInsights: {
+          totalQuestions: 0,
+          topicsExplored: [],
+          narrativeSummary: "This prospect has not yet accessed the FDD.",
+          engagementSignals: [],
+        },
         fddFocusAreas: [],
         accessedDate: null,
         engagementCount: 0,
@@ -328,50 +537,16 @@ export async function GET(request: NextRequest) {
     const sectionsViewed = Array.from(new Set(engagements?.flatMap((eng) => eng.sections_viewed || []) || []))
     const itemsViewed = Array.from(new Set(engagements?.flatMap((eng) => eng.items_viewed || []) || []))
 
-    const questions: string[] = []
     const totalQuestionsAsked = engagements?.reduce((sum, e) => sum + (e.questions_asked || 0), 0) || 0
 
-    if (engagements && engagements.length > 0) {
-      const viewedItem19 = engagements.some((e) => e.viewed_item19)
-      const viewedItem7 = engagements.some((e) => e.viewed_item7)
-      const hasSignificantTime = engagements.some((e) => e.spent_significant_time)
-
-      if (viewedItem19) {
-        questions.push(
-          "What are the typical profit margins based on Item 19 data?",
-          "Can you explain the variance between top performers and average performers?",
-          "How long does it typically take to break even based on the financial performance data?",
-        )
-      }
-
-      if (viewedItem7) {
-        questions.push(
-          "What is included in the initial franchise fee and what does it cover?",
-          "Are there any hidden costs or fees not shown in the initial investment estimate?",
-        )
-      }
-
-      if (sectionsViewed.some(s => s.includes("Item 12") || s.includes("Territory"))) {
-        questions.push(
-          "How is territory protection handled? What are the boundaries?",
-          "Can I open multiple locations, and if so, what are the requirements?",
-        )
-      }
-
-      if (sectionsViewed.some(s => s.includes("Item 11") || s.includes("Training"))) {
-        questions.push(
-          "What does the training program include and how long does it last?",
-          "Is there ongoing support after the initial training period?",
-        )
-      }
-
-      if (hasSignificantTime) {
-        questions.push(
-          "What are the key success factors for franchisees?",
-          "What is the typical timeline from signing to opening?",
-        )
-      }
-    }
+    // Generate question themes and narrative summary (privacy-preserving)
+    const questionInsights = generateQuestionInsights(
+      engagements,
+      sectionsViewed,
+      itemsViewed,
+      totalQuestionsAsked,
+      franchise?.name || "the franchise"
+    )
 
     const fddFocusAreas = sectionsViewed.slice(0, 5).map((section, idx) => ({
       item: section,
@@ -424,7 +599,7 @@ export async function GET(request: NextRequest) {
       averageSessionDuration: sessionCount > 0 ? Math.round(totalTimeSpent / sessionCount) : 0,
       sectionsViewed: sectionsViewed.slice(0, 10),
       itemsViewed: itemsViewed.slice(0, 10),
-      questionsAsked: questions.slice(0, 5),
+      questionInsights,
       fddFocusAreas,
       accessedDate,
       engagementCount: sessionCount,

@@ -327,10 +327,7 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
           engagementData?.fddFocusAreas && engagementData.fddFocusAreas.length > 0
             ? engagementData.fddFocusAreas
             : lead.fddFocusAreas,
-        questionsAsked:
-          engagementData?.questionsAsked && engagementData.questionsAsked.length > 0
-            ? engagementData.questionsAsked
-            : lead.questionsAsked,
+        // questionInsights is accessed directly from engagementData, not displayLead
         aiInsights: lead.aiInsights || engagementData?.aiInsights || null,
       }
     : null
@@ -1300,22 +1297,61 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
                   </div>
                 )}
 
-              {displayLead.questionsAsked && displayLead.questionsAsked.length > 0 && (
+              {engagementData?.questionInsights && (
+                engagementData.questionInsights.topicsExplored?.length > 0 || engagementData.questionInsights.totalQuestions > 0
+              ) && (
                 <div>
-                  <h3 className="mb-3 font-bold">Questions Asked ({displayLead.questionsAsked.length})</h3>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Topics and concerns the lead has expressed through their FDD review
-                  </p>
-                  <div className="space-y-2">
-                    {displayLead.questionsAsked.map((question, idx) => (
-                      <div key={idx} className="flex items-start gap-3 rounded-lg border p-3 bg-accent/5">
-                        <div className="h-6 w-6 rounded-full bg-cta/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                          <span className="text-xs font-bold text-cta">Q</span>
-                        </div>
-                        <p className="text-sm flex-1">{question}</p>
-                      </div>
-                    ))}
+                  <h3 className="mb-3 font-bold flex items-center gap-2">
+                    <MessageSquare className="h-5 w-5 text-primary" />
+                    Topics of Interest
+                    {engagementData.questionInsights.totalQuestions > 0 && (
+                      <Badge variant="secondary" className="ml-2">
+                        {engagementData.questionInsights.totalQuestions} question{engagementData.questionInsights.totalQuestions !== 1 ? 's' : ''} asked
+                      </Badge>
+                    )}
+                  </h3>
+                  
+                  {/* Topic badges */}
+                  {engagementData.questionInsights.topicsExplored?.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {engagementData.questionInsights.topicsExplored.map((topic: { name: string; icon: string; count: number }, idx: number) => (
+                        <Badge 
+                          key={idx} 
+                          variant="outline" 
+                          className={`text-sm py-1.5 px-3 ${
+                            idx === 0 ? 'bg-primary/10 border-primary/30 text-primary' : 
+                            idx === 1 ? 'bg-blue-50 border-blue-200 text-blue-700' : 
+                            'bg-gray-50'
+                          }`}
+                        >
+                          <span className="mr-1.5">{topic.icon}</span>
+                          {topic.name}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {/* Narrative summary */}
+                  <div className="rounded-lg bg-gradient-to-br from-slate-50 to-blue-50 border border-slate-200 p-4">
+                    <p className="text-sm text-slate-700 leading-relaxed">
+                      {engagementData.questionInsights.narrativeSummary?.split('**').map((part: string, i: number) => 
+                        i % 2 === 1 ? <strong key={i} className="text-slate-900">{part}</strong> : part
+                      )}
+                    </p>
                   </div>
+                  
+                  {/* Engagement signals */}
+                  {engagementData.questionInsights.engagementSignals?.length > 0 && (
+                    <div className="mt-4 space-y-2">
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Behavioral Signals</p>
+                      {engagementData.questionInsights.engagementSignals.map((signal: string, idx: number) => (
+                        <div key={idx} className="flex items-center gap-2 text-sm text-slate-600">
+                          <span className="text-emerald-500">→</span>
+                          {signal}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 
