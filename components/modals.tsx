@@ -794,9 +794,10 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
                 </div>
               )}
 
-              {displayLead.financialQualification && (
+              {/* Only show legacy Financial Qualification if we DON'T have real buyer qualification data */}
+              {displayLead.financialQualification && !engagementData?.buyerQualification && (
                 <div>
-                  <h3 className="mb-3 font-bold">Financial Qualification</h3>
+                  <h3 className="mb-3 font-bold">Financial Qualification (Legacy)</h3>
 
                   {displayLead.verificationStatus !== "verified" && (
                     <div className="mb-4 rounded-lg bg-amber-50 border border-amber-200 p-4">
