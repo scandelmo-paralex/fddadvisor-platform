@@ -522,6 +522,31 @@ async function generateEnhancedAIInsights(
     financialFit = assessFinancialFit(buyerProfile, financialReqs)
   }
 
+  // Handle "none" tier - no engagement yet, simple honest message
+  if (tier === "none") {
+    const buyerName = buyerProfile?.first_name
+      ? `${buyerProfile.first_name} ${buyerProfile.last_name || ""}`.trim()
+      : "This prospect"
+    const franchiseName = franchise?.name || "the franchise"
+    
+    return {
+      summary: `${buyerName} has not engaged with the ${franchiseName} FDD yet. Specific insights about their interests, concerns, and questions will be available once they begin reviewing the document.`,
+      keyFindings: [],
+      recommendations: [],
+      nextSteps: [],
+      engagementTier: "none" as EngagementTier,
+      tierMessage: "Awaiting first FDD session",
+      candidateFit: financialFit ? {
+        financialFit: {
+          status: financialFit.overallFit,
+          score: financialFit.score,
+          liquidCapitalAssessment: financialFit.liquidCapitalAssessment,
+          netWorthAssessment: financialFit.netWorthAssessment,
+        }
+      } : null,
+    }
+  }
+
   if (tier === "minimal") {
     return generateMinimalEngagementInsights(
       engagements,
