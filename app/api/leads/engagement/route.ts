@@ -17,41 +17,61 @@ function getEngagementTier(totalTimeSeconds: number, sessionCount: number): Enga
 function parseFinancialRange(range: string | null): { min: number; max: number } | null {
   if (!range) return null
   
-  // Handle common patterns like "$100K - $250K", "$500,000+", "Under $100K"
+  // Handle common patterns like "$100K - $250K", "$2M+", "$500,000+", "Under $100K"
   const cleanRange = range.replace(/,/g, '').toLowerCase()
   
+  // Helper to get multiplier based on suffix (k = thousands, m = millions)
+  const getMultiplier = (str: string, numberStr: string): number => {
+    // Check what comes right after the number
+    const afterNumber = str.substring(str.indexOf(numberStr) + numberStr.length)
+    if (afterNumber.startsWith('m') || str.includes('million')) return 1000000
+    if (afterNumber.startsWith('k') || str.includes('thousand')) return 1000
+    // If it's a small number without suffix, assume thousands
+    const num = parseInt(numberStr)
+    if (num < 1000) return 1000
+    return 1
+  }
+  
   if (cleanRange.includes('under') || cleanRange.includes('less than')) {
-    const match = cleanRange.match(/(\d+)k?/)
+    const match = cleanRange.match(/(\d+)/)
     if (match) {
-      const value = parseInt(match[1]) * (cleanRange.includes('k') ? 1000 : 1)
+      const value = parseInt(match[1]) * getMultiplier(cleanRange, match[1])
       return { min: 0, max: value }
     }
   }
   
   if (cleanRange.includes('+') || cleanRange.includes('over') || cleanRange.includes('more than')) {
-    const match = cleanRange.match(/(\d+)k?/)
+    const match = cleanRange.match(/(\d+)/)
     if (match) {
-      const value = parseInt(match[1]) * (cleanRange.includes('k') ? 1000 : 1)
+      const value = parseInt(match[1]) * getMultiplier(cleanRange, match[1])
       return { min: value, max: value * 10 } // Assume upper bound is 10x
     }
   }
   
-  // Range pattern: "$100K - $250K" or "100000 - 250000"
-  const rangeMatch = cleanRange.match(/\$?(\d+)k?\s*[-–]\s*\$?(\d+)k?/i)
+  // Range pattern: "$100K - $250K" or "$1M - $2M" or "100000 - 250000"
+  const rangeMatch = cleanRange.match(/\$?(\d+)([km])?\s*[-–]\s*\$?(\d+)([km])?/i)
   if (rangeMatch) {
     let min = parseInt(rangeMatch[1])
-    let max = parseInt(rangeMatch[2])
-    // If values are small, assume they're in thousands
-    if (min < 1000) min *= 1000
-    if (max < 1000) max *= 1000
+    let max = parseInt(rangeMatch[3])
+    // Apply multipliers
+    if (rangeMatch[2] === 'm') min *= 1000000
+    else if (rangeMatch[2] === 'k') min *= 1000
+    else if (min < 1000) min *= 1000
+    
+    if (rangeMatch[4] === 'm') max *= 1000000
+    else if (rangeMatch[4] === 'k') max *= 1000
+    else if (max < 1000) max *= 1000
+    
     return { min, max }
   }
   
-  // Single value
-  const singleMatch = cleanRange.match(/\$?(\d+)k?/)
+  // Single value with suffix: "$2M", "$500K", "500000"
+  const singleMatch = cleanRange.match(/\$?(\d+)([km])?/)
   if (singleMatch) {
     let value = parseInt(singleMatch[1])
-    if (value < 1000) value *= 1000
+    if (singleMatch[2] === 'm') value *= 1000000
+    else if (singleMatch[2] === 'k') value *= 1000
+    else if (value < 1000) value *= 1000
     return { min: value, max: value }
   }
   
@@ -440,105 +460,40 @@ function generatePendingLeadInsights(invitation: any, franchise: any, buyerProfi
     ? `${buyerProfile.first_name} ${buyerProfile.last_name || ""}`.trim()
     : invitation.lead_name || "This prospect"
   const franchiseName = franchise?.name || invitation.brand || "the franchise"
-  const source = invitation.source || buyerProfile?.signup_source || "Direct"
-  const timeline = invitation.timeline || buyerProfile?.buying_timeline || "Not specified"
-  const location = invitation.city && invitation.state ? `${invitation.city}, ${invitation.state}` : null
-  const targetLocation = invitation.target_location || null
   const sentDate = invitation.sent_at ? new Date(invitation.sent_at).toLocaleDateString() : "recently"
 
-  // Check if franchise has financial requirements
+  // Check if franchise has financial requirements for assessment
   const idealProfile = franchise?.ideal_candidate_profile
   const financialReqs = idealProfile?.financial_requirements
   
-  // Get buyer profile info
-  const yearsExperience = buyerProfile?.years_of_experience
-  const hasOwnedBusiness = buyerProfile?.has_owned_business
-  const industryExperience = buyerProfile?.industry_experience
-  const relevantSkills = buyerProfile?.relevant_skills
-  const fundingPlans = buyerProfile?.funding_plans
-  const liquidAssets = buyerProfile?.liquid_assets_range
-  const netWorth = buyerProfile?.net_worth_range
-
-  // Build experience summary
-  let experienceSummary = ""
-  if (yearsExperience || hasOwnedBusiness || industryExperience) {
-    const parts = []
-    if (yearsExperience) parts.push(`${yearsExperience} years of experience`)
-    if (hasOwnedBusiness) parts.push("previous business owner")
-    if (industryExperience && Array.isArray(industryExperience) && industryExperience.length > 0) {
-      parts.push(`background in ${industryExperience.join(", ")}`)
-    }
-    experienceSummary = parts.length > 0 ? ` With ${parts.join(", ")}, they bring valuable experience.` : ""
+  // Calculate financial fit if we have requirements AND buyer financial data
+  let financialFit = null
+  if (financialReqs && buyerProfile?.liquid_assets_range) {
+    financialFit = assessFinancialFit({
+      liquid_assets_range: buyerProfile.liquid_assets_range,
+      net_worth_range: buyerProfile.net_worth_range,
+      funding_plans: buyerProfile.funding_plans,
+    }, financialReqs)
   }
 
-  const summary = `${leadName} received an FDD invitation on ${sentDate} but hasn't accessed it yet. They came through ${source}${timeline !== "Not specified" ? ` with a ${timeline} buying timeline` : ""}.${experienceSummary} This is an opportunity to follow up and encourage engagement.`
-
-  const keyFindings = [
-    `Lead source: ${source} - tailor your follow-up messaging accordingly`,
-    timeline !== "Not specified"
-      ? `Timeline: ${timeline} - ${timeline.includes("0-3") || timeline.includes("3-6") ? "Active buyer, prioritize follow-up" : "Longer timeline, nurture relationship"}`
-      : "No timeline specified - qualify buying intent on follow-up call",
-    location
-      ? `Located in ${location}${targetLocation ? `, interested in ${targetLocation} territory` : ""}`
-      : "Location not specified - clarify target market",
-    `FDD sent but not opened - may need reminder or different approach`,
-  ]
-
-  // Add experience-based findings
-  if (yearsExperience) {
-    keyFindings.push(`Experience: ${yearsExperience} years${hasOwnedBusiness ? " with prior business ownership" : ""} - experienced candidate`)
-  }
-  if (industryExperience && Array.isArray(industryExperience) && industryExperience.length > 0) {
-    keyFindings.push(`Industry background: ${industryExperience.join(", ")} - evaluate fit with franchise operations`)
-  }
-  if (relevantSkills && Array.isArray(relevantSkills) && relevantSkills.length > 0) {
-    keyFindings.push(`Key skills: ${relevantSkills.join(", ")}`)
-  }
-
-  // Add financial findings
-  if (liquidAssets && netWorth) {
-    keyFindings.push(`Self-reported financials: ${liquidAssets} liquid assets, ${netWorth} net worth`)
-  } else if (financialReqs) {
-    keyFindings.push(`Financial requirements: ${(financialReqs.liquid_capital_min/1000).toFixed(0)}K liquid capital, ${(financialReqs.net_worth_min/1000).toFixed(0)}K net worth - qualify on first call`)
-  } else {
-    keyFindings.push("Verify financial qualification on first call")
-  }
-
-  if (fundingPlans) {
-    const plans = Array.isArray(fundingPlans) ? fundingPlans.join(", ") : fundingPlans
-    keyFindings.push(`Funding approach: ${plans}`)
-  }
-
-  const recommendations = [
-    `Send a friendly follow-up email reminding ${leadName} about their FDD access`,
-    source === "Trade Show"
-      ? "Reference your conversation at the trade show to personalize outreach"
-      : source === "Referral"
-        ? "Mention the referral source to build trust and credibility"
-        : source === "Website"
-          ? "Highlight key benefits they likely saw on your website"
-          : "Personalize your outreach based on how they found you",
-    "Offer a quick call to walk them through the FDD highlights",
-    "Address common hesitations: 'Many prospects find the FDD overwhelming at first - happy to guide you through the key sections'",
-  ]
-
-  const nextSteps = [
-    `Send follow-up email within 24 hours if FDD hasn't been accessed`,
-    `Call ${leadName} to confirm they received the invitation and offer assistance`,
-    "Prepare a 'FDD highlights' one-pager to share as a conversation starter",
-    targetLocation
-      ? `Research territory availability in ${targetLocation} before your call`
-      : "Have territory availability information ready for the call",
-  ]
+  // Simple, honest summary - no fake insights
+  const summary = `${leadName} has not engaged with the ${franchiseName} FDD yet. Specific insights about their interests, concerns, and questions will be available once they begin reviewing the document.`
 
   return {
     summary,
-    keyFindings,
-    recommendations,
-    nextSteps,
+    keyFindings: [],
+    recommendations: [],
+    nextSteps: [],
     engagementTier: "none" as EngagementTier,
     tierMessage: "Awaiting first FDD session",
-    candidateFit: null, // No fit assessment until they engage
+    candidateFit: financialFit ? {
+      financialFit: {
+        status: financialFit.overallFit,
+        score: financialFit.score,
+        liquidCapitalAssessment: financialFit.liquidCapitalAssessment,
+        netWorthAssessment: financialFit.netWorthAssessment,
+      }
+    } : null,
   }
 }
 
