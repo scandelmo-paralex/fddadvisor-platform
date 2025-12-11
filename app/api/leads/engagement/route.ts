@@ -509,6 +509,7 @@ export async function GET(request: NextRequest) {
     const { data: buyerProfile } = await supabase
       .from("buyer_profiles")
       .select(`
+        id, user_id,
         first_name, last_name, email, city_location, state_location, buying_timeline, signup_source,
         fico_score_range, liquid_assets_range, net_worth_range, funding_plans, linkedin_url,
         no_felony_attestation, no_bankruptcy_attestation, profile_completed_at,
@@ -531,10 +532,14 @@ export async function GET(request: NextRequest) {
       .eq("lead_email", buyerProfile?.email)
       .single()
 
+    // Query fdd_engagements using user_id (not buyer_profiles.id)
+    // fdd_engagements.buyer_id references users.id, which is buyer_profiles.user_id
+    const engagementBuyerId = buyerProfile?.user_id || accessRecord.buyer_id
+    
     const { data: engagements, error: engagementError } = await supabase
       .from("fdd_engagements")
       .select("*")
-      .eq("buyer_id", accessRecord.buyer_id)
+      .eq("buyer_id", engagementBuyerId)
       .eq("franchise_id", accessRecord.franchise_id)
       .order("created_at", { ascending: false })
 
