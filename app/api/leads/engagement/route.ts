@@ -527,6 +527,7 @@ export async function GET(request: NextRequest) {
         totalTimeSpent: "47m",
         totalTimeSpentSeconds: 2820,
         averageSessionDuration: 940,
+        qualityScore: 92, // Override the lead's qualityScore for demo
         sectionsViewed: ["Item 19 - Financial Performance", "Item 7 - Initial Investment", "Item 12 - Territory", "Item 11 - Training"],
         itemsViewed: ["19", "7", "12", "11", "20"],
         questionInsights: {

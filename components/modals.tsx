@@ -395,6 +395,7 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
   const displayLead = lead
     ? {
         ...lead,
+        qualityScore: engagementData?.qualityScore ?? lead.qualityScore, // Prefer engagement data qualityScore for demo
         totalTimeSpent:
           engagementData?.totalTimeSpent && engagementData.totalTimeSpent !== "0m"
             ? engagementData.totalTimeSpent
