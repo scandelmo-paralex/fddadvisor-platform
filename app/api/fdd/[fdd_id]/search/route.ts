@@ -6,12 +6,9 @@ import Anthropic from "@anthropic-ai/sdk"
 const CONFIDENCE_THRESHOLD = 0.4
 
 type FPRIntent =
-  | "earnings_question" // "How much can I make?"
-  | "roi_question" // "What's the ROI?"
-  | "profitability_question" // "Is this profitable?"
-  | "projection_request" // "Calculate my expected earnings"
-  | "comparison_request" // "Which franchise earns more?"
-  | "investment_advice" // "Is this a good investment?"
+  | "personal_earnings_projection" // "How much will I make?"
+  | "calculation_request" // "Calculate my expected earnings"
+  | "investment_advice" // "Should I invest?", "Is this worth it?"
   | null
 
 interface FPRDetectionResult {
@@ -24,133 +21,92 @@ interface FPRDetectionResult {
 function detectFPRIntent(query: string): FPRDetectionResult {
   const lowerQuery = query.toLowerCase()
 
-  // Earnings/Income questions - redirect to Item 19
-  if (
-    /how much (can|will|could|should|would) (i|we|someone) (make|earn|profit|take home)/i.test(query) ||
-    /what (can|could|should|would) (i|we) expect to (make|earn)/i.test(query) ||
-    /typical|average|expected|normal.*(earnings|income|salary|take.?home)/i.test(query)
-  ) {
-    return {
-      intent: "earnings_question",
-      shouldRedirect: true,
-      suggestedAction: "navigate_item19",
-      friendlyResponse: `That's one of the most important questions for any franchise buyer! While I can't predict what you'll earn (every owner's results are different), I can show you exactly what this franchisor has disclosed about existing locations.
-
-**Here's what I can help with:**
-- Walk you through Item 19's Financial Performance Representation
-- Show you reported revenue ranges from actual locations
-- Explain the sample sizes and time periods for the data
-
-Would you like me to find the Item 19 financial data for you? You can also talk directly with existing franchisees listed in Item 20 to hear about their real experiences.`,
+  // ALLOW these patterns - legitimate questions about FDD content:
+  // - "What does Item 19 say?"
+  // - "What is the average revenue disclosed?"
+  // - "Show me the financial performance data"
+  // - "What are the gross sales figures?"
+  // - "How many locations are profitable?"
+  const allowedPatterns = [
+    /what (does|do|is|are|did).*(item.?19|fdd|disclose|say|show|report|state)/i,
+    /show me.*(item.?19|financial|data|disclosure|figures)/i,
+    /what.*(disclosed|reported|stated|shown)/i,
+    /tell me about.*(item.?19|financial performance|disclosure)/i,
+    /explain.*(item.?19|financial|data)/i,
+    /summarize.*(item.?19|financial)/i,
+    /how many.*(locations?|franchisees?|units?)/i,
+    /what is the.*(average|median|range|breakdown).*(revenue|sales|figure)/i,
+  ]
+  
+  for (const pattern of allowedPatterns) {
+    if (pattern.test(query)) {
+      console.log("[v0] FPR Check: Query matches allowed pattern, proceeding with answer")
+      return { intent: null, shouldRedirect: false, friendlyResponse: "" }
     }
   }
 
-  // ROI/Payback questions - redirect to Item 7 + Item 19
+  // BLOCK: Personal earnings projections - "How much will/can I make?"
   if (
-    /what('s| is| are) (the |my )?(roi|return on investment|payback|break.?even)/i.test(query) ||
-    /how (long|quickly|soon) (until|before|to|till) (break.?even|profit|profitable|recoup)/i.test(query)
+    /how much (can|will|could|would|should) (i|we|you|someone|a franchisee) (make|earn|profit|take home|expect)/i.test(query) ||
+    /what (can|could|will|would|should) (i|we|my|someone) expect to (make|earn)/i.test(query) ||
+    /what (will|would) (i|we|my) (earnings|income|profit|salary) be/i.test(query)
   ) {
     return {
-      intent: "roi_question",
+      intent: "personal_earnings_projection",
+      shouldRedirect: true,
+      suggestedAction: "navigate_item19",
+      friendlyResponse: `I can't predict what you'll personally earn—every franchisee's results depend on location, market, and how they operate.
+
+**But I can show you the actual data:**
+Item 19 contains the franchisor's disclosed financial performance figures from existing locations. Would you like me to walk you through what they've reported?
+
+You can also contact current franchisees listed in Item 20 for firsthand insights.`,
+    }
+  }
+
+  // BLOCK: Calculation/projection requests
+  if (
+    /(calculate|compute|estimate|project|predict|forecast) (my|the|expected|potential|likely|projected)/i.test(query) &&
+    /(earnings|income|revenue|profit|sales|return|roi)/i.test(query)
+  ) {
+    return {
+      intent: "calculation_request",
       shouldRedirect: true,
       suggestedAction: "show_fdd_data",
-      friendlyResponse: `ROI and breakeven timing depend on many factors unique to your situation—your location, local market, how you operate, and more. I can't calculate that for you, but I can give you the building blocks.
-
-**Here's what the FDD tells us:**
-- **Item 7** shows the initial investment range (what you'll spend to open)
-- **Item 19** (if provided) shows historical financial performance of existing locations
-
-With these figures, you and your accountant can model different scenarios. Would you like me to pull up the investment costs and any disclosed revenue data?`,
-    }
-  }
-
-  // Profitability questions
-  if (
-    /is (this|it) (a )?(profitable|lucrative|money.?maker)/i.test(query) ||
-    /how profitable/i.test(query) ||
-    /will (i|we) make money/i.test(query) ||
-    /can (i|you|we) make (good )?money/i.test(query)
-  ) {
-    return {
-      intent: "profitability_question",
-      shouldRedirect: true,
-      suggestedAction: "navigate_item19",
-      friendlyResponse: `Profitability varies significantly from one franchisee to another—even within the same brand. Location, market conditions, and how you run the business all play a role.
-
-**What I can show you:**
-- Disclosed financial performance data (if the franchisor provides Item 19)
-- The number of locations and how that's changed over time
-- Any litigation or franchisee turnover trends
-
-The best insight often comes from talking to current and former franchisees. Item 20 lists their contact information. Want me to summarize what the FDD discloses about financial performance?`,
-    }
-  }
-
-  // Projection/Calculation requests - firm but friendly
-  if (
-    /calculate|compute|estimate|project|predict/i.test(query) &&
-    /earnings|income|revenue|profit|sales|money/i.test(query)
-  ) {
-    return {
-      intent: "projection_request",
-      shouldRedirect: true,
-      suggestedAction: "show_fdd_data",
-      friendlyResponse: `I can't calculate projected earnings—franchise regulations (and common sense!) prevent anyone from predicting your specific results. But here's the good news: the FDD contains real data that's more valuable than any projection.
-
-**I can help you find:**
-- Actual revenue figures from existing locations (Item 19)
-- Total investment costs (Item 7)
-- Franchise fee and ongoing royalty structure (Items 5 & 6)
-
-Would you like me to gather this data so you can run your own analysis or work through the numbers with your accountant?`,
-    }
-  }
-
-  // Comparison requests
-  if (
-    /(compare|versus|vs\.?|better than|which is better)/i.test(query) &&
-    /profit|revenue|earnings|income|money|return/i.test(query)
-  ) {
-    return {
-      intent: "comparison_request",
-      shouldRedirect: true,
-      suggestedAction: "navigate_item19",
-      friendlyResponse: `Comparing franchise earnings is tricky—different brands report data differently (or not at all), and your results will depend on your specific situation.
+      friendlyResponse: `I can't calculate projected earnings—regulations prevent predictions of individual results.
 
 **What I can do:**
-- Show you exactly what this franchisor discloses in their Item 19
-- Explain the methodology and sample sizes they use
-- Help you understand what the numbers actually mean
+- Show you Item 19's disclosed financial figures
+- Pull up Item 7's investment breakdown
+- Help you understand the data so you can run your own analysis
 
-For true comparisons, you'd want to review each brand's FDD independently and ideally speak with franchisees from each system. Would you like me to walk through this franchise's financial disclosures?`,
+Would you like me to gather the disclosed figures for you?`,
     }
   }
 
-  // Investment advice questions
+  // BLOCK: Direct investment advice requests
   if (
-    /is (this|it) a good (investment|opportunity|idea|decision)/i.test(query) ||
-    /should (i|we) (invest|buy|purchase|get)/i.test(query) ||
-    /worth (it|the investment|buying)/i.test(query) ||
-    /recommend.*(invest|buy|franchise)/i.test(query)
+    /should (i|we) (invest|buy|purchase|get into|do this)/i.test(query) ||
+    /is (this|it) (a )?(good|bad|smart|wise|worth|worthwhile) (investment|opportunity|idea|decision|franchise)/i.test(query) ||
+    /do you recommend/i.test(query) ||
+    /worth (it|buying|the investment|my money)/i.test(query)
   ) {
     return {
       intent: "investment_advice",
       shouldRedirect: true,
       suggestedAction: "show_fdd_data",
-      friendlyResponse: `That's a decision only you can make—but I can help you gather the facts! A franchise attorney and accountant are essential partners in evaluating any opportunity.
+      friendlyResponse: `That's a decision only you can make—I can't advise on whether to invest.
 
-**Here's how the FDD can help you decide:**
-- **Item 19**: Financial performance (if disclosed)
-- **Item 20**: Contact info for current/former franchisees to interview
-- **Item 3**: Litigation history
-- **Item 4**: Bankruptcy history
-- **Item 21**: Financial statements
+**Here's how I can help you decide:**
+- Walk through Item 19's financial disclosures (if provided)
+- Show you the investment costs in Item 7
+- Highlight litigation history (Item 3) and unit turnover (Item 20)
 
-Would you like me to help you explore any of these areas? Many buyers find speaking with existing franchisees to be the most valuable research.`,
+A franchise attorney and accountant are essential partners in evaluating this. What data would be most helpful for you to review?`,
     }
   }
 
-  // No FPR issue detected
+  // No FPR issue detected - allow the question
   return {
     intent: null,
     shouldRedirect: false,
