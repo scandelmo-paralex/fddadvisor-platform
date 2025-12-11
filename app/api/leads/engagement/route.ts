@@ -711,11 +711,38 @@ export async function GET(request: NextRequest) {
       franchise?.name || "the franchise"
     )
 
-    const fddFocusAreas = sectionsViewed.slice(0, 5).map((section, idx) => ({
-      item: section,
-      timeSpent: idx === 0 ? "45m" : idx === 1 ? "32m" : idx === 2 ? "28m" : "15m",
-      interest: idx < 2 ? "High" : "Medium",
-    }))
+    // Build fddFocusAreas from actual engagement data with real durations
+    // Group engagements by section and sum durations
+    const sectionDurations = new Map<string, number>()
+    engagements?.forEach((eng) => {
+      if (eng.section_name) {
+        const current = sectionDurations.get(eng.section_name) || 0
+        sectionDurations.set(eng.section_name, current + (eng.duration_seconds || 0))
+      }
+      // Also track viewed_items if present
+      const items = Array.isArray(eng.viewed_items) ? eng.viewed_items : (eng.viewed_items ? [eng.viewed_items] : [])
+      items.forEach((item: string) => {
+        if (item) {
+          const itemKey = item.startsWith('Item') ? item : `Item ${item}`
+          const current = sectionDurations.get(itemKey) || 0
+          sectionDurations.set(itemKey, current + (eng.duration_seconds || 0) / Math.max(items.length, 1))
+        }
+      })
+    })
+    
+    // Sort by duration and format
+    const fddFocusAreas = Array.from(sectionDurations.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([section, durationSeconds]) => {
+        const mins = Math.round(durationSeconds / 60)
+        const timeStr = mins >= 60 ? `${Math.floor(mins/60)}h ${mins%60}m` : `${mins}m`
+        return {
+          item: section,
+          timeSpent: timeStr,
+          interest: durationSeconds > 300 ? "High" : durationSeconds > 60 ? "Medium" : "Low",
+        }
+      })
 
     const hours = Math.floor(totalTimeSpent / 3600)
     const minutes = Math.floor((totalTimeSpent % 3600) / 60)
@@ -754,17 +781,17 @@ export async function GET(request: NextRequest) {
         }
       : null
 
-    // Calculate overall quality score based on financial fit + engagement
-    // Financial Readiness (30%) + Engagement (40%) + Timeline (15%) + Experience (15%)
-    let qualityScore = 30 // Base score (lower to allow room for growth)
+    // Calculate overall quality score based on financial fit + engagement + experience
+    // Engagement is the most important factor for lead temperature
+    let qualityScore = 20 // Base score
     
-    // Financial component (30 points max)
+    // Financial component (25 points max)
     const financialStatus = aiInsights?.candidateFit?.financialFit?.status || 
                            aiInsights?.candidateFit?.financialFit?.preCalculated?.overallFit
     if (financialStatus === 'qualified') {
-      qualityScore += 30
+      qualityScore += 25
     } else if (financialStatus === 'borderline') {
-      qualityScore += 20
+      qualityScore += 15
     } else if (financialStatus === 'not_qualified') {
       qualityScore += 5
     } else {
@@ -772,15 +799,16 @@ export async function GET(request: NextRequest) {
       qualityScore += 10
     }
     
-    // Engagement component (25 points max) - most important for "hot lead" status
+    // Engagement component (40 points max) - most important for "hot lead" status
+    // High engagement should be required for HOT LEAD status
     if (tier === 'high') {
-      qualityScore += 25
+      qualityScore += 40  // 45+ minutes
     } else if (tier === 'meaningful') {
-      qualityScore += 18
+      qualityScore += 28  // 15-45 minutes
     } else if (tier === 'partial') {
-      qualityScore += 12
+      qualityScore += 18  // 5-15 minutes
     } else if (tier === 'minimal') {
-      qualityScore += 5
+      qualityScore += 8   // < 5 minutes
     }
     // 'none' tier adds 0
     
@@ -796,7 +824,7 @@ export async function GET(request: NextRequest) {
     // Cap at 100
     qualityScore = Math.min(qualityScore, 100)
     
-    console.log('[DEBUG] Quality score calculation:', { financialStatus, tier, qualityScore })
+    console.log('[DEBUG] Quality score calculation:', { financialStatus, tier, qualityScore, buyerProfile: { management_experience: buyerProfile?.management_experience, has_owned_business: buyerProfile?.has_owned_business, years_of_experience: buyerProfile?.years_of_experience }})
 
     return NextResponse.json({
       accessRecord,
