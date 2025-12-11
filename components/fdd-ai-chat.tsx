@@ -448,9 +448,11 @@ export function FDDAIChat({
                 {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
               </Button>
             </div>
+            {/* HIDDEN FOR DEMO - question counter
             <p className="text-xs text-muted-foreground mt-2 text-center">
               {questionsAsked.length}/3 questions asked {questionsAsked.length >= 3 && "✓"}
             </p>
+            */}
           </div>
         </Card>
       )}

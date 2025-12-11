@@ -468,7 +468,7 @@ export default function MyFDDsPage() {
                         </div>
                       )}
 
-                      {/* Stats */}
+                      {/* HIDDEN FOR DEMO - Stats showing 0 views / 0s
                       <div className="grid grid-cols-2 gap-2 text-xs">
                         <div className="flex items-center gap-1.5 text-muted-foreground bg-muted/30 p-1.5 rounded-md">
                           <Eye className="h-3.5 w-3.5" />
@@ -479,6 +479,7 @@ export default function MyFDDsPage() {
                           <span>{formatTimeSpent(fdd.total_time_spent_seconds)}</span>
                         </div>
                       </div>
+                      */}
 
                       <div className="space-y-1 pt-1">
                         {/* Last viewed */}
