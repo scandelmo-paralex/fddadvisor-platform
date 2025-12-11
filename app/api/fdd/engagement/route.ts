@@ -52,8 +52,9 @@ export async function POST(request: Request) {
         return NextResponse.json({ success: true, engagement: null })
       }
 
-      // NOTE: fdd_engagements.buyer_id references auth.users(id), NOT buyer_profiles(id)
-      const buyer_id = user.id
+      // fdd_engagements.buyer_id references buyer_profiles(id) per the FK constraint
+      const buyer_id = buyerProfile.id
+      console.log("[v0] Using buyer_id:", buyer_id, "(buyer_profiles.id) for user:", user.id)
       const questions_count = Array.isArray(questionsAsked) ? questionsAsked.length : 0
 
       // Look up fdd_id from fdds table using franchise_id
@@ -212,12 +213,23 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    // NOTE: fdd_engagements.buyer_id references auth.users(id), NOT buyer_profiles(id)
+    // Get buyer profile to get the correct buyer_id
+    const { data: buyerProfile } = await supabase
+      .from("buyer_profiles")
+      .select("id")
+      .eq("user_id", user.id)
+      .single()
+
+    if (!buyerProfile) {
+      return NextResponse.json({ engagement: null })
+    }
+
+    // fdd_engagements.buyer_id references buyer_profiles(id) per the FK constraint
     try {
       const { data, error } = await supabase
         .from("fdd_engagements")
         .select("*")
-        .eq("buyer_id", user.id)
+        .eq("buyer_id", buyerProfile.id)
         .eq("franchise_id", franchise_id)
         .order("created_at", { ascending: false })
         .limit(1)
