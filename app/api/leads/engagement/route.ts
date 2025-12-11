@@ -536,6 +536,9 @@ export async function GET(request: NextRequest) {
     // fdd_engagements.buyer_id references users.id, which is buyer_profiles.user_id
     const engagementBuyerId = buyerProfile?.user_id || accessRecord.buyer_id
     
+    // DEBUG: Log which ID we're using for the engagements query
+    console.log('[DEBUG v2] engagementBuyerId:', engagementBuyerId, 'from user_id:', buyerProfile?.user_id, 'fallback:', accessRecord.buyer_id)
+    
     const { data: engagements, error: engagementError } = await supabase
       .from("fdd_engagements")
       .select("*")
