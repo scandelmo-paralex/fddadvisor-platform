@@ -464,7 +464,6 @@ const SUGGESTED_QUESTIONS = [
   "What are the initial investment requirements?",
   "What training and support does the franchisor provide?",
   "What are the ongoing fees and royalties?",
-  "What is the typical timeline to profitability?",
   "What are the territory rights and restrictions?",
   "How many franchisees have left the system recently?",
   "What financing options are available?",
