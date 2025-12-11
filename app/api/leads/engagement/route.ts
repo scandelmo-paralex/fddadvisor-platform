@@ -1,4 +1,5 @@
 import { createServerClient } from "@/lib/supabase/server"
+import { createServiceRoleClient } from "@/lib/supabase/service-role"
 import { type NextRequest, NextResponse } from "next/server"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 
@@ -539,7 +540,9 @@ export async function GET(request: NextRequest) {
     // DEBUG: Log which ID we're using for the engagements query
     console.log('[DEBUG v2] engagementBuyerId:', engagementBuyerId, 'from user_id:', buyerProfile?.user_id, 'fallback:', accessRecord.buyer_id)
     
-    const { data: engagements, error: engagementError } = await supabase
+    // Use service role client to bypass RLS - franchisor needs to read buyer engagement data
+    const serviceClient = createServiceRoleClient()
+    const { data: engagements, error: engagementError } = await serviceClient
       .from("fdd_engagements")
       .select("*")
       .eq("buyer_id", engagementBuyerId)
