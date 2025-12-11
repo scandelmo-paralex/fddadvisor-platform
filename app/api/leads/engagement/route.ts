@@ -84,9 +84,10 @@ function generateQuestionInsights(
   sectionsViewed: string[],
   itemsViewed: string[],
   totalQuestionsAsked: number,
+  questionsList: string[],
   franchiseName: string
 ): QuestionInsights {
-  // Track which topics were explored based on sections/items viewed and engagement data
+  // Track which topics were explored based on sections/items viewed, questions asked, and engagement data
   const topicCounts = new Map<string, { name: string; icon: string; count: number }>()
 
   // Check engagement flags
@@ -94,8 +95,9 @@ function generateQuestionInsights(
   const viewedItem7 = engagements?.some((e) => e.viewed_item7) || false
   const hasSignificantTime = engagements?.some((e) => e.spent_significant_time) || false
 
-  // Process sections and items viewed to determine topics
+  // Process sections, items viewed, and actual questions to determine topics
   const allViewed = [...sectionsViewed, ...itemsViewed].map(s => s.toLowerCase())
+  const allQuestions = questionsList.map(q => q.toLowerCase())
 
   for (const category of TOPIC_CATEGORIES) {
     let count = 0
@@ -111,6 +113,13 @@ function generateQuestionInsights(
     for (const item of category.fddItems) {
       if (itemsViewed.some(v => v.includes(item) || v === `Item ${item}`)) {
         count++
+      }
+    }
+
+    // Check if any keywords match actual questions asked (higher weight)
+    for (const keyword of category.keywords) {
+      if (allQuestions.some(q => q.includes(keyword))) {
+        count += 2 // Questions are stronger signal than just viewing
       }
     }
 
@@ -538,6 +547,9 @@ export async function GET(request: NextRequest) {
     const itemsViewed = Array.from(new Set(engagements?.flatMap((eng) => eng.items_viewed || []) || []))
 
     const totalQuestionsAsked = engagements?.reduce((sum, e) => sum + (e.questions_asked || 0), 0) || 0
+    
+    // Collect all questions from questions_list across all engagement sessions
+    const allQuestionsList = engagements?.flatMap((e) => e.questions_list || []) || []
 
     // Generate question themes and narrative summary (privacy-preserving)
     const questionInsights = generateQuestionInsights(
@@ -545,6 +557,7 @@ export async function GET(request: NextRequest) {
       sectionsViewed,
       itemsViewed,
       totalQuestionsAsked,
+      allQuestionsList,
       franchise?.name || "the franchise"
     )
 
