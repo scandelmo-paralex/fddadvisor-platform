@@ -103,7 +103,7 @@ function generateQuestionInsights(
 
   // Process sections, items viewed, and actual questions to determine topics
   const allViewed = [...sectionsViewed, ...itemsViewed].map(s => String(s).toLowerCase())
-  const allQuestions = questionsList.map(q => q.toLowerCase())
+  const allQuestions = questionsList.map(q => String(q || '').toLowerCase())
 
   for (const category of TOPIC_CATEGORIES) {
     let count = 0
@@ -785,8 +785,8 @@ async function generateEnhancedAIInsights(
 
   // Calculate engagement metrics for meaningful/high engagement
   // Derive from actual data: section_name and viewed_items columns
-  const allSectionsLower = sectionsViewed.map(s => s.toLowerCase())
-  const allItemsLower = itemsViewed.map(i => i.toLowerCase())
+  const allSectionsLower = sectionsViewed.map(s => String(s).toLowerCase())
+  const allItemsLower = itemsViewed.map(i => String(i).toLowerCase())
   const viewedItem19 = allSectionsLower.some((s) => s.includes("item 19") || s.includes("financial")) || allItemsLower.some((i) => i.includes("19"))
   const viewedItem7 = allSectionsLower.some((s) => s.includes("item 7") || s.includes("investment")) || allItemsLower.some((i) => i.includes("7"))
   const viewedItem12 = allSectionsLower.some((s) => s.includes("item 12") || s.includes("territory")) || allItemsLower.some((i) => i.includes("12"))
@@ -1159,7 +1159,7 @@ function generatePartialEngagementInsights(
   const location = invitation?.city && invitation?.state ? `${invitation.city}, ${invitation.state}` : null
 
   // Derive from section_name data instead of non-existent viewed_item19/viewed_item7 columns
-  const sectionsLower = sectionsViewed.map(s => s.toLowerCase())
+  const sectionsLower = sectionsViewed.map(s => String(s).toLowerCase())
   const viewedItem19 = sectionsLower.some((s) => s.includes("item 19") || s.includes("financial"))
   const viewedItem7 = sectionsLower.some((s) => s.includes("item 7") || s.includes("investment"))
 
@@ -1282,7 +1282,7 @@ function generateTemplateInsights(
   const targetLocation = invitation?.target_location || null
 
   // Derive from section_name data instead of non-existent viewed_item19/viewed_item7 columns
-  const sectionsLower = sectionsViewed.map(s => s.toLowerCase())
+  const sectionsLower = sectionsViewed.map(s => String(s).toLowerCase())
   const viewedItem19 = sectionsLower.some((s) => s.includes("item 19") || s.includes("financial"))
   const viewedItem7 = sectionsLower.some((s) => s.includes("item 7") || s.includes("investment"))
   const viewedItem12 = sectionsLower.some((s) => s.includes("item 12") || s.includes("territory"))
