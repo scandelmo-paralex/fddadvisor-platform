@@ -519,6 +519,132 @@ export async function GET(request: NextRequest) {
       .eq("id", accessRecord.buyer_id)
       .single()
 
+    // ==========================================
+    // DEMO: Hardcoded data for Bob Smith to showcase Lead Intelligence
+    // ==========================================
+    if (buyerProfile?.first_name === "Bob" && buyerProfile?.last_name === "Smith") {
+      return NextResponse.json({
+        totalTimeSpent: "47m",
+        totalTimeSpentSeconds: 2820,
+        averageSessionDuration: 940,
+        sectionsViewed: ["Item 19 - Financial Performance", "Item 7 - Initial Investment", "Item 12 - Territory", "Item 11 - Training"],
+        itemsViewed: ["19", "7", "12", "11", "20"],
+        questionInsights: {
+          totalQuestions: 5,
+          topicsExplored: [
+            { name: "Financial Performance", icon: "📊", count: 5 },
+            { name: "Investment & Costs", icon: "💰", count: 4 },
+            { name: "Territory Protection", icon: "🗺️", count: 3 },
+            { name: "Training & Support", icon: "🎓", count: 2 },
+          ],
+          narrativeSummary: "This prospect has asked 5 questions focusing primarily on **financial performance**, **investment & costs**, and **territory protection**. Their focus on financials combined with territory questions indicates they're **evaluating market opportunity** and investment potential in their area. The depth of their engagement indicates a **serious prospect** worth prioritizing.",
+          engagementSignals: [
+            "Focused on financial performance data - likely evaluating ROI potential",
+            "Reviewed initial investment details - assessing affordability",
+            "Explored territory information - interested in market exclusivity",
+            "Reviewed training programs - evaluating support structure",
+            "Spent significant time in due diligence - serious consideration"
+          ],
+        },
+        fddFocusAreas: [
+          { item: "Item 19 - Financial Performance", timeSpent: "18m", interest: "High" },
+          { item: "Item 7 - Initial Investment", timeSpent: "12m", interest: "High" },
+          { item: "Item 12 - Territory", timeSpent: "9m", interest: "Medium" },
+          { item: "Item 11 - Training", timeSpent: "8m", interest: "Medium" },
+        ],
+        accessedDate: new Date().toLocaleDateString(),
+        engagementCount: 3,
+        engagementTier: "high",
+        aiInsights: {
+          summary: "✅ FINANCIALLY QUALIFIED. Bob Smith is a highly engaged prospect who has spent 47 minutes across 3 sessions conducting thorough due diligence on the Drybar FDD. His focus on Item 19 (financial performance) and Item 7 (investment details) indicates a data-driven decision-making approach typical of serious franchise buyers.",
+          keyFindings: [
+            "✅ MEETS: $250K - $500K liquid assets exceeds $100K requirement",
+            "✅ MEETS: $500K - $1M net worth exceeds $300K requirement",
+            "Financial focus: Deep analysis of both investment requirements and financial performance - likely calculating ROI",
+            "Persistent interest: 3 sessions shows sustained commitment to due diligence",
+            "Territory interest: Actively researching territories for Los Angeles area",
+            "Lead source: Referral - high-quality lead channel with strong conversion rates"
+          ],
+          recommendations: [
+            "Lead with financial success stories - Bob has invested significant time in Item 19, indicating he values data-driven ROI discussions",
+            "Mention the referral source to build trust and credibility in your outreach",
+            "He's detail-oriented with 5 questions asked - prepare comprehensive answers and be ready for in-depth questions",
+            "Multiple sessions indicate thorough research - respect his process while addressing any remaining concerns",
+            "Strike while engagement is high - his recent activity suggests active decision-making"
+          ],
+          nextSteps: [
+            "Schedule a call with Bob within 24-48 hours to discuss his questions about financial performance",
+            "Share success stories from top-performing franchisees in similar markets",
+            "Prepare territory availability maps and demographic data for Los Angeles area",
+            "Send a personalized follow-up email summarizing your conversation and next steps"
+          ],
+          salesStrategy: {
+            recommendedApproach: "Urgency",
+            approachRationale: "High engagement indicates strong interest - create urgency while addressing any remaining questions. Bob's thorough due diligence and financial qualification make him ready for next steps.",
+            talkingPoints: [
+              "Deep dive into Item 19 financial performance data - he's shown strong interest",
+              "Address investment questions - he's reviewed costs carefully",
+              "Discuss territory details for Los Angeles - he's evaluating market opportunity",
+              "Expand on training details - he wants to understand support",
+              "Reference his referral source to personalize conversation",
+              "Align on his 3-6 month timeline"
+            ],
+            anticipatedObjections: [
+              { objection: "Investment seems high", response: "Let's walk through the ROI data and financing options available - your financial profile positions you well for this investment" },
+              { objection: "Concerned about competition", response: "Our territory protection ensures you have exclusive rights in your market - let me show you the Los Angeles availability" },
+              { objection: "Need more time", response: "Completely understand - what specific information would help you feel confident in moving forward?" }
+            ],
+            questionsToAsk: [
+              "What aspects of Drybar appeal most to you?",
+              "Have you identified your preferred territory in Los Angeles?",
+              "What's your funding plan for the investment?",
+              "What questions do you have after reviewing the FDD?",
+              "When are you hoping to open your location?"
+            ]
+          },
+          engagementTier: "high",
+          tierMessage: "🔥 Hot lead - prioritize immediate follow-up",
+          candidateFit: {
+            financialFit: {
+              status: "qualified",
+              score: 100,
+              liquidCapitalAssessment: "✅ MEETS: $250K - $500K exceeds $100K requirement",
+              netWorthAssessment: "✅ MEETS: $500K - $1M exceeds $300K requirement"
+            }
+          }
+        },
+        buyerQualification: {
+          ficoScoreRange: buyerProfile.fico_score_range,
+          liquidAssetsRange: buyerProfile.liquid_assets_range,
+          netWorthRange: buyerProfile.net_worth_range,
+          fundingPlans: buyerProfile.funding_plans,
+          linkedInUrl: buyerProfile.linkedin_url,
+          noFelonyAttestation: buyerProfile.no_felony_attestation,
+          noBankruptcyAttestation: buyerProfile.no_bankruptcy_attestation,
+          profileCompletedAt: buyerProfile.profile_completed_at,
+          yearsOfExperience: buyerProfile.years_of_experience,
+          managementExperience: buyerProfile.management_experience,
+          hasOwnedBusiness: buyerProfile.has_owned_business,
+          industryExperience: buyerProfile.industry_experience,
+          relevantSkills: buyerProfile.relevant_skills,
+        },
+        buyerLocation: buyerProfile.city_location && buyerProfile.state_location
+          ? `${buyerProfile.city_location}, ${buyerProfile.state_location}`
+          : "Los Angeles, CA",
+        invitationData: {
+          source: "Referral",
+          timeline: "3-6 months",
+          city: "Los Angeles",
+          state: "CA",
+          targetLocation: "Los Angeles, CA",
+          brand: "Drybar"
+        }
+      })
+    }
+    // ==========================================
+    // END DEMO DATA
+    // ==========================================
+
     // Get franchise with ideal_candidate_profile
     const { data: franchise } = await supabase
       .from("franchises")
