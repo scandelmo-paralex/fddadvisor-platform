@@ -754,9 +754,54 @@ export async function GET(request: NextRequest) {
         }
       : null
 
+    // Calculate overall quality score based on financial fit + engagement
+    // Financial Readiness (30%) + Engagement (40%) + Timeline (15%) + Experience (15%)
+    let qualityScore = 30 // Base score (lower to allow room for growth)
+    
+    // Financial component (30 points max)
+    const financialStatus = aiInsights?.candidateFit?.financialFit?.status || 
+                           aiInsights?.candidateFit?.financialFit?.preCalculated?.overallFit
+    if (financialStatus === 'qualified') {
+      qualityScore += 30
+    } else if (financialStatus === 'borderline') {
+      qualityScore += 20
+    } else if (financialStatus === 'not_qualified') {
+      qualityScore += 5
+    } else {
+      // Unknown financial status - neutral
+      qualityScore += 10
+    }
+    
+    // Engagement component (25 points max) - most important for "hot lead" status
+    if (tier === 'high') {
+      qualityScore += 25
+    } else if (tier === 'meaningful') {
+      qualityScore += 18
+    } else if (tier === 'partial') {
+      qualityScore += 12
+    } else if (tier === 'minimal') {
+      qualityScore += 5
+    }
+    // 'none' tier adds 0
+    
+    // Experience component (15 points max)
+    if (buyerProfile?.management_experience) qualityScore += 5
+    if (buyerProfile?.has_owned_business) qualityScore += 5
+    if (buyerProfile?.years_of_experience) {
+      const years = parseInt(buyerProfile.years_of_experience) || 0
+      if (years >= 10) qualityScore += 5
+      else if (years >= 5) qualityScore += 3
+    }
+    
+    // Cap at 100
+    qualityScore = Math.min(qualityScore, 100)
+    
+    console.log('[DEBUG] Quality score calculation:', { financialStatus, tier, qualityScore })
+
     return NextResponse.json({
       accessRecord,
       engagements,
+      qualityScore, // Add calculated quality score
       totalTimeSpent: formattedTimeSpent,
       totalTimeSpentSeconds: totalTimeSpent,
       averageSessionDuration: sessionCount > 0 ? Math.round(totalTimeSpent / sessionCount) : 0,
