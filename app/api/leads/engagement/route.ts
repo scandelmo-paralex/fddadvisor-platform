@@ -711,38 +711,19 @@ export async function GET(request: NextRequest) {
       franchise?.name || "the franchise"
     )
 
-    // Build fddFocusAreas from actual engagement data with real durations
-    // Group engagements by section and sum durations
-    const sectionDurations = new Map<string, number>()
-    engagements?.forEach((eng) => {
-      if (eng.section_name) {
-        const current = sectionDurations.get(eng.section_name) || 0
-        sectionDurations.set(eng.section_name, current + (eng.duration_seconds || 0))
+    // Build fddFocusAreas from sections viewed with estimated time distribution
+    const fddFocusAreas = sectionsViewed.slice(0, 5).map((section, idx) => {
+      // Distribute total time across sections (more time to earlier/more viewed sections)
+      const weight = 1 / (idx + 1)
+      const totalWeight = sectionsViewed.slice(0, 5).reduce((sum, _, i) => sum + 1/(i+1), 0)
+      const sectionTime = Math.round((totalTimeSpent * weight / totalWeight) / 60)
+      const timeStr = sectionTime >= 60 ? `${Math.floor(sectionTime/60)}h ${sectionTime%60}m` : `${sectionTime}m`
+      return {
+        item: section,
+        timeSpent: timeStr,
+        interest: idx < 2 ? "High" : "Medium",
       }
-      // Also track viewed_items if present
-      const items = Array.isArray(eng.viewed_items) ? eng.viewed_items : (eng.viewed_items ? [eng.viewed_items] : [])
-      items.forEach((item: string) => {
-        if (item) {
-          const itemKey = item.startsWith('Item') ? item : `Item ${item}`
-          const current = sectionDurations.get(itemKey) || 0
-          sectionDurations.set(itemKey, current + (eng.duration_seconds || 0) / Math.max(items.length, 1))
-        }
-      })
     })
-    
-    // Sort by duration and format
-    const fddFocusAreas = Array.from(sectionDurations.entries())
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
-      .map(([section, durationSeconds]) => {
-        const mins = Math.round(durationSeconds / 60)
-        const timeStr = mins >= 60 ? `${Math.floor(mins/60)}h ${mins%60}m` : `${mins}m`
-        return {
-          item: section,
-          timeSpent: timeStr,
-          interest: durationSeconds > 300 ? "High" : durationSeconds > 60 ? "Medium" : "Low",
-        }
-      })
 
     const hours = Math.floor(totalTimeSpent / 3600)
     const minutes = Math.floor((totalTimeSpent % 3600) / 60)
@@ -782,33 +763,31 @@ export async function GET(request: NextRequest) {
       : null
 
     // Calculate overall quality score based on financial fit + engagement + experience
-    // Engagement is the most important factor for lead temperature
-    let qualityScore = 20 // Base score
+    let qualityScore = 30 // Base score
     
-    // Financial component (25 points max)
+    // Financial component (30 points max)
     const financialStatus = aiInsights?.candidateFit?.financialFit?.status || 
                            aiInsights?.candidateFit?.financialFit?.preCalculated?.overallFit
     if (financialStatus === 'qualified') {
-      qualityScore += 25
+      qualityScore += 30
     } else if (financialStatus === 'borderline') {
-      qualityScore += 15
+      qualityScore += 20
     } else if (financialStatus === 'not_qualified') {
       qualityScore += 5
     } else {
-      // Unknown financial status - neutral
-      qualityScore += 10
+      // Unknown financial status - give benefit of doubt
+      qualityScore += 15
     }
     
-    // Engagement component (40 points max) - most important for "hot lead" status
-    // High engagement should be required for HOT LEAD status
+    // Engagement component (25 points max)
     if (tier === 'high') {
-      qualityScore += 40  // 45+ minutes
+      qualityScore += 25  // 45+ minutes
     } else if (tier === 'meaningful') {
-      qualityScore += 28  // 15-45 minutes
+      qualityScore += 18  // 15-45 minutes
     } else if (tier === 'partial') {
-      qualityScore += 18  // 5-15 minutes
+      qualityScore += 12  // 5-15 minutes
     } else if (tier === 'minimal') {
-      qualityScore += 8   // < 5 minutes
+      qualityScore += 5   // < 5 minutes
     }
     // 'none' tier adds 0
     
@@ -823,8 +802,6 @@ export async function GET(request: NextRequest) {
     
     // Cap at 100
     qualityScore = Math.min(qualityScore, 100)
-    
-    console.log('[DEBUG] Quality score calculation:', { financialStatus, tier, qualityScore, buyerProfile: { management_experience: buyerProfile?.management_experience, has_owned_business: buyerProfile?.has_owned_business, years_of_experience: buyerProfile?.years_of_experience }})
 
     return NextResponse.json({
       accessRecord,
