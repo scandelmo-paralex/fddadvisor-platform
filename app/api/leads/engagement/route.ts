@@ -92,8 +92,8 @@ function generateQuestionInsights(
   const topicCounts = new Map<string, { name: string; icon: string; count: number }>()
 
   // Derive engagement flags from actual data (columns: section_name, viewed_items, duration_seconds)
-  const allSections = sectionsViewed.map(s => s.toLowerCase())
-  const allItems = itemsViewed.map(i => i.toLowerCase())
+  const allSections = sectionsViewed.map(s => String(s).toLowerCase())
+  const allItems = itemsViewed.map(i => String(i).toLowerCase())
   const viewedItem19 = allSections.some(s => s.includes('item 19') || s.includes('financial')) ||
                        allItems.some(i => i.includes('19'))
   const viewedItem7 = allSections.some(s => s.includes('item 7') || s.includes('investment')) ||
@@ -102,7 +102,7 @@ function generateQuestionInsights(
   const hasSignificantTime = totalTime > 1800 // 30+ minutes
 
   // Process sections, items viewed, and actual questions to determine topics
-  const allViewed = [...sectionsViewed, ...itemsViewed].map(s => s.toLowerCase())
+  const allViewed = [...sectionsViewed, ...itemsViewed].map(s => String(s).toLowerCase())
   const allQuestions = questionsList.map(q => q.toLowerCase())
 
   for (const category of TOPIC_CATEGORIES) {
@@ -117,7 +117,7 @@ function generateQuestionInsights(
 
     // Check if specific FDD items match
     for (const item of category.fddItems) {
-      if (itemsViewed.some(v => v.includes(item) || v === `Item ${item}`)) {
+      if (itemsViewed.some(v => String(v).includes(item) || String(v) === `Item ${item}`)) {
         count++
       }
     }
