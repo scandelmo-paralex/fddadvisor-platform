@@ -674,6 +674,7 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
                   <option value="Direct Inquiry">Direct Inquiry</option>
                   <option value="Other">Other</option>
                 </select>
+                {/* HIDDEN FOR DEMO - Status filter
                 <div className="h-4 w-px bg-border/50 mx-1" />
                 <select
                   className="h-8 px-2 text-sm bg-transparent border-none focus:ring-0 text-foreground font-medium cursor-pointer hover:text-cta transition-colors"
@@ -684,6 +685,7 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
                   <option value="verified">Verified</option>
                   <option value="unverified">Unverified</option>
                 </select>
+                */}
                 <div className="h-4 w-px bg-border/50 mx-1" />
                 <select
                   className="h-8 px-2 text-sm bg-transparent border-none focus:ring-0 text-foreground font-medium cursor-pointer hover:text-cta transition-colors"
@@ -734,9 +736,11 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
                     <th className="px-6 py-4 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider w-[120px]">
                       Source
                     </th>
+                    {/* HIDDEN FOR DEMO - Verification column
                     <th className="px-6 py-4 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider w-[120px]">
                       Verification
                     </th>
+                    */}
                     <th className="px-6 py-4 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider w-[140px]">
                       Location
                     </th>
@@ -800,6 +804,7 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
                             {lead.source || "FDDAdvisor"}
                           </Badge>
                         </td>
+                        {/* HIDDEN FOR DEMO - Verification cell
                         <td className="px-6 py-4">
                           {lead.verificationStatus === "verified" ? (
                             <div className="flex items-center gap-1.5 text-emerald-600">
@@ -813,6 +818,7 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
                             </div>
                           )}
                         </td>
+                        */}
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                             <MapPin className="h-3.5 w-3.5 flex-shrink-0 opacity-70" />
