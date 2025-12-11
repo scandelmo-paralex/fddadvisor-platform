@@ -164,6 +164,75 @@ function getCriteriaScoreConfig(score: string | undefined) {
   }
 }
 
+// Helper function to infer topics from question text (for mock data fallback)
+function inferTopicsFromQuestions(questions: string[]): { name: string; icon: string; count: number }[] {
+  const topicKeywords: { [key: string]: { name: string; icon: string; keywords: string[] } } = {
+    financial: { name: "Financial Performance", icon: "📊", keywords: ["profit", "margin", "revenue", "earnings", "roi", "income", "break even", "break-even"] },
+    investment: { name: "Investment & Costs", icon: "💰", keywords: ["cost", "fee", "investment", "franchise fee", "royalty", "hidden"] },
+    territory: { name: "Territory Protection", icon: "🗺️", keywords: ["territory", "location", "area", "exclusive", "protected", "multiple", "expansion"] },
+    training: { name: "Training & Support", icon: "🎓", keywords: ["training", "support", "program", "ongoing", "assistance"] },
+    success: { name: "Success Factors", icon: "🎯", keywords: ["success", "timeline", "opening", "factors"] },
+  }
+
+  const topicCounts: { [key: string]: number } = {}
+  const questionsLower = questions.map(q => q.toLowerCase())
+
+  for (const [topicKey, config] of Object.entries(topicKeywords)) {
+    for (const question of questionsLower) {
+      if (config.keywords.some(kw => question.includes(kw))) {
+        topicCounts[topicKey] = (topicCounts[topicKey] || 0) + 1
+      }
+    }
+  }
+
+  return Object.entries(topicCounts)
+    .filter(([_, count]) => count > 0)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 4)
+    .map(([key, count]) => ({
+      name: topicKeywords[key].name,
+      icon: topicKeywords[key].icon,
+      count,
+    }))
+}
+
+// Helper function to generate narrative from questions (for mock data fallback)
+function generateNarrativeFromQuestions(questions: string[], prospectName: string): string {
+  const topics = inferTopicsFromQuestions(questions)
+  const topicNames = topics.map(t => t.name.toLowerCase())
+
+  if (topics.length === 0) {
+    return `${prospectName} has asked ${questions.length} question${questions.length !== 1 ? 's' : ''} while reviewing the FDD.`
+  }
+
+  let narrative = `${prospectName} has asked ${questions.length} question${questions.length !== 1 ? 's' : ''} focusing on `
+
+  if (topicNames.length === 1) {
+    narrative += `**${topicNames[0]}**`
+  } else if (topicNames.length === 2) {
+    narrative += `**${topicNames[0]}** and **${topicNames[1]}**`
+  } else {
+    narrative += `**${topicNames[0]}**, **${topicNames[1]}**, and **${topicNames[2]}**`
+  }
+
+  narrative += "."
+
+  // Add interpretation
+  const hasFinancial = topics.some(t => t.name.includes("Financial") || t.name.includes("Investment"))
+  const hasOperational = topics.some(t => t.name.includes("Training") || t.name.includes("Success"))
+  const hasTerritory = topics.some(t => t.name.includes("Territory"))
+
+  if (hasFinancial && hasOperational) {
+    narrative += " Their interest in both financial returns and operational details suggests they're in **active due diligence**."
+  } else if (hasFinancial) {
+    narrative += " This financial focus suggests they're **ROI-oriented** and evaluating the investment potential."
+  } else if (hasTerritory) {
+    narrative += " Their territory focus suggests they have a **specific market in mind**."
+  }
+
+  return narrative
+}
+
 export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps) {
   const [liveLeadData, setLiveLeadData] = useState<any>(null)
   const [isLive, setIsLive] = useState(false)
@@ -314,6 +383,14 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
 
   const lead = liveLeadData || (leadId ? leads.find((l) => l.id === leadId) : null)
   const franchise = franchiseId ? franchises.find((f) => f.id === franchiseId) : null
+
+  // Generate fallback questionInsights from mock questionsAsked data if API didn't return questionInsights
+  const questionInsights = engagementData?.questionInsights || (lead?.questionsAsked && lead.questionsAsked.length > 0 ? {
+    totalQuestions: lead.questionsAsked.length,
+    topicsExplored: inferTopicsFromQuestions(lead.questionsAsked),
+    narrativeSummary: generateNarrativeFromQuestions(lead.questionsAsked, lead.name || "This prospect"),
+    engagementSignals: [],
+  } : null)
 
   const displayLead = lead
     ? {
@@ -1298,8 +1375,6 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
                 )}
 
               {engagementData?.questionInsights && (
-                engagementData.questionInsights.topicsExplored?.length > 0 || engagementData.questionInsights.totalQuestions > 0
-              ) && (
                 <div>
                   <h3 className="mb-3 font-bold flex items-center gap-2">
                     <MessageSquare className="h-5 w-5 text-primary" />

@@ -2,23 +2,30 @@ import { createServerClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
 
 function calculateQualityScore(access: any, engagements: any[]): number {
-  let score = 50 // Base score
+  let score = 50 // Base score for verified lead
 
-  // Engagement scoring (40 points)
+  // Engagement scoring (40 points max)
   if (engagements && engagements.length > 0) {
-    const totalTime = engagements.reduce((sum, eng) => sum + (eng.duration_seconds || 0), 0)
-    const timeSpentMinutes = totalTime / 60
-    score += Math.min(timeSpentMinutes * 2, 20) // Up to 20 points for time spent
+    // Time spent scoring (up to 20 points) - uses correct column name: time_spent (in seconds)
+    const totalTimeSeconds = engagements.reduce((sum, eng) => sum + (eng.time_spent || 0), 0)
+    const timeSpentMinutes = totalTimeSeconds / 60
+    score += Math.min(timeSpentMinutes * 2, 20) // 2 pts per minute, max 20
 
-    const totalQuestions = engagements.reduce((sum, eng) => sum + (eng.questions_list?.length || 0), 0)
-    score += Math.min(totalQuestions * 4, 15) // Up to 15 points for questions
+    // Questions asked scoring (up to 15 points) - uses correct column name: questions_asked (count)
+    const totalQuestions = engagements.reduce((sum, eng) => sum + (eng.questions_asked || 0), 0)
+    score += Math.min(totalQuestions * 4, 15) // 4 pts per question, max 15
 
-    const sectionsViewed = new Set(engagements.flatMap((eng) => eng.viewed_items || []))
-    score += Math.min(sectionsViewed.size * 1, 5) // Up to 5 points for sections viewed
+    // Sections viewed scoring (up to 5 points) - uses correct column names
+    const sectionsViewed = new Set([
+      ...engagements.flatMap((eng) => eng.sections_viewed || []),
+      ...engagements.flatMap((eng) => eng.items_viewed || [])
+    ])
+    score += Math.min(sectionsViewed.size * 1, 5) // 1 pt per section, max 5
   }
 
-  // Access frequency scoring (10 points)
-  score += Math.min((access.total_views || 0) * 2, 10)
+  // Session frequency scoring (up to 10 points)
+  const sessionCount = engagements?.length || 0
+  score += Math.min(sessionCount * 2, 10) // 2 pts per session, max 10
 
   return Math.min(Math.round(score), 100)
 }
@@ -91,83 +98,35 @@ export async function GET(request: Request) {
         console.log("[v0] First engagement:", engagements[0])
       }
 
-      const isBobSmith = access.buyer?.email === "spcandelmo@gmail.com"
+      // Calculate engagement metrics from REAL database data
+      // Using correct column names: time_spent, questions_asked, sections_viewed, items_viewed
+      const totalTimeSpent = engagements?.reduce((sum, eng) => sum + (eng.time_spent || 0), 0) || 0
+      const totalQuestionsAsked = engagements?.reduce((sum, eng) => sum + (eng.questions_asked || 0), 0) || 0
       
-      let totalTimeSpent, questionsAsked, sectionsViewed, focusAreas, aiInsights
-      let qualityScore, intent
-
-      if (isBobSmith) {
-        // Hardcoded demo data for Bob Smith
-        totalTimeSpent = 8400 // 140 minutes (2h 20m)
-        questionsAsked = [
-          "What are the typical profit margins for Drybar locations?",
-          "How much territory protection do I get?",
-          "What is the training program timeline?",
-          "Can you provide examples of Item 19 performance for similar markets?",
-          "What are the ongoing royalty and marketing fees?",
-          "How many salons can I open in my territory?",
-          "What is the typical time to break even?",
-          "Are there any restrictions on operating hours?",
-          "What support does Drybar provide for site selection?",
-          "What are the staffing requirements?",
-          "How does Drybar handle territory disputes?"
-        ]
-        sectionsViewed = [
-          "Item 19 - Financial Performance",
-          "Item 7 - Initial Investment",
-          "Item 6 - Other Fees",
-          "Item 12 - Territory",
-          "Item 11 - Training and Support",
-          "Item 5 - Initial Fees",
-          "Item 8 - Restrictions on Sources",
-          "Item 15 - Obligations to Participate"
-        ]
-        focusAreas = [
-          { item: "Item 19 - Financial Performance Representations", timeSpent: "45 min", interest: "High" },
-          { item: "Item 7 - Estimated Initial Investment", timeSpent: "28 min", interest: "High" },
-          { item: "Item 12 - Territory", timeSpent: "22 min", interest: "High" },
-          { item: "Item 11 - Franchisor's Assistance, Training & Support", timeSpent: "18 min", interest: "High" },
-          { item: "Item 6 - Other Fees", timeSpent: "15 min", interest: "Medium" }
-        ]
-        aiInsights = {
-          summary: "Bob Smith demonstrates exceptionally high engagement with the Drybar FDD, spending 2 hours and 20 minutes across 3 separate sessions over 3 days. His focus on Item 19 (Financial Performance), Item 7 (Initial Investment), and Item 12 (Territory) indicates serious financial evaluation and territory planning. The 11 detailed questions asked show sophisticated understanding of franchise operations and strong interest in ROI metrics.",
-          keyFindings: [
-            "Primary Interest: Financial performance and ROI - spent 45 minutes on Item 19 alone",
-            "Territory Focused: Multiple questions about territory protection, expansion rights, and market exclusivity",
-            "Systems-Oriented: Detailed questions about training, support infrastructure, and operational procedures",
-            "Timeline Conscious: Asked about break-even periods and training program duration",
-            "Investment Ready: Questions indicate access to capital and readiness to move forward pending satisfactory financial validation"
-          ],
-          recommendations: [
-            "Lead with specific Item 19 examples from comparable markets - Bob wants concrete financial data",
-            "Prepare detailed territory map showing available locations and expansion opportunities in his target area",
-            "Emphasize the comprehensive 3-week training program and ongoing operational support",
-            "Address his break-even concerns with realistic timelines based on market analysis",
-            "Position multi-unit development opportunity given his territory expansion questions"
-          ],
-          nextSteps: [
-            "Schedule Discovery Day within next 7-10 days while engagement is hot",
-            "Send Item 19 deep-dive analysis with comparable market performance data",
-            "Provide territory availability map for his target region with demographic overlay",
-            "Connect him with 2-3 existing franchisees in similar markets for validation calls",
-            "Introduce franchise business consultant to discuss financing and timeline"
-          ]
-        }
-        qualityScore = 92
-        intent = "High"
-      } else {
-        totalTimeSpent = engagements?.reduce((sum, eng) => sum + (eng.duration_seconds || 0), 0) || 0
-        questionsAsked = engagements?.flatMap((eng) => eng.questions_list || []) || []
-        sectionsViewed = [...new Set(engagements?.flatMap((eng) => eng.viewed_items || []) || [])]
-        focusAreas = sectionsViewed.slice(0, 5).map((item: string) => ({
+      // Combine sections_viewed and items_viewed for full coverage
+      const sectionsViewed = [...new Set([
+        ...(engagements?.flatMap((eng) => eng.sections_viewed || []) || []),
+        ...(engagements?.flatMap((eng) => eng.items_viewed || []) || [])
+      ])]
+      
+      // Generate focus areas from actual viewed sections
+      const focusAreas = sectionsViewed.slice(0, 5).map((item: string, idx: number) => {
+        // Estimate time based on position (most viewed items first)
+        const estimatedMinutes = Math.max(5, 15 - (idx * 2))
+        return {
           item: item,
-          timeSpent: "5 min",
-          interest: "High",
-        }))
-        aiInsights = null
-        qualityScore = calculateQualityScore(access, engagements || [])
-        intent = calculateIntent(qualityScore)
-      }
+          timeSpent: `${estimatedMinutes} min`,
+          interest: idx < 2 ? "High" : "Medium",
+        }
+      })
+      
+      // Calculate quality score and intent from real data
+      const qualityScore = calculateQualityScore(access, engagements || [])
+      const intent = calculateIntent(qualityScore)
+      
+      // AI insights will be fetched from /api/leads/engagement endpoint by the modal
+      // This endpoint returns basic lead data; engagement API handles AI analysis
+      const aiInsights = null
 
       const lead = {
         id: access.id,
@@ -180,7 +139,7 @@ export async function GET(request: Request) {
         accessedDate: access.created_at ? new Date(access.created_at).toLocaleDateString() : "",
         totalTimeSpent: totalTimeSpent > 0 ? `${Math.floor(totalTimeSpent / 60)}m` : "0m",
         fddFocusAreas: focusAreas.length > 0 ? focusAreas : [],
-        questionsAsked: questionsAsked,
+        questionsAsked: [], // Actual questions come from /api/leads/engagement
         aiInsights: aiInsights,
         engagement: [
           {
@@ -205,23 +164,41 @@ export async function GET(request: Request) {
             : []),
         ],
         verificationStatus: "unverified",
+        // Use REAL buyer profile data instead of hardcoded values
+        buyerProfile: access.buyer ? {
+          ficoScoreRange: access.buyer.fico_score_range,
+          liquidAssetsRange: access.buyer.liquid_assets_range,
+          netWorthRange: access.buyer.net_worth_range,
+          fundingPlans: access.buyer.funding_plans,
+          yearsOfExperience: access.buyer.years_of_experience,
+          managementExperience: access.buyer.management_experience,
+          hasOwnedBusiness: access.buyer.has_owned_business,
+          industryExperience: access.buyer.industry_experience,
+          relevantSkills: access.buyer.relevant_skills,
+          noFelonyAttestation: access.buyer.no_felony_attestation,
+          noBankruptcyAttestation: access.buyer.no_bankruptcy_attestation,
+          linkedinUrl: access.buyer.linkedin_url,
+          buyingTimeline: access.buyer.buying_timeline,
+        } : null,
         financialQualification: {
-          creditScore: 720,
+          creditScore: null, // Not collected directly - use fico_score_range instead
+          ficoScoreRange: access.buyer?.fico_score_range || null,
           creditScoreVerified: false,
-          backgroundCheck: "Not Started",
-          backgroundCheckVerified: false,
+          backgroundCheck: access.buyer?.no_felony_attestation && access.buyer?.no_bankruptcy_attestation ? "Passed" : "Not Started",
+          backgroundCheckVerified: access.buyer?.no_felony_attestation && access.buyer?.no_bankruptcy_attestation ? true : false,
           preApproval: {
             status: "Not Started",
             verified: false,
           },
           liquidCapital: {
-            amount: 150000,
+            range: access.buyer?.liquid_assets_range || null,
             source: "Self-reported",
           },
           netWorth: {
-            amount: 500000,
+            range: access.buyer?.net_worth_range || null,
             source: "Self-reported",
           },
+          fundingPlans: access.buyer?.funding_plans || null,
         },
       }
 

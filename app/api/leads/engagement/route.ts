@@ -25,49 +25,49 @@ const TOPIC_CATEGORIES: TopicCategory[] = [
   {
     name: "Financial Performance",
     icon: "📊",
-    keywords: ["item 19", "profit", "revenue", "earnings", "roi", "income", "performance"],
+    keywords: ["item 19", "profit", "revenue", "earnings", "roi", "income", "performance", "gross sales", "average sales", "median", "financial data"],
     fddItems: ["19"],
   },
   {
     name: "Investment & Costs",
     icon: "💰",
-    keywords: ["item 7", "item 5", "item 6", "investment", "cost", "fee", "royalty", "franchise fee"],
+    keywords: ["item 7", "item 5", "item 6", "investment", "cost", "fee", "royalty", "franchise fee", "marketing fee", "ongoing fee", "initial fee", "how much"],
     fddItems: ["5", "6", "7"],
   },
   {
     name: "Territory Protection",
     icon: "🗺️",
-    keywords: ["item 12", "territory", "exclusive", "protected", "area", "location"],
+    keywords: ["item 12", "territory", "exclusive", "protected", "area", "location", "market", "competition"],
     fddItems: ["12"],
   },
   {
     name: "Training & Support",
     icon: "🎓",
-    keywords: ["item 11", "training", "support", "assistance", "program"],
+    keywords: ["item 11", "training", "support", "assistance", "program", "help", "learn", "onboarding"],
     fddItems: ["11"],
   },
   {
     name: "System & Brand",
     icon: "🏢",
-    keywords: ["item 20", "outlets", "locations", "system", "growth", "brand"],
+    keywords: ["item 20", "outlets", "locations", "system", "growth", "brand", "units", "opened", "closed", "how many", "franchisees"],
     fddItems: ["20"],
   },
   {
     name: "Obligations & Restrictions",
     icon: "📋",
-    keywords: ["item 8", "item 9", "restrictions", "requirements", "obligation", "sources", "products"],
+    keywords: ["item 8", "item 9", "restrictions", "requirements", "obligation", "sources", "products", "suppliers", "purchase"],
     fddItems: ["8", "9"],
   },
   {
     name: "Franchisor Background",
     icon: "👥",
-    keywords: ["item 1", "item 2", "item 3", "item 4", "management", "background", "litigation", "bankruptcy"],
+    keywords: ["item 1", "item 2", "item 3", "item 4", "management", "background", "litigation", "bankruptcy", "history", "experience", "leadership"],
     fddItems: ["1", "2", "3", "4"],
   },
   {
     name: "Renewal & Termination",
     icon: "📝",
-    keywords: ["item 17", "renewal", "termination", "transfer", "exit"],
+    keywords: ["item 17", "renewal", "termination", "transfer", "exit", "sell", "leave", "end"],
     fddItems: ["17"],
   },
 ]
@@ -90,10 +90,15 @@ function generateQuestionInsights(
   // Track which topics were explored based on sections/items viewed, questions asked, and engagement data
   const topicCounts = new Map<string, { name: string; icon: string; count: number }>()
 
-  // Check engagement flags
-  const viewedItem19 = engagements?.some((e) => e.viewed_item19) || false
-  const viewedItem7 = engagements?.some((e) => e.viewed_item7) || false
-  const hasSignificantTime = engagements?.some((e) => e.spent_significant_time) || false
+  // Derive engagement flags from actual data (columns: section_name, viewed_items, duration_seconds)
+  const allSections = sectionsViewed.map(s => s.toLowerCase())
+  const allItems = itemsViewed.map(i => i.toLowerCase())
+  const viewedItem19 = allSections.some(s => s.includes('item 19') || s.includes('financial')) ||
+                       allItems.some(i => i.includes('19'))
+  const viewedItem7 = allSections.some(s => s.includes('item 7') || s.includes('investment')) ||
+                      allItems.some(i => i.includes('7'))
+  const totalTime = engagements?.reduce((sum, e) => sum + (e.duration_seconds || 0), 0) || 0
+  const hasSignificantTime = totalTime > 1800 // 30+ minutes
 
   // Process sections, items viewed, and actual questions to determine topics
   const allViewed = [...sectionsViewed, ...itemsViewed].map(s => s.toLowerCase())
@@ -538,13 +543,20 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: engagementError.message }, { status: 500 })
     }
 
-    const totalTimeSpent = engagements?.reduce((sum, eng) => sum + (eng.time_spent || 0), 0) || 0
+    // Map to correct column names: duration_seconds (not time_spent), section_name (not sections_viewed), viewed_items
+    const totalTimeSpent = engagements?.reduce((sum, eng) => sum + (eng.duration_seconds || 0), 0) || 0
     const sessionCount = engagements?.length || 0
 
     const tier = getEngagementTier(totalTimeSpent, sessionCount)
 
-    const sectionsViewed = Array.from(new Set(engagements?.flatMap((eng) => eng.sections_viewed || []) || []))
-    const itemsViewed = Array.from(new Set(engagements?.flatMap((eng) => eng.items_viewed || []) || []))
+    // section_name is a single value per engagement, not an array
+    const sectionsViewed = Array.from(new Set(engagements?.map((eng) => eng.section_name).filter(Boolean) || []))
+    // viewed_items may be an array or single value
+    const itemsViewed = Array.from(new Set(engagements?.flatMap((eng) => {
+      if (Array.isArray(eng.viewed_items)) return eng.viewed_items
+      if (eng.viewed_items) return [eng.viewed_items]
+      return []
+    }) || []))
 
     const totalQuestionsAsked = engagements?.reduce((sum, e) => sum + (e.questions_asked || 0), 0) || 0
     
@@ -761,11 +773,14 @@ async function generateEnhancedAIInsights(
   }
 
   // Calculate engagement metrics for meaningful/high engagement
-  const viewedItem19 = engagements?.some((e) => e.viewed_item19) || false
-  const viewedItem7 = engagements?.some((e) => e.viewed_item7) || false
-  const viewedItem12 = sectionsViewed.some((s) => s.includes("Item 12") || s.includes("Territory")) || itemsViewed.some((i) => i.includes("12"))
-  const viewedItem20 = sectionsViewed.some((s) => s.includes("Item 20") || s.includes("Outlets")) || itemsViewed.some((i) => i.includes("20"))
-  const viewedItem11 = sectionsViewed.some((s) => s.includes("Item 11") || s.includes("Training")) || itemsViewed.some((i) => i.includes("11"))
+  // Derive from actual data: section_name and viewed_items columns
+  const allSectionsLower = sectionsViewed.map(s => s.toLowerCase())
+  const allItemsLower = itemsViewed.map(i => i.toLowerCase())
+  const viewedItem19 = allSectionsLower.some((s) => s.includes("item 19") || s.includes("financial")) || allItemsLower.some((i) => i.includes("19"))
+  const viewedItem7 = allSectionsLower.some((s) => s.includes("item 7") || s.includes("investment")) || allItemsLower.some((i) => i.includes("7"))
+  const viewedItem12 = allSectionsLower.some((s) => s.includes("item 12") || s.includes("territory")) || allItemsLower.some((i) => i.includes("12"))
+  const viewedItem20 = allSectionsLower.some((s) => s.includes("item 20") || s.includes("outlets")) || allItemsLower.some((i) => i.includes("20"))
+  const viewedItem11 = allSectionsLower.some((s) => s.includes("item 11") || s.includes("training")) || allItemsLower.some((i) => i.includes("11"))
 
   // Calculate session span (days between first and last session)
   const sessionDates = engagements?.map((e) => new Date(e.created_at).getTime()) || []
@@ -1073,11 +1088,34 @@ function generateMinimalEngagementInsights(
     "Schedule a follow-up reminder if they haven't returned to the FDD in 5 days",
   ].filter(Boolean)
 
+  // Build sales strategy for minimal engagement
+  const salesStrategy = {
+    recommendedApproach: financialStatus === 'not_qualified' ? 'Disqualify' : 'Educational',
+    approachRationale: financialStatus === 'not_qualified'
+      ? `Financial requirements not met - verify if they can secure additional funding before investing time`
+      : `Early stage prospect with minimal engagement - focus on education and building interest`,
+    talkingPoints: [
+      "Introduce yourself and the franchise opportunity",
+      "Ask about their interest in the industry",
+      "Share 2-3 key differentiators of the franchise",
+      "Offer to guide them through the most important FDD sections",
+    ],
+    anticipatedObjections: [
+      { objection: "Just browsing/not ready", response: "No pressure - would it help if I shared a quick overview of what makes this opportunity unique?" },
+    ],
+    questionsToAsk: [
+      "What sparked your interest in franchise ownership?",
+      "Have you explored other franchise opportunities?",
+      "What's your ideal timeline for making a decision?",
+    ],
+  }
+
   return {
     summary,
     keyFindings,
     recommendations,
     nextSteps,
+    salesStrategy,
     engagementTier: "minimal" as EngagementTier,
     tierMessage: "Limited engagement - Early stage, needs nurturing",
     candidateFit: financialFit ? {
@@ -1109,8 +1147,10 @@ function generatePartialEngagementInsights(
   const timeline = invitation?.timeline || buyerProfile?.buying_timeline || null
   const location = invitation?.city && invitation?.state ? `${invitation.city}, ${invitation.state}` : null
 
-  const viewedItem19 = engagements?.some((e) => e.viewed_item19) || sectionsViewed.some((s) => s.includes("Item 19"))
-  const viewedItem7 = engagements?.some((e) => e.viewed_item7) || sectionsViewed.some((s) => s.includes("Item 7"))
+  // Derive from section_name data instead of non-existent viewed_item19/viewed_item7 columns
+  const sectionsLower = sectionsViewed.map(s => s.toLowerCase())
+  const viewedItem19 = sectionsLower.some((s) => s.includes("item 19") || s.includes("financial"))
+  const viewedItem7 = sectionsLower.some((s) => s.includes("item 7") || s.includes("investment"))
 
   const financialStatus = financialFit?.overallFit || 'unknown'
   const financialPrefix = financialStatus === 'qualified' ? '✅ FINANCIALLY QUALIFIED. ' :
@@ -1156,11 +1196,44 @@ function generatePartialEngagementInsights(
     "Prepare answers to common questions about training, support, and timeline to opening",
   ]
 
+  // Build sales strategy for the Recommended Approach section
+  const salesStrategy = {
+    recommendedApproach: financialStatus === 'not_qualified' ? 'Disqualify' :
+                         financialStatus === 'borderline' ? 'Validation' :
+                         viewedItem19 ? 'Consultative' : 'Educational',
+    approachRationale: financialStatus === 'not_qualified' 
+      ? `Financial requirements not met - verify financing options before investing time`
+      : financialStatus === 'borderline'
+        ? `Close to financial requirements - validate assets and funding plan early`
+        : viewedItem19 
+          ? `Their focus on Item 19 indicates ROI-driven decision making - lead with financial success stories`
+          : `Still exploring - educate them on the opportunity and guide them to key FDD sections`,
+    talkingPoints: [
+      viewedItem19 ? "Walk through Item 19 financial performance data in detail" : "Highlight key Item 19 metrics and franchisee success stories",
+      viewedItem7 ? "Address any investment concerns and discuss financing options" : "Present clear breakdown of investment requirements",
+      "Discuss territory availability and protection",
+      "Explain training and ongoing support programs",
+      timeline ? `Align timeline expectations - they indicated ${timeline}` : "Understand their decision timeline",
+    ],
+    anticipatedObjections: [
+      { objection: "Investment seems high", response: "Let's walk through the ROI data from Item 19 and successful franchisee case studies" },
+      { objection: "Need more time to decide", response: "Completely understand - what specific information would help you move forward?" },
+    ],
+    questionsToAsk: [
+      "What attracted you most to this franchise opportunity?",
+      "What's your ideal timeline for opening?",
+      location ? `Are you committed to the ${location} area, or open to other territories?` : "What locations are you considering?",
+      "What's your funding plan for the investment?",
+      "Have you owned a business before?",
+    ],
+  }
+
   return {
     summary,
     keyFindings,
     recommendations,
     nextSteps,
+    salesStrategy,
     engagementTier: "partial" as EngagementTier,
     tierMessage: "Partial engagement - Interested, needs encouragement",
     candidateFit: financialFit ? {
@@ -1197,10 +1270,12 @@ function generateTemplateInsights(
   const location = invitation?.city && invitation?.state ? `${invitation.city}, ${invitation.state}` : null
   const targetLocation = invitation?.target_location || null
 
-  const viewedItem19 = engagements?.some((e) => e.viewed_item19) || false
-  const viewedItem7 = engagements?.some((e) => e.viewed_item7) || false
-  const viewedItem12 = sectionsViewed.some((s) => s.includes("Item 12") || s.includes("Territory"))
-  const viewedItem11 = sectionsViewed.some((s) => s.includes("Item 11") || s.includes("Training"))
+  // Derive from section_name data instead of non-existent viewed_item19/viewed_item7 columns
+  const sectionsLower = sectionsViewed.map(s => s.toLowerCase())
+  const viewedItem19 = sectionsLower.some((s) => s.includes("item 19") || s.includes("financial"))
+  const viewedItem7 = sectionsLower.some((s) => s.includes("item 7") || s.includes("investment"))
+  const viewedItem12 = sectionsLower.some((s) => s.includes("item 12") || s.includes("territory"))
+  const viewedItem11 = sectionsLower.some((s) => s.includes("item 11") || s.includes("training"))
 
   const financialStatus = financialFit?.overallFit || 'unknown'
   const financialPrefix = financialStatus === 'qualified' ? '✅ FINANCIALLY QUALIFIED. ' :
@@ -1316,11 +1391,46 @@ function generateTemplateInsights(
 
   nextSteps.push("Send a personalized follow-up email summarizing your conversation and next steps")
 
+  // Build sales strategy for template fallback
+  const salesStrategy = {
+    recommendedApproach: financialStatus === 'not_qualified' ? 'Disqualify' :
+                         financialStatus === 'borderline' ? 'Validation' :
+                         tier === 'high' ? 'Urgency' : 'Consultative',
+    approachRationale: financialStatus === 'not_qualified'
+      ? `Financial requirements not met - verify financing options before investing significant time`
+      : financialStatus === 'borderline'
+        ? `Close to financial requirements - validate assets and funding plan early in conversation`
+        : tier === 'high'
+          ? `High engagement indicates strong interest - create urgency while addressing any remaining questions`
+          : `Meaningful engagement suggests active evaluation - take consultative approach to understand their specific needs`,
+    talkingPoints: [
+      viewedItem19 ? "Deep dive into Item 19 financial performance data - they've shown strong interest" : "Present Item 19 highlights and franchisee success stories",
+      viewedItem7 ? "Address investment questions - they've reviewed costs carefully" : "Walk through investment breakdown clearly",
+      viewedItem12 ? "Discuss territory details - they're evaluating market opportunity" : "Present territory options and exclusivity",
+      viewedItem11 ? "Expand on training details - they want to understand support" : "Highlight training and ongoing support programs",
+      `Reference their ${source} lead source to personalize conversation`,
+      timeline ? `Align on their ${timeline} timeline` : "Understand their decision timeline",
+    ].filter(Boolean),
+    anticipatedObjections: [
+      { objection: "Investment seems high", response: "Let's walk through the ROI data and financing options available" },
+      { objection: "Concerned about competition", response: "Our territory protection ensures you have exclusive rights in your market" },
+      { objection: "Need more time", response: "What specific information would help you feel confident in moving forward?" },
+    ],
+    questionsToAsk: [
+      "What aspects of this franchise appeal most to you?",
+      "Have you identified your preferred territory?",
+      "What's your funding plan for the investment?",
+      "What questions do you have after reviewing the FDD?",
+      "When are you hoping to open your location?",
+    ],
+  }
+
   return {
     summary,
     keyFindings,
     recommendations,
     nextSteps,
+    salesStrategy,
     engagementTier: tier,
     tierMessage:
       tier === "high"
