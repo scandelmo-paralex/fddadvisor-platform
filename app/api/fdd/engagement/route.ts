@@ -3,6 +3,10 @@ import { createServerClient, createClient } from "@/lib/supabase/server"
 
 export async function POST(request: Request) {
   try {
+    // Use createServerClient to get authenticated user (reads from cookies)
+    const authClient = await createServerClient()
+    
+    // Use service role for database operations (bypasses RLS)
     const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
       auth: {
         autoRefreshToken: false,
@@ -33,12 +37,13 @@ export async function POST(request: Request) {
     } = body
 
     try {
+      // Get user from auth client (has access to cookies/session)
       const {
         data: { user },
-      } = await supabase.auth.getUser()
+      } = await authClient.auth.getUser()
 
       if (!user || !franchise_id) {
-        console.log("[v0] Skipping engagement tracking - no user or franchise_id")
+        console.log("[v0] Skipping engagement tracking - no user or franchise_id. User:", !!user, "franchise_id:", franchise_id)
         return NextResponse.json({ success: true, engagement: null })
       }
 

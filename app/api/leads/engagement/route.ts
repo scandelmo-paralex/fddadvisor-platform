@@ -660,12 +660,12 @@ export async function GET(request: NextRequest) {
       .eq("lead_email", buyerProfile?.email)
       .single()
 
-    // Query fdd_engagements using user_id (not buyer_profiles.id)
-    // fdd_engagements.buyer_id references users.id, which is buyer_profiles.user_id
-    const engagementBuyerId = buyerProfile?.user_id || accessRecord.buyer_id
+    // fdd_engagements.buyer_id stores buyer_profiles.id (same as how it's saved in /api/fdd/engagement)
+    // accessRecord.buyer_id is already buyer_profiles.id from lead_fdd_access table
+    const engagementBuyerId = buyerProfile?.id || accessRecord.buyer_id
     
     // DEBUG: Log which ID we're using for the engagements query
-    console.log('[DEBUG v2] engagementBuyerId:', engagementBuyerId, 'from user_id:', buyerProfile?.user_id, 'fallback:', accessRecord.buyer_id)
+    console.log('[DEBUG v3] engagementBuyerId:', engagementBuyerId, 'from buyer_profiles.id:', buyerProfile?.id, 'fallback accessRecord.buyer_id:', accessRecord.buyer_id)
     
     // Use service role client to bypass RLS - franchisor needs to read buyer engagement data
     const serviceClient = createServiceRoleClient()
