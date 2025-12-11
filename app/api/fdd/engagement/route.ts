@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
-import { createServerClient, createClient } from "@/lib/supabase/server"
+import { createServerClient } from "@/lib/supabase/server"
+import { createServiceRoleClient } from "@/lib/supabase/service-role"
 
 export async function POST(request: Request) {
   try {
@@ -7,12 +8,7 @@ export async function POST(request: Request) {
     const authClient = await createServerClient()
     
     // Use service role for database operations (bypasses RLS)
-    const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      },
-    })
+    const supabase = createServiceRoleClient()
 
     const body = await request.json()
 
@@ -37,6 +33,12 @@ export async function POST(request: Request) {
     } = body
 
     try {
+      // Check if auth client was created successfully
+      if (!authClient) {
+        console.log("[v0] Skipping engagement tracking - no auth client")
+        return NextResponse.json({ success: true, engagement: null })
+      }
+
       // Get user from auth client (has access to cookies/session)
       const {
         data: { user },
