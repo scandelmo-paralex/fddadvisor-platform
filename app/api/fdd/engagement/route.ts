@@ -37,6 +37,9 @@ export async function POST(request: Request) {
         return NextResponse.json({ success: true, engagement: null })
       }
 
+      console.log("[v0] Processing engagement for user:", user.email, "franchise_id:", franchise_id)
+      console.log("[v0] Raw input - viewedItems:", viewedItems, "sectionsViewed:", sectionsViewed, "timeSpent:", time_spent)
+
       // Get buyer profile to get buyer_id
       const { data: buyerProfile } = await supabase
         .from("buyer_profiles")
@@ -51,9 +54,39 @@ export async function POST(request: Request) {
 
       const buyer_id = buyerProfile.id
       const questions_count = Array.isArray(questionsAsked) ? questionsAsked.length : 0
+
+      // Look up fdd_id from fdds table using franchise_id
+      let fdd_id: string | null = null
+      try {
+        const { data: fddData } = await supabase
+          .from("fdds")
+          .select("id")
+          .eq("franchise_id", franchise_id)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle()
+        
+        fdd_id = fddData?.id || null
+        console.log("[v0] Found fdd_id:", fdd_id, "for franchise_id:", franchise_id)
+      } catch (fddError) {
+        console.log("[v0] Could not look up fdd_id, will try without it")
+      }
+      // Frontend sends items like "item7", "item19" - extract the number part
       const viewed_items_array = Array.isArray(viewedItems)
-        ? viewedItems.map((item) => (typeof item === "number" ? item : Number.parseInt(item))).filter((n) => !isNaN(n))
+        ? viewedItems
+            .map((item) => {
+              if (typeof item === "number") return item
+              // Handle "item7" format - extract number after "item"
+              const match = String(item).match(/item(\d+)/i)
+              if (match) return Number.parseInt(match[1])
+              // Handle plain number string like "7"
+              const num = Number.parseInt(String(item))
+              return isNaN(num) ? null : num
+            })
+            .filter((n): n is number => n !== null)
         : []
+
+      console.log("[v0] Parsed viewed_items_array:", viewed_items_array, "from raw:", viewedItems)
 
       // Build section_name from sectionsViewed (take the most recent/primary one)
       const section_name = Array.isArray(sectionsViewed) && sectionsViewed.length > 0 
@@ -107,7 +140,7 @@ export async function POST(request: Request) {
         console.log("[v0] Updated engagement for buyer:", buyer_id, "duration:", time_spent, "viewedItems:", mergedViewedItems)
       } else {
         // Create new engagement - only use columns that exist!
-        const engagementData = {
+        const engagementData: Record<string, any> = {
           buyer_id,
           franchise_id,
           buyer_email: buyerProfile.email,
@@ -123,6 +156,15 @@ export async function POST(request: Request) {
             sectionsViewed: sectionsViewed || [],
           },
         }
+        
+        // Add fdd_id if we found one (required by database schema)
+        if (fdd_id) {
+          engagementData.fdd_id = fdd_id
+        } else {
+          // fdd_id is required - if we don't have one, we can't create the engagement
+          console.log("[v0] No fdd_id found for franchise_id:", franchise_id, "- cannot create engagement")
+          return NextResponse.json({ success: true, engagement: null, message: "No FDD record found for this franchise" })
+        }
 
         const { data, error } = await supabase
           .from("fdd_engagements")
@@ -132,7 +174,7 @@ export async function POST(request: Request) {
 
         if (error) throw error
         result = data
-        console.log("[v0] Created new engagement for buyer:", buyer_id, "duration:", time_spent)
+        console.log("[v0] Created new engagement for buyer:", buyer_id, "duration:", time_spent, "fdd_id:", fdd_id)
       }
 
       return NextResponse.json({ success: true, engagement: result })
