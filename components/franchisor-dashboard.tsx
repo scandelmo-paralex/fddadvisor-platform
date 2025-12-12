@@ -539,6 +539,18 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
         <div className="flex gap-3">
           {" "}
           {/* Increased gap */}
+          <Button
+            variant="default"
+            size="sm"
+            className="gap-2 h-8 bg-blue-600 hover:bg-blue-700 text-white"
+            onClick={() => {
+              // Future: Navigate to reports/analytics page
+              console.log("[v0] Reports button clicked - feature coming soon")
+            }}
+          >
+            <BarChart3 className="h-4 w-4" />
+            Reports
+          </Button>
           <div className="flex gap-1 mr-2 bg-muted/50 p-1 rounded-lg border border-border/50">
             {" "}
             {/* Improved toggle style */}
@@ -1424,6 +1436,7 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
           </Card>
         </div>
       )}
+      {/* HIDDEN FOR DEMO - Quick action cards (redundant with filters)
       <div className="grid gap-4 md:grid-cols-3">
         <Card className="p-6 border-border/50 bg-gradient-to-br from-cta/5 to-transparent">
           <div className="space-y-4">
@@ -1486,6 +1499,7 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
           </div>
         </Card>
       </div>
+      */}
     </div>
   )
 }
