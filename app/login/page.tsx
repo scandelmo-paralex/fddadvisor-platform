@@ -88,11 +88,6 @@ export default function LoginPage() {
               Sign up
             </Link>
           </div>
-          <div className="mt-4 text-center">
-            <Link href="/" className="text-sm text-muted-foreground hover:text-foreground">
-              View demo
-            </Link>
-          </div>
         </CardContent>
       </Card>
     </div>
