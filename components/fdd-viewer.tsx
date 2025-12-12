@@ -389,6 +389,7 @@ export function FDDViewer({
               name: m.label,
               pageNumber: m.page_number,
             }))
+            .sort((a: any, b: any) => a.pageNumber - b.pageNumber) // Sort by page number
 
           console.log("[v0] ✓ Setting fddExhibits with", exhibits.length, "exhibits")
           setFddExhibits(exhibits)
