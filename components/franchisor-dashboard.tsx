@@ -541,8 +541,7 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
           {/* Increased gap */}
           <Button
             variant="default"
-            size="sm"
-            className="gap-2 h-8 bg-blue-600 hover:bg-blue-700 text-white"
+            className="gap-2 bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
             onClick={() => {
               // Future: Navigate to reports/analytics page
               console.log("[v0] Reports button clicked - feature coming soon")
