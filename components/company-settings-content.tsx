@@ -175,9 +175,17 @@ export function CompanySettingsContent({
         {/* Company Information */}
         <Card className="p-6 space-y-6 border-border/60 shadow-sm">
           <div className="flex items-center gap-3 pb-4 border-b border-border/40">
-            <div className="rounded-xl bg-cta/10 p-2.5">
-              <Building2 className="h-5 w-5 text-cta" />
-            </div>
+            {franchisorProfile?.logo_url ? (
+              <img
+                src={franchisorProfile.logo_url}
+                alt={franchisorProfile.company_name || "Company logo"}
+                className="h-12 w-12 rounded-xl object-contain border border-border/50 bg-white p-1"
+              />
+            ) : (
+              <div className="rounded-xl bg-cta/10 p-2.5">
+                <Building2 className="h-5 w-5 text-cta" />
+              </div>
+            )}
             <div>
               <h2 className="text-lg font-semibold">Company Information</h2>
               <p className="text-xs text-muted-foreground">Business details</p>
