@@ -52,8 +52,15 @@ const pdfModules: {
 } | null = null
 
 const pdfViewerStyles = `
+  .react-pdf__Document {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
   .react-pdf__Page {
     position: relative !important;
+    max-width: 100%;
   }
 
   .react-pdf__Page__textContent {
@@ -69,6 +76,8 @@ const pdfViewerStyles = `
 
   .react-pdf__Page__canvas {
     display: block !important;
+    max-width: 100%;
+    height: auto !important;
   }
 `
 
@@ -1151,7 +1160,7 @@ export function FDDViewer({
             </div>
           </div>
 
-          <div className="flex-1 overflow-auto p-4 flex justify-center min-h-0">
+          <div className="flex-1 overflow-auto p-4 flex justify-center items-start min-h-0 bg-slate-100 dark:bg-slate-900/50">
             {pdfLoadError ? (
               <Card className="flex h-full w-full items-center justify-center p-8">
                 <div className="text-center space-y-4">
@@ -1198,7 +1207,6 @@ export function FDDViewer({
                     </div>
                   </Card>
                 }
-                className="w-full"
               >
                 <div className="relative">
                   <pdfComponents.Page
