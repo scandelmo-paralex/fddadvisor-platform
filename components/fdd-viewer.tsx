@@ -23,6 +23,8 @@ import {
   X,
   Pencil,
   Info,
+  ZoomIn,
+  ZoomOut,
 } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -185,6 +187,7 @@ export function FDDViewer({
   const [pdfBlobUrl, setPdfBlobUrl] = useState<string | null>(null) // Added state for PDF blob URL to bypass CORS
 
   const [pageInput, setPageInput] = useState<string>("")
+  const [pdfZoom, setPdfZoom] = useState<number>(1.0) // Zoom level: 0.5 to 2.0
 
   const [isPageVisible, setIsPageVisible] = useState(true)
   const [isUserActive, setIsUserActive] = useState(true)
@@ -1108,6 +1111,28 @@ export function FDDViewer({
               )}
             </div>
             <div className="flex items-center gap-2">
+              {/* Zoom controls */}
+              <div className="flex items-center gap-1 border-r pr-2 mr-1">
+                <Button
+                  onClick={() => setPdfZoom((z) => Math.max(0.5, z - 0.25))}
+                  disabled={pdfZoom <= 0.5}
+                  variant="ghost"
+                  size="sm"
+                  title="Zoom out"
+                >
+                  <ZoomOut className="h-4 w-4" />
+                </Button>
+                <span className="text-xs text-muted-foreground w-12 text-center">{Math.round(pdfZoom * 100)}%</span>
+                <Button
+                  onClick={() => setPdfZoom((z) => Math.min(2.0, z + 0.25))}
+                  disabled={pdfZoom >= 2.0}
+                  variant="ghost"
+                  size="sm"
+                  title="Zoom in"
+                >
+                  <ZoomIn className="h-4 w-4" />
+                </Button>
+              </div>
               {/* Progress indicator */}
               {numPages > 0 && (
                 <div className="flex items-center gap-2">
@@ -1180,7 +1205,7 @@ export function FDDViewer({
                     pageNumber={pageNumber}
                     renderTextLayer={true}
                     renderAnnotationLayer={true}
-                    width={Math.min(window.innerWidth * 0.5, 750)}
+                    width={Math.min(window.innerWidth * 0.5, 750) * pdfZoom}
                     className="shadow-lg"
                   />
                   {showCoverOverlay && pageNumber === 1 && (franchise.coverImageUrl || franchise.cover_image_url) && (
