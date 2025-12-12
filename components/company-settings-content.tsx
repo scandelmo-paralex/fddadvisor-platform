@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { User, Building2, Mail, Phone, Globe, Upload, FileText, ArrowLeft, CheckCircle2, Calendar, Bell, Loader2, AlertCircle } from 'lucide-react'
+import { User, Building2, Mail, Phone, Globe, FileText, ArrowLeft, CheckCircle2, Calendar, Bell, Loader2, AlertCircle, MessageSquare, X } from 'lucide-react'
 import { createBrowserClient } from "@supabase/ssr"
 
 export function CompanySettingsContent({
@@ -39,6 +39,8 @@ export function CompanySettingsContent({
   const [showErrorToast, setShowErrorToast] = useState(false)
   const [errorMessage, setErrorMessage] = useState("")
   const [isSaving, setIsSaving] = useState(false)
+  const [showUpdateRequestModal, setShowUpdateRequestModal] = useState(false)
+  const [selectedFranchiseForUpdate, setSelectedFranchiseForUpdate] = useState<any>(null)
 
   const handleSave = async () => {
     setIsSaving(true)
@@ -81,13 +83,6 @@ export function CompanySettingsContent({
     } finally {
       setIsSaving(false)
     }
-  }
-
-  const handleUploadFDD = async (franchiseId: string, file: File) => {
-    // TODO: Upload FDD file
-    console.log("[v0] Uploading FDD for franchise:", franchiseId, file.name)
-    setShowSuccessToast(true)
-    setTimeout(() => setShowSuccessToast(false), 3000)
   }
 
   const handleViewFDD = (franchiseId: string, franchiseName: string) => {
@@ -276,18 +271,12 @@ export function CompanySettingsContent({
                       className="w-full bg-background hover:bg-muted border-border/60"
                       onClick={(e) => {
                         e.stopPropagation()
-                        const input = document.createElement("input")
-                        input.type = "file"
-                        input.accept = ".pdf"
-                        input.onchange = (e: any) => {
-                          const file = e.target?.files?.[0]
-                          if (file) handleUploadFDD(franchise.id, file)
-                        }
-                        input.click()
+                        setSelectedFranchiseForUpdate(franchise)
+                        setShowUpdateRequestModal(true)
                       }}
                     >
-                      <Upload className="mr-2 h-3.5 w-3.5" />
-                      Upload Update
+                      <MessageSquare className="mr-2 h-3.5 w-3.5" />
+                      Request Update
                     </Button>
                   </div>
 
@@ -409,6 +398,74 @@ export function CompanySettingsContent({
             <div className="flex items-center gap-3">
               <AlertCircle className="h-5 w-5 text-red-600" />
               <p className="font-medium text-red-600">{errorMessage || "Failed to save settings"}</p>
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {/* FDD Update Request Modal */}
+      {showUpdateRequestModal && selectedFranchiseForUpdate && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <Card className="w-full max-w-md mx-4 p-6 space-y-4 shadow-xl">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="rounded-xl bg-cta/10 p-2.5">
+                  <FileText className="h-5 w-5 text-cta" />
+                </div>
+                <div>
+                  <h3 className="font-semibold">Request FDD Update</h3>
+                  <p className="text-xs text-muted-foreground">{selectedFranchiseForUpdate.name}</p>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  setShowUpdateRequestModal(false)
+                  setSelectedFranchiseForUpdate(null)
+                }}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <div className="space-y-4 pt-2">
+              <p className="text-sm text-muted-foreground">
+                Need to update your FDD with an amendment or new annual version? Our team will process your update within 24-48 hours.
+              </p>
+
+              <div className="bg-muted/30 rounded-lg p-4 space-y-2">
+                <p className="text-sm font-medium">To request an update:</p>
+                <ul className="text-sm text-muted-foreground space-y-1">
+                  <li>• Email your updated FDD to <a href="mailto:support@fddhub.com" className="text-cta hover:underline">support@fddhub.com</a></li>
+                  <li>• Include the franchise name in the subject line</li>
+                  <li>• Note if it's an amendment or full FDD replacement</li>
+                </ul>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => {
+                    setShowUpdateRequestModal(false)
+                    setSelectedFranchiseForUpdate(null)
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="flex-1 bg-cta hover:bg-cta/90 text-cta-foreground"
+                  onClick={() => {
+                    window.location.href = `mailto:support@fddhub.com?subject=FDD Update Request - ${selectedFranchiseForUpdate.name}&body=Hi FDDHub Team,%0D%0A%0D%0AI'd like to request an FDD update for ${selectedFranchiseForUpdate.name}.%0D%0A%0D%0AUpdate type: [Amendment / New Annual FDD]%0D%0A%0D%0APlease let me know the next steps.%0D%0A%0D%0AThank you`
+                    setShowUpdateRequestModal(false)
+                    setSelectedFranchiseForUpdate(null)
+                  }}
+                >
+                  <Mail className="mr-2 h-4 w-4" />
+                  Send Email
+                </Button>
+              </div>
             </div>
           </Card>
         </div>
