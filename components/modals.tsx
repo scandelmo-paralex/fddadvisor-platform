@@ -1485,6 +1485,7 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
                 </div>
               )}
 
+                            {/* HIDDEN FOR PILOT - Generic AI Recommendation box (redundant with AI-Powered Sales Intelligence)
               <div
                 className={`rounded-lg p-4 ${displayLead.verificationStatus === "verified" ? "bg-blue-50" : "bg-amber-50"}`}
               >
@@ -1510,6 +1511,7 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
                   )}
                 </p>
               </div>
+              */}
             </div>
           )}
         </div>
