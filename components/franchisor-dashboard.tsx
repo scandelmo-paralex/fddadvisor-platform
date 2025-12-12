@@ -104,8 +104,8 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
         console.log("[v0] FranchisorDashboard: Received leads from API:", realLeads.length)
         console.log("[v0] FranchisorDashboard: First lead:", realLeads[0])
 
-        // Merge real leads with mock data (real leads first)
-        setLeads([...realLeads, ...initialLeads])
+        // Use only real leads from API (no mock data for production)
+        setLeads(realLeads)
       } catch (error) {
         console.error("[v0] FranchisorDashboard: Error fetching leads:", error)
         // Still set mock leads so the dashboard shows something

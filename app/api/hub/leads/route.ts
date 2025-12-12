@@ -211,7 +211,7 @@ export async function GET() {
           name: inv.lead_name || "Unknown",
           email: inv.lead_email || "",
           phone: inv.lead_phone || "",
-          brand: inv.brand || franchise?.name || "",
+          brand: franchise?.name || "",
           franchiseSlug: franchise?.slug || "",
           fddSendDate: inv.sent_at ? new Date(inv.sent_at).toLocaleDateString() : undefined,
           item23SignedAt: null,
