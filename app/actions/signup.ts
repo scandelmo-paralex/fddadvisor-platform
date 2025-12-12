@@ -7,7 +7,8 @@ export async function signupUser(formData: {
   email: string
   password: string
   role: "buyer" | "franchisor" | "lender"
-  name: string
+  firstName: string
+  lastName: string
   phone?: string
   company_name?: string
 }) {
@@ -38,7 +39,7 @@ export async function signupUser(formData: {
       email_confirm: true, // Auto-confirm email
       user_metadata: {
         role: formData.role,
-        name: formData.name,
+        name: `${formData.firstName} ${formData.lastName}`,
         phone: formData.phone,
         company_name: formData.company_name,
       },
@@ -72,10 +73,14 @@ export async function signupUser(formData: {
     console.log("[v0] Server: Users table updated")
 
     // Create profile based on role
+    const fullName = `${formData.firstName} ${formData.lastName}`
+
     if (formData.role === "buyer") {
       const { error: profileError } = await supabase.from("buyer_profiles").insert({
         user_id: authData.user.id,
-        full_name: formData.name,
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        email: formData.email,
         phone: formData.phone || "",
       })
 
@@ -87,7 +92,7 @@ export async function signupUser(formData: {
       const { error: profileError } = await supabase.from("franchisor_profiles").insert({
         user_id: authData.user.id,
         company_name: formData.company_name || "Company Name",
-        contact_name: formData.name,
+        contact_name: fullName,
         email: formData.email,
         phone: formData.phone || "",
       })
@@ -100,7 +105,7 @@ export async function signupUser(formData: {
       const { error: profileError } = await supabase.from("lender_profiles").insert({
         user_id: authData.user.id,
         institution_name: formData.company_name || "Institution Name",
-        contact_name: formData.name,
+        contact_name: fullName,
         email: formData.email,
         phone: formData.phone || "",
       })
