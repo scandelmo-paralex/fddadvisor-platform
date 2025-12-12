@@ -31,15 +31,21 @@ export default async function CompanySettingsPage() {
     redirect("/dashboard")
   }
 
-  console.log("[v0] Company Settings - User:", user.email, "Franchisor:", franchisorProfile.company_name)
+  console.log("[v0] Company Settings - User:", user.email, "Franchisor:", franchisorProfile.company_name, "isAdmin:", franchisorProfile.is_admin)
 
-  const { data: franchises } = await supabase
+  // Admin sees all franchises, regular franchisor sees only their own
+  let franchisesQuery = supabase
     .from("franchises")
     .select("id, name, slug, industry, logo_url, created_at")
-    .eq("franchisor_id", franchisorProfile.id)
     .order("name")
+  
+  if (!franchisorProfile.is_admin) {
+    franchisesQuery = franchisesQuery.eq("franchisor_id", franchisorProfile.id)
+  }
+  
+  const { data: franchises } = await franchisesQuery
 
-  console.log("[v0] Franchises for franchisor:", franchises?.length || 0)
+  console.log("[v0] Franchises for franchisor:", franchises?.length || 0, franchisorProfile.is_admin ? "(admin - all)" : "")
 
   return (
     <div className="min-h-screen bg-background">

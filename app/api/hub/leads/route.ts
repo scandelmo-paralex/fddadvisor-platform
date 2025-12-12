@@ -20,7 +20,7 @@ export async function GET() {
 
     const { data: profile, error: profileError } = await supabase
       .from("franchisor_profiles")
-      .select("id")
+      .select("id, is_admin")
       .eq("user_id", user.id)
       .single()
 
@@ -28,20 +28,26 @@ export async function GET() {
       return NextResponse.json({ error: "Profile not found" }, { status: 404 })
     }
 
-    // Get franchises owned by this franchisor
-    const { data: franchises } = await supabase
-      .from("franchises")
-      .select("id, name, slug")
-      .eq("franchisor_id", profile.id)
+    // Get franchises - admin sees all, regular franchisor sees only their own
+    let franchisesQuery = supabase.from("franchises").select("id, name, slug")
+    
+    if (!profile.is_admin) {
+      franchisesQuery = franchisesQuery.eq("franchisor_id", profile.id)
+    }
+    
+    const { data: franchises } = await franchisesQuery
 
     const franchiseIds = franchises?.map((f) => f.id) || []
     const franchiseMap = new Map(franchises?.map((f) => [f.id, f]) || [])
 
-    const { data: leadsRecords, error: leadsError } = await supabase
-      .from("leads")
-      .select("*")
-      .eq("franchisor_id", profile.id)
-      .order("created_at", { ascending: false })
+    // Get leads - admin sees all, regular franchisor sees only their own
+    let leadsQuery = supabase.from("leads").select("*").order("created_at", { ascending: false })
+    
+    if (!profile.is_admin) {
+      leadsQuery = leadsQuery.eq("franchisor_id", profile.id)
+    }
+    
+    const { data: leadsRecords, error: leadsError } = await leadsQuery
 
     // Get all FDD access records for this franchisor's franchises
     const { data: fddAccessRecords, error: accessError } = await supabase
@@ -101,12 +107,14 @@ export async function GET() {
       }
     })
 
-    // Get invitation data
-    const { data: invitations, error: invError } = await supabase
-      .from("lead_invitations")
-      .select("*")
-      .eq("franchisor_id", profile.id)
-      .order("sent_at", { ascending: false })
+    // Get invitation data - admin sees all, regular franchisor sees only their own
+    let invitationsQuery = supabase.from("lead_invitations").select("*").order("sent_at", { ascending: false })
+    
+    if (!profile.is_admin) {
+      invitationsQuery = invitationsQuery.eq("franchisor_id", profile.id)
+    }
+    
+    const { data: invitations, error: invError } = await invitationsQuery
 
     // Create invitation map by email (for matching with leads)
     const invitationByEmailMap = new Map(invitations?.map((inv: any) => [inv.lead_email, inv]) || [])

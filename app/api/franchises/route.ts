@@ -26,13 +26,14 @@ export async function GET() {
 
     const { data: profile, error: profileError } = await supabase
       .from("franchisor_profiles")
-      .select("id")
+      .select("id, is_admin")
       .eq("user_id", user.id)
       .maybeSingle()
 
     console.log("[v0] Franchisor profile check:", {
       hasProfile: !!profile,
       profileId: profile?.id,
+      isAdmin: profile?.is_admin,
       error: profileError?.message,
     })
 
@@ -68,7 +69,10 @@ export async function GET() {
       `)
       .order("created_at", { ascending: false })
 
-    if (profile?.id) {
+    if (profile?.is_admin) {
+      console.log("[v0] ✓ Admin user - showing ALL franchises")
+      // Admin sees all franchises, no filter applied
+    } else if (profile?.id) {
       console.log("[v0] ✓ Applying franchisor filter for profile:", profile.id)
       query = query.eq("franchisor_id", profile.id)
     } else {
