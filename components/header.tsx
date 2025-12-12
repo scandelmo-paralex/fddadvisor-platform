@@ -144,7 +144,7 @@ export function Header({
             </div>
 
 
-            {!hideSearch && (
+            {!hideSearch && currentView !== "franchisor-dashboard" && currentView !== "franchisor-profile" && (
               <div className="hidden lg:flex items-center flex-1 max-w-md ml-6" ref={searchRef}>
                 <div className="relative w-full">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
@@ -206,6 +206,20 @@ export function Header({
                       )}
                     </Card>
                   )}
+                </div>
+              </div>
+            )}
+
+            {/* Franchisor search - Search leads */}
+            {!hideSearch && (currentView === "franchisor-dashboard" || currentView === "franchisor-profile") && (
+              <div className="hidden lg:flex items-center flex-1 max-w-md ml-6">
+                <div className="relative w-full">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  <Input
+                    placeholder="Search leads..."
+                    className="pl-9 pr-9 h-10 bg-muted/50 border-border/50 focus-visible:ring-2 focus-visible:ring-cta transition-all duration-200"
+                    disabled
+                  />
                 </div>
               </div>
             )}
