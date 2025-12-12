@@ -67,13 +67,18 @@ export function Item23ReceiptModalDocuSeal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl max-h-[90vh] bg-white">
-        <DialogHeader>
+      <DialogContent className="max-w-6xl w-[95vw] h-[95vh] bg-white flex flex-col">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle>Item 23 Receipt - {franchiseName}</DialogTitle>
         </DialogHeader>
 
-        <div className="h-[calc(90vh-8rem)]">
-          <DocusealForm src={templateUrl} email={buyerEmail} onComplete={handleComplete} className="w-full h-full" />
+        <div className="flex-1 min-h-0 overflow-hidden">
+          <DocusealForm 
+            src={templateUrl} 
+            email={buyerEmail} 
+            onComplete={handleComplete} 
+            className="w-full h-full" 
+          />
         </div>
       </DialogContent>
     </Dialog>
