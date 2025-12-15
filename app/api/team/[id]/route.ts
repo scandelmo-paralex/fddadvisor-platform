@@ -143,10 +143,10 @@ export async function PUT(
     // Permission checks
     if (role !== undefined) {
       // Validate role value
-      const validRoles: TeamMemberRole[] = ["admin", "recruiter", "viewer"]
+      const validRoles: TeamMemberRole[] = ["admin", "recruiter"]
       if (!validRoles.includes(role)) {
         return NextResponse.json(
-          { error: "Invalid role. Must be: admin, recruiter, or viewer" },
+          { error: "Invalid role. Must be: admin or recruiter" },
           { status: 400 }
         )
       }

@@ -11,7 +11,6 @@ import {
   Mail,
   MoreHorizontal,
   Shield,
-  Eye,
   Briefcase,
   Crown,
   Loader2,
@@ -72,12 +71,6 @@ const roleConfig = {
     color: "bg-green-500/10 text-green-600 border-green-500/20",
     description: "Can send FDDs and manage their leads",
   },
-  viewer: {
-    label: "Viewer",
-    icon: Eye,
-    color: "bg-gray-500/10 text-gray-600 border-gray-500/20",
-    description: "Read-only access to assigned leads",
-  },
 }
 
 const statusConfig = {
@@ -103,7 +96,7 @@ export function TeamManagement({ franchisorId, companyName, currentUserRole = "o
   const [inviteForm, setInviteForm] = useState({
     email: "",
     full_name: "",
-    role: "recruiter" as "admin" | "recruiter" | "viewer",
+    role: "recruiter" as "admin" | "recruiter",
   })
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null)
 
@@ -353,13 +346,6 @@ export function TeamManagement({ franchisorId, companyName, currentUserRole = "o
                           <Briefcase className="mr-2 h-4 w-4" />
                           Make Recruiter
                         </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => handleUpdateRole(member.id, "viewer")}
-                          disabled={member.role === "viewer"}
-                        >
-                          <Eye className="mr-2 h-4 w-4" />
-                          Make Viewer
-                        </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                           onClick={() => handleDeactivate(member.id, member.full_name)}
@@ -429,7 +415,7 @@ export function TeamManagement({ franchisorId, companyName, currentUserRole = "o
                 <label className="text-sm font-medium">Role</label>
                 <Select
                   value={inviteForm.role}
-                  onValueChange={(value: "admin" | "recruiter" | "viewer") =>
+                  onValueChange={(value: "admin" | "recruiter") =>
                     setInviteForm({ ...inviteForm, role: value })
                   }
                 >
@@ -449,12 +435,6 @@ export function TeamManagement({ franchisorId, companyName, currentUserRole = "o
                       <div className="flex items-center gap-2">
                         <Briefcase className="h-4 w-4 text-green-600" />
                         <span>Recruiter</span>
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="viewer">
-                      <div className="flex items-center gap-2">
-                        <Eye className="h-4 w-4 text-gray-600" />
-                        <span>Viewer</span>
                       </div>
                     </SelectItem>
                   </SelectContent>

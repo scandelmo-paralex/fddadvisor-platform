@@ -326,7 +326,7 @@ export interface FDDChunkSearchResult {
 // TEAM MEMBER TYPES
 // ============================================================================
 
-export type TeamMemberRole = "owner" | "admin" | "recruiter" | "viewer"
+export type TeamMemberRole = "owner" | "admin" | "recruiter"
 
 export interface FranchisorTeamMember {
   id: string
