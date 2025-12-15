@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { createBrowserClient } from "@supabase/ssr"
 import {
   MapPin,
   Mail,
@@ -76,6 +77,52 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
   const [showItemMappingModal, setShowItemMappingModal] = useState(false)
 
   const [franchises, setFranchises] = useState<Array<{ id: string; name: string }>>([])
+
+  // Track if current user is a team member (recruiter can't access profile)
+  const [userRole, setUserRole] = useState<"owner" | "admin" | "recruiter" | null>(null)
+
+  // Fetch current user's role
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      try {
+        const supabase = createBrowserClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+        )
+
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) return
+
+        // Check if franchisor owner
+        const { data: franchisorProfile } = await supabase
+          .from("franchisor_profiles")
+          .select("id")
+          .eq("user_id", user.id)
+          .single()
+
+        if (franchisorProfile) {
+          setUserRole("owner")
+          return
+        }
+
+        // Check if team member
+        const { data: teamMember } = await supabase
+          .from("franchisor_team_members")
+          .select("role")
+          .eq("user_id", user.id)
+          .eq("is_active", true)
+          .single()
+
+        if (teamMember) {
+          setUserRole(teamMember.role as "admin" | "recruiter")
+        }
+      } catch (error) {
+        console.error("[FranchisorDashboard] Error fetching user role:", error)
+      }
+    }
+
+    fetchUserRole()
+  }, [])
 
   // For error toasts
   const [showErrorToast, setShowErrorToast] = useState(false)
@@ -579,15 +626,18 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
             <UserPlus className="h-4 w-4" />
             Add Lead
           </Button>
-          <Button
-            onClick={onNavigateToProfile}
-            className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm"
-          >
-            {" "}
-            {/* Switched to bg-primary */}
-            <ArrowRight className="h-4 w-4" />
-            Profile
-          </Button>
+          {/* Only show Profile button for owners and admins */}
+          {(userRole === "owner" || userRole === "admin") && (
+            <Button
+              onClick={onNavigateToProfile}
+              className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm"
+            >
+              {" "}
+              {/* Switched to bg-primary */}
+              <ArrowRight className="h-4 w-4" />
+              Profile
+            </Button>
+          )}
         </div>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
