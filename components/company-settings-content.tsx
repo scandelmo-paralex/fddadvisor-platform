@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { User, Building2, Mail, Phone, Globe, FileText, ArrowLeft, CheckCircle2, Calendar, Bell, Loader2, AlertCircle, MessageSquare, X } from 'lucide-react'
 import { createBrowserClient } from "@supabase/ssr"
+import { TeamManagement } from "@/components/team-management"
 
 export function CompanySettingsContent({
   user,
@@ -365,6 +366,15 @@ export function CompanySettingsContent({
             </div>
           </div>
         </Card>
+
+        {/* Team Management */}
+        <div className="lg:col-span-2">
+          <TeamManagement
+            franchisorId={franchisorProfile.id}
+            companyName={franchisorProfile.company_name}
+            currentUserRole="owner"
+          />
+        </div>
       </div>
 
       <div className="flex justify-end gap-4 pt-4 border-t border-border/40">
