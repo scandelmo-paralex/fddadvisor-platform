@@ -34,7 +34,7 @@ export default function DashboardPage() {
 
         setUserId(user.id)
 
-        // Check if user is a franchisor
+        // Check if user is a franchisor (owner)
         const { data: franchisorProfile } = await supabase
           .from("franchisor_profiles")
           .select("id")
@@ -42,7 +42,22 @@ export default function DashboardPage() {
           .single()
 
         if (franchisorProfile) {
-          console.log("[Dashboard] User is a franchisor")
+          console.log("[Dashboard] User is a franchisor owner")
+          setUserRole("franchisor")
+          setLoading(false)
+          return
+        }
+
+        // Check if user is a franchisor team member (admin/recruiter)
+        const { data: teamMember } = await supabase
+          .from("franchisor_team_members")
+          .select("id, role, franchisor_id")
+          .eq("user_id", user.id)
+          .eq("is_active", true)
+          .single()
+
+        if (teamMember) {
+          console.log("[Dashboard] User is a franchisor team member:", teamMember.role)
           setUserRole("franchisor")
           setLoading(false)
           return
