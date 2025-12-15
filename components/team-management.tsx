@@ -98,6 +98,7 @@ export function TeamManagement({ franchisorId, companyName, currentUserRole = "o
     full_name: "",
     role: "recruiter" as "admin" | "recruiter",
   })
+  const [inviteLink, setInviteLink] = useState<string | null>(null)
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null)
 
   const canManageTeam = currentUserRole === "owner" || currentUserRole === "admin"

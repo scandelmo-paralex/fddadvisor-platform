@@ -2,6 +2,7 @@ import { getSupabaseRouteClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
 import type { TeamMemberRole } from "@/lib/types/database"
 import { randomBytes } from "crypto"
+import { sendTeamInvitationEmail } from "@/lib/email"
 
 /**
  * GET /api/team
@@ -304,14 +305,35 @@ export async function POST(request: Request) {
           return NextResponse.json({ error: "Failed to reactivate team member" }, { status: 500 })
         }
 
-        // TODO: Send invitation email
-        // await sendTeamInvitationEmail({ ... })
+        // Build invitation link
+        const host = request.headers.get("host") || "localhost:3000"
+        const protocol = host.includes("localhost") ? "http" : "https"
+        const invitationLink = `${protocol}://${host}/team-signup?token=${reactivated.invitation_token}`
+
+        // Send invitation email
+        let emailSent = false
+        if (process.env.RESEND_API_KEY) {
+          try {
+            await sendTeamInvitationEmail({
+              to: email,
+              memberName: full_name,
+              companyName: companyName,
+              role: role,
+              invitationLink: invitationLink,
+            })
+            emailSent = true
+            console.log("[v0] Team invitation email sent to:", email)
+          } catch (emailError) {
+            console.error("[v0] Failed to send team invitation email:", emailError)
+          }
+        }
 
         return NextResponse.json({
           success: true,
           team_member: formatTeamMembers([reactivated])[0],
-          message: "Team member reactivated and invitation sent",
-          invitation_sent: true,
+          message: emailSent ? "Team member reactivated and invitation sent" : "Team member reactivated (email not sent)",
+          invitation_sent: emailSent,
+          invitation_link: invitationLink,
         })
       }
     }
@@ -339,21 +361,37 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Failed to create team member" }, { status: 500 })
     }
 
-    // TODO: Send invitation email
-    // await sendTeamInvitationEmail({
-    //   to: email,
-    //   teamMemberName: full_name,
-    //   franchisorName: companyName,
-    //   invitationLink: `${process.env.NEXT_PUBLIC_APP_URL}/team-signup?token=${invitationToken}`,
-    //   invitedBy: user.email || "Your organization",
-    //   role: role,
-    // })
+    // Build invitation link
+    const host = request.headers.get("host") || "localhost:3000"
+    const protocol = host.includes("localhost") ? "http" : "https"
+    const invitationLink = `${protocol}://${host}/team-signup?token=${invitationToken}`
+
+    // Send invitation email
+    let emailSent = false
+    if (process.env.RESEND_API_KEY) {
+      try {
+        await sendTeamInvitationEmail({
+          to: email,
+          memberName: full_name,
+          companyName: companyName,
+          role: role,
+          invitationLink: invitationLink,
+        })
+        emailSent = true
+        console.log("[v0] Team invitation email sent to:", email)
+      } catch (emailError) {
+        console.error("[v0] Failed to send team invitation email:", emailError)
+      }
+    } else {
+      console.log("[v0] RESEND_API_KEY not configured, skipping email")
+    }
 
     return NextResponse.json({
       success: true,
       team_member: formatTeamMembers([newMember])[0],
-      message: `Invitation sent to ${email}`,
-      invitation_sent: true, // Will be true once email is implemented
+      message: emailSent ? `Invitation sent to ${email}` : `Invitation created for ${email} (email not sent)`,
+      invitation_sent: emailSent,
+      invitation_link: invitationLink,
     })
 
   } catch (error: any) {

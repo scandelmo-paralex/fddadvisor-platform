@@ -165,3 +165,97 @@ export async function sendFDDEmail({
     throw error
   }
 }
+
+/**
+ * Send team member invitation email
+ */
+export async function sendTeamInvitationEmail({
+  to,
+  memberName,
+  companyName,
+  role,
+  invitationLink,
+  invitedByName,
+}: {
+  to: string
+  memberName: string
+  companyName: string
+  role: string
+  invitationLink: string
+  invitedByName?: string
+}) {
+  try {
+    console.log("[v0] Sending team invitation email to:", to)
+
+    const roleDescriptions: Record<string, string> = {
+      admin: "manage your team and view all leads",
+      recruiter: "send FDD invitations and manage your leads",
+    }
+
+    const roleDescription = roleDescriptions[role] || "access the platform"
+
+    const { data, error } = await resend.emails.send({
+      from: "FDDHub <noreply@invitations.fddhub.com>",
+      to: [to],
+      subject: `You're invited to join ${companyName} on FDDHub`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          </head>
+          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
+              <h1 style="color: white; margin: 0; font-size: 28px;">Team Invitation</h1>
+            </div>
+            
+            <div style="background: #ffffff; padding: 40px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 10px 10px;">
+              <p style="font-size: 16px; margin-bottom: 20px;">Hi ${memberName},</p>
+              
+              <p style="font-size: 16px; margin: 20px 0;">
+                ${invitedByName ? `${invitedByName} has` : "You've been"} invited you to join <strong>${companyName}</strong> on FDDHub as a <strong>${role.charAt(0).toUpperCase() + role.slice(1)}</strong>.
+              </p>
+
+              <p style="font-size: 16px; margin: 20px 0;">
+                As a ${role}, you'll be able to ${roleDescription}.
+              </p>
+              
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="${invitationLink}" style="display: inline-block; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+                  Accept Invitation
+                </a>
+              </div>
+              
+              <div style="background: #f9fafb; padding: 20px; border-radius: 6px; margin: 20px 0;">
+                <h3 style="margin-top: 0; color: #3b82f6; font-size: 16px;">What is FDDHub?</h3>
+                <p style="margin: 10px 0; font-size: 14px; color: #6b7280;">
+                  FDDHub is a franchise intelligence platform that helps franchisors manage leads and distribute Franchise Disclosure Documents with powerful engagement analytics.
+                </p>
+              </div>
+              
+              <p style="font-size: 14px; color: #6b7280; margin-top: 30px;">
+                If you didn't expect this invitation, you can safely ignore this email.
+              </p>
+            </div>
+            
+            <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 12px;">
+              <p>© ${new Date().getFullYear()} FDDHub. All rights reserved.</p>
+            </div>
+          </body>
+        </html>
+      `,
+    })
+
+    if (error) {
+      console.error("[v0] Team invitation email error:", error)
+      throw error
+    }
+
+    console.log("[v0] Team invitation email sent successfully:", data)
+    return { success: true, data }
+  } catch (error) {
+    console.error("[v0] Failed to send team invitation email:", error)
+    throw error
+  }
+}
