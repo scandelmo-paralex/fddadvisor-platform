@@ -59,6 +59,18 @@ export async function POST(request: Request) {
 
     console.log("[v0] Franchisor profile ID:", profile.id)
 
+    // Get the current user's team member record (for created_by tracking)
+    const { data: teamMember } = await supabase
+      .from("franchisor_team_members")
+      .select("id")
+      .eq("franchisor_id", profile.id)
+      .eq("user_id", user.id)
+      .eq("is_active", true)
+      .single()
+
+    const createdByTeamMemberId = teamMember?.id || null
+    console.log("[v0] Created by team member:", createdByTeamMemberId)
+
     const { data: franchise, error: franchiseError } = await supabase
       .from("franchises")
       .select("id, name, franchisor_id")
@@ -101,6 +113,7 @@ export async function POST(request: Request) {
         state: state || null,
         target_location: target_location || null,
         brand: franchise.name,
+        created_by: createdByTeamMemberId, // Track which team member sent this
       })
       .select()
       .single()
