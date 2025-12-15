@@ -33,7 +33,7 @@ import { leads as initialLeads, stats } from "@/lib/data"
 import { PipelineView } from "@/components/pipeline-view"
 import { ReceiptViewerModal } from "@/components/receipt-viewer-modal"
 import type { Lead } from "@/lib/data"
-import { SharedAccessManager } from "@/components/shared-access-manager"
+import { SharedAccessManager } from "@/components/shared-access-manager" // DEPRECATED - moved to Company Settings
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select" // Import Select components
 import { Textarea } from "@/components/ui/textarea" // Import Textarea
 import { Input } from "@/components/ui/input" // Added Input component
@@ -1410,7 +1410,7 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
           </Card>
         </div>
       )} */}
-      <SharedAccessManager />
+      {/* Team Management moved to Company Settings */}
       {/* Added Item Mapping editor modal */}
       {showItemMappingModal && (
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
