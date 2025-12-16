@@ -1,7 +1,7 @@
 "use client"
 
 import { X, Info, CheckCircle2, Clock, Radio, User, Linkedin, AlertTriangle, TrendingUp, Target, MessageSquare, RefreshCw, Sparkles } from "lucide-react"
-import { SalesAssistantDrawer, SalesAssistantTrigger } from "@/components/sales-assistant"
+import { SalesAssistantDrawer } from "@/components/sales-assistant"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -1535,11 +1535,7 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
               </div>
               */}
 
-              {/* SALES ASSISTANT TRIGGER - Opens slide-out drawer */}
-              <SalesAssistantTrigger 
-                onClick={() => setIsAssistantOpen(true)} 
-                leadName={displayLead.name || "this lead"}
-              />
+
             </div>
           )}
         </div>
