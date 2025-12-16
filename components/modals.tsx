@@ -1,6 +1,6 @@
 "use client"
 
-import { X, Info, CheckCircle2, Clock, Radio, User, Linkedin, AlertTriangle, TrendingUp, Target, MessageSquare, RefreshCw } from "lucide-react"
+import { X, Info, CheckCircle2, Clock, Radio, User, Linkedin, AlertTriangle, TrendingUp, Target, MessageSquare, RefreshCw, Sparkles } from "lucide-react"
 import { SalesAssistantDrawer, SalesAssistantTrigger } from "@/components/sales-assistant"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -435,9 +435,29 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
               </Badge>
             )}
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             {type === "lead-intelligence" && lastUpdate && (
               <span className="text-xs text-muted-foreground">Updated {lastUpdate.toLocaleTimeString()}</span>
+            )}
+            {type === "lead-intelligence" && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => setIsAssistantOpen(true)}
+                      className="h-8 gap-1.5 bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200 hover:from-purple-100 hover:to-blue-100"
+                    >
+                      <Sparkles className="h-3.5 w-3.5 text-purple-600" />
+                      <span className="text-purple-700 font-medium">Assistant</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Open AI Sales Assistant</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             )}
             {type === "lead-intelligence" && (
               <Button 

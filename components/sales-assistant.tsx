@@ -256,20 +256,16 @@ export function SalesAssistantDrawer({
 
   return (
     <>
-      {/* Backdrop - semi-transparent to still see the modal */}
+      {/* Drawer - No backdrop, modal stays interactive */}
       <div 
-        className="fixed inset-0 bg-black/20 z-[60]"
-        onClick={onClose}
-      />
-      
-      {/* Drawer */}
-      <div 
-        className={`fixed right-0 top-0 h-full w-[450px] max-w-[90vw] bg-white shadow-2xl z-[70] flex flex-col transform transition-transform duration-300 ease-out ${
+        className={`fixed right-0 top-0 h-screen w-[450px] max-w-[90vw] bg-white shadow-2xl z-[70] flex flex-col transform transition-transform duration-300 ease-out border-l border-gray-200 ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
+        onWheel={(e) => e.stopPropagation()}
+        onTouchMove={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-purple-50 to-blue-50">
+        <div className="flex-shrink-0 flex items-center justify-between p-4 border-b bg-gradient-to-r from-purple-50 to-blue-50">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
               <Sparkles className="h-5 w-5 text-white" />
@@ -291,9 +287,10 @@ export function SalesAssistantDrawer({
           </Button>
         </div>
 
-        {/* Messages */}
-        <ScrollArea className="flex-1 p-4">
-          <div className="space-y-4">
+        {/* Messages - Scrollable area */}
+        <div className="flex-1 overflow-hidden min-h-0">
+          <ScrollArea className="h-full overscroll-contain">
+            <div className="p-4 space-y-4">
             {messages.map((message) => (
               <div
                 key={message.id}
@@ -381,11 +378,12 @@ export function SalesAssistantDrawer({
             )}
 
             <div ref={messagesEndRef} />
-          </div>
-        </ScrollArea>
+            </div>
+          </ScrollArea>
+        </div>
 
         {/* Quick Actions */}
-        <div className="px-4 py-3 border-t bg-muted/30">
+        <div className="flex-shrink-0 px-4 py-3 border-t bg-muted/30">
           <p className="text-xs text-muted-foreground mb-2">Quick Actions</p>
           <div className="flex flex-wrap gap-2">
             <TooltipProvider>
@@ -451,7 +449,7 @@ export function SalesAssistantDrawer({
         </div>
 
         {/* Input */}
-        <div className="p-4 border-t bg-white">
+        <div className="flex-shrink-0 p-4 border-t bg-white">
           <div className="flex gap-2">
             <div className="flex-1 relative">
               <Input
