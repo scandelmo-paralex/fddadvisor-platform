@@ -1,6 +1,7 @@
 "use client"
 
 import { X, Info, CheckCircle2, Clock, Radio, User, Linkedin, AlertTriangle, TrendingUp, Target, MessageSquare, RefreshCw } from "lucide-react"
+import { SalesAssistant } from "@/components/sales-assistant"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -1512,6 +1513,46 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
                 </p>
               </div>
               */}
+
+              {/* SALES ASSISTANT - Interactive AI for drafting emails, call prep, market research */}
+              <SalesAssistant
+                leadId={leadId || ""}
+                leadContext={{
+                  lead: {
+                    name: displayLead.name || "Unknown",
+                    email: displayLead.email || "",
+                    phone: displayLead.phone || undefined,
+                    location: displayLead.location || engagementData?.buyerLocation || undefined,
+                    timeline: displayLead.timeline || engagementData?.invitationData?.timeline || undefined,
+                    source: displayLead.source || engagementData?.invitationData?.source || undefined,
+                  },
+                  brand: {
+                    name: displayLead.brand || engagementData?.invitationData?.brand || "Unknown",
+                    industry: undefined,
+                    investmentRange: undefined,
+                  },
+                  engagement: {
+                    totalTime: engagementData?.totalTimeSpent || displayLead.totalTimeSpent || "0m",
+                    sessions: engagementData?.engagementCount || 0,
+                    sectionsViewed: engagementData?.sectionsViewed || displayLead.sectionsViewed || [],
+                    questionsAsked: engagementData?.questionInsights?.topicsExplored?.map((t: any) => t.name) || [],
+                  },
+                  qualification: {
+                    liquidCapital: engagementData?.buyerQualification?.liquidAssetsRange || undefined,
+                    netWorth: engagementData?.buyerQualification?.netWorthRange || undefined,
+                    financialFit: displayLead.aiInsights?.candidateFit?.financialFit?.status || undefined,
+                    yearsOfExperience: engagementData?.buyerQualification?.yearsOfExperience || undefined,
+                    hasOwnedBusiness: engagementData?.buyerQualification?.hasOwnedBusiness || false,
+                    managementExperience: engagementData?.buyerQualification?.managementExperience || false,
+                  },
+                  computed: {
+                    qualityScore: displayLead.qualityScore || 0,
+                    intentLevel: displayLead.intent || "Unknown",
+                    engagementTier: engagementData?.engagementTier || "none",
+                  },
+                }}
+                className="mt-6"
+              />
             </div>
           )}
         </div>
