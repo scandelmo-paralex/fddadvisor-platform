@@ -18,21 +18,47 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    // First, check if user is a franchisor owner
     const { data: profile, error: profileError } = await supabase
       .from("franchisor_profiles")
       .select("id, is_admin")
       .eq("user_id", user.id)
       .single()
 
-    if (profileError || !profile) {
-      return NextResponse.json({ error: "Profile not found" }, { status: 404 })
+    let franchisorId: string
+    let isAdmin = false
+    let isRecruiter = false
+    let teamMemberId: string | null = null
+
+    if (profile) {
+      // User is a franchisor owner
+      franchisorId = profile.id
+      isAdmin = profile.is_admin || false
+    } else {
+      // Check if user is a team member
+      const { data: teamMember, error: tmError } = await supabase
+        .from("franchisor_team_members")
+        .select("id, franchisor_id, role")
+        .eq("user_id", user.id)
+        .eq("is_active", true)
+        .single()
+
+      if (tmError || !teamMember) {
+        return NextResponse.json({ error: "Not associated with any franchisor" }, { status: 403 })
+      }
+
+      franchisorId = teamMember.franchisor_id
+      teamMemberId = teamMember.id
+      isRecruiter = teamMember.role === "recruiter"
+      // Admins and owners see all leads
+      isAdmin = teamMember.role === "owner" || teamMember.role === "admin"
     }
 
     // Get franchises - admin sees all, regular franchisor sees only their own
     let franchisesQuery = supabase.from("franchises").select("id, name, slug")
     
-    if (!profile.is_admin) {
-      franchisesQuery = franchisesQuery.eq("franchisor_id", profile.id)
+    if (!isAdmin) {
+      franchisesQuery = franchisesQuery.eq("franchisor_id", franchisorId)
     }
     
     const { data: franchises } = await franchisesQuery
@@ -43,8 +69,8 @@ export async function GET() {
     // Get leads - admin sees all, regular franchisor sees only their own
     let leadsQuery = supabase.from("leads").select("*").order("created_at", { ascending: false })
     
-    if (!profile.is_admin) {
-      leadsQuery = leadsQuery.eq("franchisor_id", profile.id)
+    if (!isAdmin) {
+      leadsQuery = leadsQuery.eq("franchisor_id", franchisorId)
     }
     
     const { data: leadsRecords, error: leadsError } = await leadsQuery
@@ -107,22 +133,34 @@ export async function GET() {
       }
     })
 
-    // Get invitation data - admin sees all, regular franchisor sees only their own
+    // Get invitation data
+    // - Admin/Owner: sees all invitations for the franchisor
+    // - Recruiter: sees only invitations they created
     let invitationsQuery = supabase.from("lead_invitations").select("*").order("sent_at", { ascending: false })
     
-    if (!profile.is_admin) {
-      invitationsQuery = invitationsQuery.eq("franchisor_id", profile.id)
+    if (isRecruiter && teamMemberId) {
+      // Recruiters only see leads they created
+      invitationsQuery = invitationsQuery.eq("created_by", teamMemberId)
+    } else if (!isAdmin) {
+      // Non-admin owners see all their franchisor's invitations
+      invitationsQuery = invitationsQuery.eq("franchisor_id", franchisorId)
     }
+    // Admin sees all (no filter)
     
     const { data: invitations, error: invError } = await invitationsQuery
 
     // Create invitation map by email (for matching with leads)
     const invitationByEmailMap = new Map(invitations?.map((inv: any) => [inv.lead_email, inv]) || [])
 
+    // For recruiters, we need to filter FDD access records to only show buyers they invited
+    const recruiterInvitedEmails = isRecruiter 
+      ? new Set(invitations?.map((inv: any) => inv.lead_email).filter(Boolean) || [])
+      : null
+
     const fddAccessEmails = new Set(fddAccessRecords?.map((access: any) => access.buyer?.email).filter(Boolean) || [])
 
     // Transform FDD access records into lead objects (buyers who have accessed)
-    const accessLeads =
+    let accessLeads =
       fddAccessRecords?.map((access: any) => {
         const buyer = access.buyer
         const franchise = franchiseMap.get(access.franchise_id)
@@ -181,6 +219,13 @@ export async function GET() {
           franchiseId: access.franchise_id,
         }
       }) || []
+
+    // For recruiters, filter accessLeads to only include buyers they invited
+    if (isRecruiter && recruiterInvitedEmails) {
+      accessLeads = accessLeads.filter((lead: any) => 
+        recruiterInvitedEmails.has(lead.email)
+      )
+    }
 
     // The leads table only has relationship IDs, actual lead data is in lead_invitations
     const pendingLeads = (invitations || [])
