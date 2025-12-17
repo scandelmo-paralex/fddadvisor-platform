@@ -54,9 +54,17 @@ export async function sendInvitationEmail({
               </p>
               
               <div style="text-align: center; margin: 30px 0;">
-                <a href="${invitationLink}" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+                <!--[if mso]>
+                <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${invitationLink}" style="height:48px;v-text-anchor:middle;width:200px;" arcsize="10%" strokecolor="#667eea" fillcolor="#667eea">
+                <w:anchorlock/>
+                <center style="color:#ffffff;font-family:sans-serif;font-size:16px;font-weight:bold;">View Your FDD</center>
+                </v:roundrect>
+                <![endif]-->
+                <!--[if !mso]><!-->
+                <a href="${invitationLink}" style="display: inline-block; background-color: #667eea; color: #ffffff; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; border: 1px solid #667eea;">
                   View Your FDD
                 </a>
+                <!--<![endif]-->
               </div>
               
               <div style="background: #f9fafb; padding: 20px; border-radius: 6px; margin: 20px 0;">
@@ -135,9 +143,17 @@ export async function sendFDDEmail({
               </p>
               
               <div style="text-align: center; margin: 30px 0;">
-                <a href="${fddLink}" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+                <!--[if mso]>
+                <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${fddLink}" style="height:48px;v-text-anchor:middle;width:200px;" arcsize="10%" strokecolor="#667eea" fillcolor="#667eea">
+                <w:anchorlock/>
+                <center style="color:#ffffff;font-family:sans-serif;font-size:16px;font-weight:bold;">Access Your FDD</center>
+                </v:roundrect>
+                <![endif]-->
+                <!--[if !mso]><!-->
+                <a href="${fddLink}" style="display: inline-block; background-color: #667eea; color: #ffffff; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; border: 1px solid #667eea;">
                   Access Your FDD
                 </a>
+                <!--<![endif]-->
               </div>
               
               <p style="font-size: 14px; color: #6b7280; margin-top: 30px;">
@@ -222,9 +238,17 @@ export async function sendTeamInvitationEmail({
               </p>
               
               <div style="text-align: center; margin: 30px 0;">
-                <a href="${invitationLink}" style="display: inline-block; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+                <!--[if mso]>
+                <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${invitationLink}" style="height:48px;v-text-anchor:middle;width:220px;" arcsize="10%" strokecolor="#3b82f6" fillcolor="#3b82f6">
+                <w:anchorlock/>
+                <center style="color:#ffffff;font-family:sans-serif;font-size:16px;font-weight:bold;">Accept Invitation</center>
+                </v:roundrect>
+                <![endif]-->
+                <!--[if !mso]><!-->
+                <a href="${invitationLink}" style="display: inline-block; background-color: #3b82f6; color: #ffffff; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; border: 1px solid #3b82f6;">
                   Accept Invitation
                 </a>
+                <!--<![endif]-->
               </div>
               
               <div style="background: #f9fafb; padding: 20px; border-radius: 6px; margin: 20px 0;">
