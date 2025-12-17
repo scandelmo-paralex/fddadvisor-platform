@@ -375,6 +375,25 @@ export interface TeamMemberListItem {
   accepted_at?: string
 }
 
+// ============================================================================
+// USER CONSENT TYPES
+// ============================================================================
+
+export interface UserConsent {
+  id: string
+  user_id: string
+  tos_accepted: boolean
+  tos_accepted_at?: string
+  tos_version: string
+  privacy_accepted: boolean
+  privacy_accepted_at?: string
+  privacy_version: string
+  ip_address?: string
+  user_agent?: string
+  created_at: string
+  updated_at: string
+}
+
 // Extended LeadInvitation with team member assignment
 export interface LeadInvitationWithAssignment extends LeadInvitation {
   assigned_to?: string

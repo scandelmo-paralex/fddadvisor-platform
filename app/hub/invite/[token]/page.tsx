@@ -9,7 +9,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Loader2, CheckCircle2, XCircle } from 'lucide-react'
+import Link from "next/link"
 import type { LeadInvitation } from "@/lib/types/database"
 import { acceptInvitation, linkInvitationToExistingUser } from "@/app/actions/accept-invitation"
 
@@ -32,6 +34,10 @@ export default function InvitationPage() {
   const [mode, setMode] = useState<"signup" | "login">("signup")
   const [resetEmailSent, setResetEmailSent] = useState(false)
   const [sendingReset, setSendingReset] = useState(false)
+
+  // Legal consents
+  const [tosAccepted, setTosAccepted] = useState(false)
+  const [privacyAccepted, setPrivacyAccepted] = useState(false)
 
   useEffect(() => {
     validateInvitation()
@@ -75,6 +81,12 @@ export default function InvitationPage() {
   const handleCreateAccount = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    // Validate legal consents first
+    if (!tosAccepted || !privacyAccepted) {
+      setError("You must agree to the Terms of Service and Privacy Policy to create an account.")
+      return
+    }
+
     if (password !== confirmPassword) {
       setError("Passwords do not match")
       return
@@ -105,6 +117,8 @@ export default function InvitationPage() {
         city: city.trim(),
         state: state.trim(),
         invitation_token: token,
+        tosAccepted,
+        privacyAccepted,
       })
 
       console.log("[v0] acceptInvitation result:", result)
@@ -193,7 +207,7 @@ export default function InvitationPage() {
     )
   }
 
-  if (error) {
+  if (error && !invitation) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background px-4">
         <Card className="w-full max-w-md">
@@ -346,6 +360,49 @@ export default function InvitationPage() {
                     placeholder="Re-enter password"
                   />
                 </div>
+
+                {/* Legal Consents */}
+                <div className="space-y-3 border-t pt-4">
+                  <div className="flex items-start space-x-3">
+                    <Checkbox
+                      id="tosAccepted"
+                      checked={tosAccepted}
+                      onCheckedChange={(checked) => setTosAccepted(checked as boolean)}
+                      className="mt-1"
+                    />
+                    <Label htmlFor="tosAccepted" className="font-normal text-sm leading-relaxed">
+                      I have read and agree to the{" "}
+                      <Link 
+                        href="/legal/terms" 
+                        target="_blank" 
+                        className="text-primary hover:underline font-medium"
+                      >
+                        Terms of Service
+                      </Link>
+                      {" "}*
+                    </Label>
+                  </div>
+
+                  <div className="flex items-start space-x-3">
+                    <Checkbox
+                      id="privacyAccepted"
+                      checked={privacyAccepted}
+                      onCheckedChange={(checked) => setPrivacyAccepted(checked as boolean)}
+                      className="mt-1"
+                    />
+                    <Label htmlFor="privacyAccepted" className="font-normal text-sm leading-relaxed">
+                      I have read and agree to the{" "}
+                      <Link 
+                        href="/legal/privacy" 
+                        target="_blank" 
+                        className="text-primary hover:underline font-medium"
+                      >
+                        Privacy Policy
+                      </Link>
+                      {" "}*
+                    </Label>
+                  </div>
+                </div>
               </>
             )}
 
@@ -377,7 +434,11 @@ export default function InvitationPage() {
 
             {error && <p className="text-sm text-destructive">{error}</p>}
 
-            <Button type="submit" className="w-full" disabled={creating}>
+            <Button 
+              type="submit" 
+              className="w-full" 
+              disabled={creating || (mode === "signup" && (!tosAccepted || !privacyAccepted))}
+            >
               {creating ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -405,12 +466,6 @@ export default function InvitationPage() {
                 {mode === "signup" ? "Already have an account? Log in" : "Need to create an account? Sign up"}
               </Button>
             </div>
-
-            {mode === "signup" && (
-              <p className="text-xs text-center text-muted-foreground">
-                By creating an account, you agree to our Terms of Service and Privacy Policy
-              </p>
-            )}
           </form>
         </CardContent>
       </Card>

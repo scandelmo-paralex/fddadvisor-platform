@@ -12,6 +12,8 @@ export async function acceptInvitation(formData: {
   city: string
   state: string
   invitation_token: string
+  tosAccepted?: boolean
+  privacyAccepted?: boolean
 }) {
   const supabase = await createClient()
   const adminSupabase = createServiceRoleClient()
@@ -79,6 +81,29 @@ export async function acceptInvitation(formData: {
 
     if (userError) {
       console.error("[v0] Warning: Failed to insert public user record (might already exist)", userError)
+    }
+
+    // STEP 2.6: Save consent record
+    if (formData.tosAccepted || formData.privacyAccepted) {
+      console.log("[v0] Step 2.6: Saving user consents")
+      const now = new Date().toISOString()
+      const { error: consentError } = await adminSupabase.from("user_consents").insert({
+        user_id: userId,
+        tos_accepted: formData.tosAccepted || false,
+        tos_accepted_at: formData.tosAccepted ? now : null,
+        tos_version: "1.0",
+        privacy_accepted: formData.privacyAccepted || false,
+        privacy_accepted_at: formData.privacyAccepted ? now : null,
+        privacy_version: "1.0",
+      })
+
+      if (consentError) {
+        console.error("[v0] Step 2.6 warning: Consent save error:", consentError)
+        // Don't fail signup for consent error, but log it
+        console.error("[v0] WARNING - Consent not saved, continuing with signup")
+      } else {
+        console.log("[v0] Step 2.6 completed: User consents saved successfully")
+      }
     }
 
     console.log("[v0] Step 3 started: Creating buyer profile with authenticated session")

@@ -11,6 +11,8 @@ export async function signupUser(formData: {
   lastName: string
   phone?: string
   company_name?: string
+  tosAccepted?: boolean
+  privacyAccepted?: boolean
 }) {
   try {
     const cookieStore = await cookies()
@@ -71,6 +73,28 @@ export async function signupUser(formData: {
     }
 
     console.log("[v0] Server: Users table updated")
+
+    // Save consent record
+    if (formData.tosAccepted || formData.privacyAccepted) {
+      const now = new Date().toISOString()
+      const { error: consentError } = await supabase.from("user_consents").insert({
+        user_id: authData.user.id,
+        tos_accepted: formData.tosAccepted || false,
+        tos_accepted_at: formData.tosAccepted ? now : null,
+        tos_version: "1.0",
+        privacy_accepted: formData.privacyAccepted || false,
+        privacy_accepted_at: formData.privacyAccepted ? now : null,
+        privacy_version: "1.0",
+      })
+
+      if (consentError) {
+        console.error("[v0] Server: Consent save error:", consentError)
+        // Don't fail signup for consent error, but log it
+        console.error("[v0] Server: WARNING - Consent not saved, continuing with signup")
+      } else {
+        console.log("[v0] Server: User consents saved successfully")
+      }
+    }
 
     // Create profile based on role
     const fullName = `${formData.firstName} ${formData.lastName}`
