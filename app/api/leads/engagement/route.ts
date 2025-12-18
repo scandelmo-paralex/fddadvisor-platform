@@ -881,6 +881,15 @@ function generatePendingLeadInsights(invitation: any, franchise: any, buyerProfi
         liquidCapitalAssessment: financialFit.liquidCapitalAssessment,
         netWorthAssessment: financialFit.netWorthAssessment,
       }
+    } : (buyerProfile?.liquid_assets_range || buyerProfile?.net_worth_range) ? {
+      // Show buyer's financial data even without franchise requirements to compare against
+      financialFit: {
+        status: 'unknown' as const,
+        score: null,
+        liquidCapitalAssessment: buyerProfile?.liquid_assets_range ? `Liquid assets: ${buyerProfile.liquid_assets_range}` : 'Not provided',
+        netWorthAssessment: buyerProfile?.net_worth_range ? `Net worth: ${buyerProfile.net_worth_range}` : 'Not provided',
+        note: 'Franchise has not configured financial requirements for comparison'
+      }
     } : null,
   }
 }
@@ -1250,9 +1259,22 @@ function generateMinimalEngagementInsights(
 
   const summary = `${financialPrefix}${buyerName} has briefly accessed the ${franchiseName} FDD (${totalMinutes} minute${totalMinutes !== 1 ? "s" : ""}), suggesting initial interest but limited engagement so far. This is an early-stage lead that needs nurturing.`
 
+  // Build financial findings - show actual buyer data even when no franchise requirements to compare against
+  const liquidCapitalFinding = financialFit 
+    ? financialFit.liquidCapitalAssessment 
+    : buyerProfile?.liquid_assets_range 
+      ? `Liquid assets: ${buyerProfile.liquid_assets_range}` 
+      : "Liquid assets: Not yet provided"
+  
+  const netWorthFinding = financialFit 
+    ? financialFit.netWorthAssessment 
+    : buyerProfile?.net_worth_range 
+      ? `Net worth: ${buyerProfile.net_worth_range}` 
+      : "Net worth: Not yet provided"
+
   const keyFindings = [
-    financialFit ? financialFit.liquidCapitalAssessment : "Financial qualification: Not yet provided",
-    financialFit ? financialFit.netWorthAssessment : "Net worth: Not yet provided",
+    liquidCapitalFinding,
+    netWorthFinding,
     `Limited engagement: Only ${totalMinutes} minute${totalMinutes !== 1 ? "s" : ""} of FDD review suggests they may be exploring options`,
     sectionsViewed.length > 0
       ? `Initial focus on: ${sectionsViewed.slice(0, 2).join(", ")}`
@@ -1313,6 +1335,15 @@ function generateMinimalEngagementInsights(
         liquidCapitalAssessment: financialFit.liquidCapitalAssessment,
         netWorthAssessment: financialFit.netWorthAssessment,
       }
+    } : (buyerProfile?.liquid_assets_range || buyerProfile?.net_worth_range) ? {
+      // Show buyer's financial data even without franchise requirements to compare against
+      financialFit: {
+        status: 'unknown' as const,
+        score: null,
+        liquidCapitalAssessment: buyerProfile?.liquid_assets_range ? `Liquid assets: ${buyerProfile.liquid_assets_range}` : 'Not provided',
+        netWorthAssessment: buyerProfile?.net_worth_range ? `Net worth: ${buyerProfile.net_worth_range}` : 'Not provided',
+        note: 'Franchise has not configured financial requirements for comparison'
+      }
     } : null,
   }
 }
@@ -1347,9 +1378,22 @@ function generatePartialEngagementInsights(
 
   const summary = `${financialPrefix}${buyerName} has shown moderate interest in ${franchiseName}, spending ${totalMinutes} minutes across ${sessionCount} session${sessionCount !== 1 ? "s" : ""}. ${viewedItem19 || viewedItem7 ? "Their focus on financial sections suggests they're evaluating the investment seriously." : "They appear to be in the exploration phase and may benefit from guided engagement."}`
 
+  // Build financial findings - show actual buyer data even when no franchise requirements to compare against
+  const liquidCapitalFinding = financialFit 
+    ? financialFit.liquidCapitalAssessment 
+    : buyerProfile?.liquid_assets_range 
+      ? `Liquid assets: ${buyerProfile.liquid_assets_range}` 
+      : "Liquid assets: Not yet provided"
+  
+  const netWorthFinding = financialFit 
+    ? financialFit.netWorthAssessment 
+    : buyerProfile?.net_worth_range 
+      ? `Net worth: ${buyerProfile.net_worth_range}` 
+      : "Net worth: Not yet provided"
+
   const keyFindings = [
-    financialFit ? financialFit.liquidCapitalAssessment : "Financial qualification: Not yet provided",
-    financialFit ? financialFit.netWorthAssessment : "Net worth: Not yet provided",
+    liquidCapitalFinding,
+    netWorthFinding,
     `Moderate engagement: ${totalMinutes} minutes indicates genuine interest but not deep due diligence yet`,
     viewedItem19
       ? "Viewed financial performance data (Item 19) - interested in ROI potential"
@@ -1431,6 +1475,15 @@ function generatePartialEngagementInsights(
         liquidCapitalAssessment: financialFit.liquidCapitalAssessment,
         netWorthAssessment: financialFit.netWorthAssessment,
       }
+    } : (buyerProfile?.liquid_assets_range || buyerProfile?.net_worth_range) ? {
+      // Show buyer's financial data even without franchise requirements to compare against
+      financialFit: {
+        status: 'unknown' as const,
+        score: null,
+        liquidCapitalAssessment: buyerProfile?.liquid_assets_range ? `Liquid assets: ${buyerProfile.liquid_assets_range}` : 'Not provided',
+        netWorthAssessment: buyerProfile?.net_worth_range ? `Net worth: ${buyerProfile.net_worth_range}` : 'Not provided',
+        note: 'Franchise has not configured financial requirements for comparison'
+      }
     } : null,
   }
 }
@@ -1482,10 +1535,18 @@ function generateTemplateInsights(
 
   const keyFindings: string[] = []
 
-  // Add financial findings first
+  // Add financial findings first - show actual buyer data even when no franchise requirements
   if (financialFit) {
     keyFindings.push(financialFit.liquidCapitalAssessment)
     keyFindings.push(financialFit.netWorthAssessment)
+  } else {
+    // No franchise requirements to compare against, but still show buyer's financial data
+    if (buyerProfile?.liquid_assets_range) {
+      keyFindings.push(`Liquid assets: ${buyerProfile.liquid_assets_range}`)
+    }
+    if (buyerProfile?.net_worth_range) {
+      keyFindings.push(`Net worth: ${buyerProfile.net_worth_range}`)
+    }
   }
 
   if (viewedItem19 && viewedItem7) {
@@ -1630,6 +1691,15 @@ function generateTemplateInsights(
         score: financialFit.score,
         liquidCapitalAssessment: financialFit.liquidCapitalAssessment,
         netWorthAssessment: financialFit.netWorthAssessment,
+      }
+    } : (buyerProfile?.liquid_assets_range || buyerProfile?.net_worth_range) ? {
+      // Show buyer's financial data even without franchise requirements to compare against
+      financialFit: {
+        status: 'unknown' as const,
+        score: null,
+        liquidCapitalAssessment: buyerProfile?.liquid_assets_range ? `Liquid assets: ${buyerProfile.liquid_assets_range}` : 'Not provided',
+        netWorthAssessment: buyerProfile?.net_worth_range ? `Net worth: ${buyerProfile.net_worth_range}` : 'Not provided',
+        note: 'Franchise has not configured financial requirements for comparison'
       }
     } : null,
   }
