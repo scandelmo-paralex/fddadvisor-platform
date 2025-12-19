@@ -260,6 +260,12 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
     if (activeFilter) {
       if (activeFilter === "high-intent" && lead.intent !== "High") return false
       if (activeFilter === "new" && !lead.isNew) return false
+      // Filter for leads who have viewed FDD (have fddSendDate and engagement)
+      if (activeFilter === "views" && !lead.fddSendDate) return false
+      // Filter for leads who have viewed Item 19 (checking engagement or qualityScore as proxy)
+      if (activeFilter === "item19" && (!lead.fddSendDate || lead.qualityScore < 50)) return false
+      // Filter for qualified leads (qualityScore >= 60 or intent is Medium/High)
+      if (activeFilter === "qualified" && lead.qualityScore < 60 && lead.intent === "Low") return false
     }
 
     // Apply source filter
