@@ -159,6 +159,7 @@ export interface BuyerProfile {
     managementExperience: boolean
     currentEmploymentStatus: "Employed Full-Time" | "Employed Part-Time" | "Self-Employed" | "Unemployed" | "Retired"
     relevantSkills: string[] // e.g., ["Sales", "Operations", "Marketing"]
+    isVeteran?: boolean | null // true = yes, false = no, null/undefined = not answered
   }
   financialQualification?: {
     ficoScoreRange?: string // Self-reported FICO score range

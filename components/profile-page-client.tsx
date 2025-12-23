@@ -97,6 +97,7 @@ export function ProfilePageClient({ userId, userEmail }: ProfilePageClientProps)
             managementExperience: buyerProfileData?.management_experience || false,
             currentEmploymentStatus: buyerProfileData?.current_employment_status || "Employed Full-Time",
             relevantSkills: buyerProfileData?.relevant_skills || [],
+            isVeteran: buyerProfileData?.is_veteran ?? null,
           },
           financialQualification: {
             ficoScoreRange: buyerProfileData?.fico_score_range || "",
@@ -149,6 +150,7 @@ export function ProfilePageClient({ userId, userEmail }: ProfilePageClientProps)
         management_experience: updatedProfile.businessExperience?.managementExperience,
         current_employment_status: updatedProfile.businessExperience?.currentEmploymentStatus,
         relevant_skills: updatedProfile.businessExperience?.relevantSkills,
+        is_veteran: updatedProfile.businessExperience?.isVeteran,
         
         // Financial Qualification
         fico_score_range: updatedProfile.financialQualification?.ficoScoreRange,
