@@ -1,0 +1,196 @@
+{
+  "item_9_franchisee_obligations": {
+    "title": "Franchisee's Obligations",
+    "description": "This section lists the principal obligations of the franchisee under the Franchise Agreement and other agreements. It directs the franchisee to find more detailed information in those agreements and in other items of this Disclosure Document.",
+    "obligations": [
+      {
+        "obligation": "Site selection and acquisition/lease",
+        "agreement_section": "Section 4.1",
+        "related_disclosure_items": [
+          "ITEM 7",
+          "ITEM 11"
+        ]
+      },
+      {
+        "obligation": "Pre-opening purchases/leases",
+        "agreement_section": "Sections 7.1 and 11.1",
+        "related_disclosure_items": [
+          "ITEM 7",
+          "ITEM 8",
+          "ITEM 11"
+        ]
+      },
+      {
+        "obligation": "Site development and other pre-opening requirements",
+        "agreement_section": "Article 7",
+        "related_disclosure_items": [
+          "ITEM 6",
+          "ITEM 7",
+          "ITEM 11"
+        ]
+      },
+      {
+        "obligation": "Initial and ongoing training",
+        "agreement_section": "Article 6",
+        "related_disclosure_items": [
+          "ITEM 11"
+        ]
+      },
+      {
+        "obligation": "Opening",
+        "agreement_section": "Section 7.3",
+        "related_disclosure_items": [
+          "ITEM 11"
+        ]
+      },
+      {
+        "obligation": "Fees",
+        "agreement_section": "Articles 5 and 12, Section 13.5",
+        "related_disclosure_items": [
+          "ITEM 5",
+          "ITEM 6"
+        ]
+      },
+      {
+        "obligation": "Compliance with standards and policies/Operations Manual",
+        "agreement_section": "Article 9 and Section 11.1",
+        "related_disclosure_items": [
+          "ITEM 1",
+          "ITEM 11"
+        ]
+      },
+      {
+        "obligation": "Trademarks and proprietary information",
+        "agreement_section": "Article 15 and Sections 18.6 and 20.4",
+        "related_disclosure_items": [
+          "ITEM 13",
+          "ITEM 14"
+        ]
+      },
+      {
+        "obligation": "Restrictions on products/services offered",
+        "agreement_section": "Sections 11.1, 14.2, 18.2 and 20.1",
+        "related_disclosure_items": [
+          "ITEM 8",
+          "ITEM 16"
+        ]
+      },
+      {
+        "obligation": "Warranty and customer service requirements",
+        "agreement_section": "Section 11.1",
+        "related_disclosure_items": [
+          "ITEM 11"
+        ]
+      },
+      {
+        "obligation": "Territorial development and sales quotas",
+        "agreement_section": "Article 4 and Section 12.4",
+        "related_disclosure_items": [
+          "ITEM 11",
+          "ITEM 12"
+        ]
+      },
+      {
+        "obligation": "Ongoing product/service purchases",
+        "agreement_section": "Sections 11.1 and 14.2",
+        "related_disclosure_items": [
+          "ITEM 8",
+          "ITEM 16"
+        ]
+      },
+      {
+        "obligation": "Maintenance, appearance and remodeling requirements",
+        "agreement_section": "Section 11.1",
+        "related_disclosure_items": [
+          "ITEM 7"
+        ]
+      },
+      {
+        "obligation": "Insurance",
+        "agreement_section": "Article 21",
+        "related_disclosure_items": [
+          "ITEM 7"
+        ]
+      },
+      {
+        "obligation": "Advertising",
+        "agreement_section": "Article 13 and Section 12.2",
+        "related_disclosure_items": [
+          "ITEM 11"
+        ]
+      },
+      {
+        "obligation": "Indemnification",
+        "agreement_section": "Section 19.3",
+        "related_disclosure_items": [
+          "ITEM 6",
+          "ITEM 14"
+        ]
+      },
+      {
+        "obligation": "Owners participation/management/staffing",
+        "agreement_section": "Section 11.1",
+        "related_disclosure_items": [
+          "ITEM 15"
+        ]
+      },
+      {
+        "obligation": "Records and reports",
+        "agreement_section": "Article 16 and Section 18.1",
+        "related_disclosure_items": [
+          "ITEM 6",
+          "ITEM 17"
+        ]
+      },
+      {
+        "obligation": "Inspection and audits",
+        "agreement_section": "Section 16.3",
+        "related_disclosure_items": [
+          "ITEM 6"
+        ]
+      },
+      {
+        "obligation": "Transfer",
+        "agreement_section": "Article 17",
+        "related_disclosure_items": [
+          "ITEM 17"
+        ]
+      },
+      {
+        "obligation": "Renewal",
+        "agreement_section": "Sections 3.3 and 3.4",
+        "related_disclosure_items": [
+          "ITEM 17"
+        ]
+      },
+      {
+        "obligation": "Post-termination obligations",
+        "agreement_section": "Sections 18.6, 18.7, 18.8, 18.9, 20.2, 20.3, 20.4, and 20.5",
+        "related_disclosure_items": [
+          "ITEM 17"
+        ]
+      },
+      {
+        "obligation": "Non-competition covenants",
+        "agreement_section": "Article 20",
+        "related_disclosure_items": [
+          "ITEM 17"
+        ]
+      },
+      {
+        "obligation": "Dispute resolution",
+        "agreement_section": "Article 22",
+        "related_disclosure_items": [
+          "ITEM 17"
+        ]
+      },
+      {
+        "obligation": "Guaranty by Owners and Other Individuals",
+        "agreement_section": "Sections 11.1 and 11.2, and Exhibit III",
+        "related_disclosure_items": [
+          "ITEM 15"
+        ]
+      }
+    ]
+  }
+}

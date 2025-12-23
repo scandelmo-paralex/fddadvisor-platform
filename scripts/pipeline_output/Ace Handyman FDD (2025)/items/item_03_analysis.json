@@ -1,0 +1,40 @@
+{
+  "has_litigation": true,
+  "total_cases": 3,
+  "clean_record": false,
+  "cases": [
+    {
+      "case_type": "franchisee",
+      "party_involved": "direct_franchisor",
+      "status": "settled",
+      "year_filed": 2020,
+      "year_resolved": 2020,
+      "nature": "Trademark infringement and unfair competition related to the use of the mark 'ACE HANDYMAN SERVICES'.",
+      "resolution": "Plaintiff was paid $150,000 for franchisees and franchisor to use the mark and for plaintiff to discontinue its use of 'ACE' and 'ACE HANDYMAN SERVICES'."
+    },
+    {
+      "case_type": "other",
+      "party_involved": "parent_company",
+      "status": "settled",
+      "year_filed": 2017,
+      "year_resolved": 2022,
+      "nature": "Allegations of wrongful payments to a former vendor (Sentron International, Inc.) for products belonging to Sentron.",
+      "resolution": "Settled for $1.1 million, with $650,000 paid by Ace Hardware. Plaintiffs' complaint and Ace Hardware's cross-complaint were dismissed."
+    },
+    {
+      "case_type": "franchisee",
+      "party_involved": "parent_company",
+      "status": "settled",
+      "year_filed": 2012,
+      "year_resolved": 2017,
+      "nature": "Allegations of fraud in connection with becoming an Ace Hardware member and operating a Vision 21 store, including violations of the Illinois Franchise Disclosure Act.",
+      "resolution": "Settled with fifteen corporate entities and seven bankruptcy trustees for $25,000 each. Case dismissed with prejudice."
+    }
+  ],
+  "summary_by_type": {
+    "direct_franchisor_cases": 1,
+    "parent_affiliate_cases": 2,
+    "franchisee_disputes": 2,
+    "regulatory_actions": 0
+  }
+}

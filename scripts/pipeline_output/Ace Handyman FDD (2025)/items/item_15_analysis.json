@@ -1,0 +1,49 @@
+{
+  "item_number": 15,
+  "title": "Obligation to Participate in the Actual Operation of the Franchise Business",
+  "franchisee_responsibilities": [
+    {
+      "point": "Direct supervision of daily operations",
+      "details": "An individual franchisee or a designated and approved Franchise Manager must directly supervise the daily operation of the franchise at the Business Location. If the franchisor believes the franchisee lacks business experience, a Franchise Manager will be required."
+    },
+    {
+      "point": "Franchise Manager requirements",
+      "details": "The Franchise Manager must be approved by the franchisor and perform direct, on-site supervision. A Franchise Manager is not required to have an ownership interest in a business entity franchisee. The Franchise Manager must attend and complete the initial business training program and abide by the Franchise Agreement and Operations Manual."
+    },
+    {
+      "point": "Employee management",
+      "details": "The franchisee is responsible for recruiting, appointing, hiring, firing, and supervising employees, independent agents, Office Managers, Franchise Managers, and other representatives. The franchisee has sole authority and control over day-to-day operations and employee training."
+    },
+    {
+      "point": "Use of independent contractors",
+      "details": "The franchisee has sole authority and control over the decision to use independent contractors. The franchisor recommends that independent contractors do not exceed 40 percent of the work force. The franchisee is solely responsible and liable for decisions regarding independent contractors and compliance with related laws and regulations."
+    },
+    {
+      "point": "Background checks",
+      "details": "The franchisee must conduct background checks on all employees, contractors, and subcontractors utilized in the AHS Business and System. These checks must comply with all applicable laws, including the Fair Credit Reporting Act and state equivalents. No person without a successfully completed background check should enter a customer's home or business."
+    },
+    {
+      "point": "Office Manager requirement",
+      "details": "An experienced Office Manager must be hired to assist with phone answering, job scheduling, employment applications, paperwork check-in, and other customer service and office duties. The Office Manager must complete the initial business training program and on-site training program."
+    },
+    {
+      "point": "LRRP Certification",
+      "details": "At least one representative of the AHS Business must maintain LRRP Certification at all times. The franchisor recommends the franchisee or Franchise Manager obtain this certification. If the certified representative leaves or their certification is terminated, another representative must immediately obtain it."
+    },
+    {
+      "point": "Time commitment",
+      "details": "The franchisee or Franchise Manager is required to devote full time and best efforts on a daily basis, in person, to the supervision and conduct of the AHS Business, not less than 40 hours per week. An exception may be made for franchisees operating multiple AHS Businesses in adjacent territories, allowing one Franchise Manager to dedicate full time to all businesses."
+    },
+    {
+      "point": "Operating other businesses",
+      "details": "Prior approval from the franchisor is required to operate another business, including any e-commerce business."
+    },
+    {
+      "point": "Guaranty and Assumption of Franchisee's Obligations",
+      "details": "Unless waived, individuals owning an interest in the franchisee entity will sign a Guaranty and Assumption of Franchisee\u2019s Obligations, agreeing to discharge all franchisee obligations and comply with all restrictions."
+    }
+  ],
+  "franchisor_role": {
+    "advice_and_training": "The franchisor may provide advice, suggestions, and certain training programs to protect its brand and Marks, but this does not constitute control over the day-to-day operation of the AHS Business. The franchisor is not a joint employer."
+  }
+}

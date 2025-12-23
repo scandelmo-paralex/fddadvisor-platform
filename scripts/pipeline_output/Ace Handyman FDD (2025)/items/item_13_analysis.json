@@ -1,0 +1,87 @@
+{
+  "item_number": 13,
+  "title": "Trademarks",
+  "franchisor_grant": {
+    "right_granted": "The right to operate a business under the Marks.",
+    "ownership": "Marks are owned by Ace Hardware, the ultimate parent.",
+    "brand_equity_factor": "Strict compliance to the proper use of the Marks is a key factor in growing the equity behind the Ace Handyman Services brand."
+  },
+  "registered_marks": [
+    {
+      "mark_description": "Ace Hardware has filed for registration on the Principal Register of the United States Patent and Trademark Office.",
+      "registration_details": [
+        {
+          "serial_number": "6,071,158",
+          "registration_date": "June 2, 2020"
+        },
+        {
+          "serial_number": "6,241,209",
+          "registration_date": "January 5, 2021"
+        },
+        {
+          "serial_number": "6,241,296",
+          "registration_date": "January 5, 2021"
+        },
+        {
+          "serial_number": "7,711,957",
+          "registration_date": "March 4, 2025"
+        }
+      ]
+    }
+  ],
+  "license_agreement_with_ace_hardware": {
+    "agreement_date": "September 18, 2019",
+    "license_type": "Nonexclusive, royalty-free",
+    "territory": "United States of America",
+    "term": "20 years commencing September 18, 2019",
+    "renewal": "Automatically renews for successive 20-year periods if no material breach occurs.",
+    "termination_provision": "If the license is terminated, Ace Hardware will permit existing franchisees with effective Franchise Agreements to continue using the Marks, provided the franchisor assigns the agreements to Ace Hardware or its successor."
+  },
+  "unregistered_marks": {
+    "franchisor_use": "The franchisor also uses other unregistered trademarks and service marks, in which it claims common law trademark rights.",
+    "federal_registration_status": "No federal registration for these principal trademarks.",
+    "legal_benefits": "Do not have as many legal benefits and rights as federally registered trademarks.",
+    "potential_impact_of_challenge": "If the right to use these trademarks is challenged, franchisees may have to change to an alternative trademark, which may increase expenses."
+  },
+  "definition_of_marks": "The Marks owned by Ace Hardware and the franchisor's other trademarks and service marks are collectively referred to as the \u201cMarks\u201d or individually as a \u201cMark.\u201d",
+  "franchisee_obligations_for_mark_use": [
+    "Must follow the franchisor's rules when using any of the Marks.",
+    "Cannot use the Marks as part of a business entity name or with modifying words, designs, or symbols except as licensed.",
+    "May not use the Marks or any unregistered mark or variation thereof with the sale of an unauthorized product or service or in a manner not authorized in writing by the franchisor.",
+    "Must notify the franchisor immediately when learning about an infringement of or challenge to their use of the Marks.",
+    "Must use the Marks only in accordance with the Franchise Agreement.",
+    "Must modify or discontinue the use of a Mark if the franchisor modifies or discontinues it.",
+    "Must not directly or indirectly contest the franchisor's right to its Marks."
+  ],
+  "franchisor_reserved_rights": {
+    "internet_sites": "Rights to any Internet sites utilizing a domain name incorporating specific keywords (e.g., \u201cAce Handyman,\u201d \u201cAce Hardware Home Services,\u201d \u201cAHS,\u201d \u201cHandyman Matters,\u201d or derivatives using \u201cAce\u201d or \u201cHandyman\u201d).",
+    "internet_advertising": "To advertise the Ace Handyman Services System on the Internet.",
+    "domain_name_ownership": "Owner of all right, title, and interest in and to any domain names designated in the Operations Manual."
+  },
+  "franchisee_internet_site_restrictions": {
+    "requirement": "Cannot establish an Internet site without the franchisor's prior written consent.",
+    "scope": "Includes any site using a domain name containing specific keywords (e.g., \u201cAce,\u201d in conjunction with \u201cHandyman,\u201d or \u201cMatters,\u201d or any variation thereof).",
+    "consent_discretion": "The franchisor may withhold consent in its sole discretion."
+  },
+  "pending_litigation_or_determinations": {
+    "status": "No currently effective material determinations of the United States Patent and Trademark Office, trademark trial and appeal board, the trademark administrator of any state or court pending infringement, opposition or cancellation, or pending material litigation involving the principal Marks."
+  },
+  "agreements_limiting_use": {
+    "status": "No currently effective agreements limit the franchisor's right to use or license the use of the Marks, except that the franchisor may not violate the terms of existing License Agreements between Ace Hardware and the franchisor."
+  },
+  "litigation_control_and_benefits": {
+    "franchisor_control": "The franchisor has the exclusive right to control any litigation, arbitration, or administrative proceeding arising out of any infringement of, or challenge or claim to, any of the Marks or in any way related to the Marks.",
+    "damages_accrual": "Any damages or benefits arising out of any infringement, challenge, or claim shall accrue exclusively to the franchisor."
+  },
+  "modification_or_discontinuation_of_marks": {
+    "franchisee_obligation": "Must modify or discontinue the use of a Mark if the franchisor modifies or discontinues it.",
+    "franchisor_reimbursement": "The franchisor will reimburse franchisees for reasonable out-of-pocket costs (if any) of changing main identifying signage and other signage.",
+    "limitation_of_liability": "The franchisor will not be liable for any other costs, expenses, or damages incurred by the franchisee as a result of the franchisor's decision to modify or discontinue use of a Mark."
+  },
+  "research_recommendation_for_franchisee": {
+    "recommendation": "The franchisor strongly urges franchisees to research the possibility of businesses similar to an AHS Business operating in or near their potential business area, with names and/or marks similar to the franchisor's and with superior rights.",
+    "research_methods": "Using telephone directories, internet searches, local filings, and other means.",
+    "timing": "Before signing the Franchise Agreement or any other related documents, or expending sums or making commitments concerning the business.",
+    "risk_of_failure_to_research": "Failure to do so may put the franchisee at risk."
+  }
+}

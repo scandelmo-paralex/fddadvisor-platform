@@ -1,0 +1,167 @@
+{
+  "total_categories": 17,
+  "facility_types": [
+    {
+      "type": "Standard AHS Business",
+      "categories": [
+        {
+          "name": "Initial Franchise Fee",
+          "low": 70000,
+          "high": 100000,
+          "method": "Lump sum",
+          "when_due": "At signing of Franchise Agreement",
+          "paid_to": "Us"
+        },
+        {
+          "name": "Travel and living expense while training",
+          "low": 3500,
+          "high": 4500,
+          "method": "As incurred",
+          "when_due": "during training",
+          "paid_to": "Airlines, hotels, restaurants, auto rental"
+        },
+        {
+          "name": "Lease Deposit",
+          "low": 1000,
+          "high": 3200,
+          "method": "Lump sum",
+          "when_due": "At signing of lease and for term",
+          "paid_to": "Lessor"
+        },
+        {
+          "name": "Rent for first 3 months",
+          "low": 3500,
+          "high": 4800,
+          "method": "As incurred",
+          "when_due": "Monthly",
+          "paid_to": "Lessor"
+        },
+        {
+          "name": "Leasehold Improvements and Signage",
+          "low": 600,
+          "high": 4000,
+          "method": "Will vary",
+          "when_due": "As incurred",
+          "paid_to": "Contractor or Suppliers"
+        },
+        {
+          "name": "Furnishings",
+          "low": 600,
+          "high": 4000,
+          "method": "Will vary",
+          "when_due": "As incurred",
+          "paid_to": "Suppliers"
+        },
+        {
+          "name": "Tools and equipment",
+          "low": 0,
+          "high": 2500,
+          "method": "Lump sum",
+          "when_due": "At delivery",
+          "paid_to": "Suppliers"
+        },
+        {
+          "name": "Truck or Van",
+          "low": 0,
+          "high": 9000,
+          "method": "As incurred",
+          "when_due": "Monthly",
+          "paid_to": "Suppliers"
+        },
+        {
+          "name": "Computer Hardware and Office Equipment",
+          "low": 2500,
+          "high": 5500,
+          "method": "As needed",
+          "when_due": "Before training and as incurred",
+          "paid_to": "Third Party"
+        },
+        {
+          "name": "Software and Internet Fees (3 months)",
+          "low": 1797,
+          "high": 1797,
+          "method": "As incurred, monthly",
+          "when_due": "Monthly",
+          "paid_to": "Us"
+        },
+        {
+          "name": "Initial Marketing Spend",
+          "low": 9000,
+          "high": 16000,
+          "method": "As incurred",
+          "when_due": "Varied times from pre-opening to post-opening",
+          "paid_to": "Suppliers"
+        },
+        {
+          "name": "Utility deposits and fees",
+          "low": 500,
+          "high": 1000,
+          "method": "As incurred",
+          "when_due": "Monthly",
+          "paid_to": "Utility companies"
+        },
+        {
+          "name": "Licenses and permits",
+          "low": 1000,
+          "high": 5000,
+          "method": "Lump sum",
+          "when_due": "At time of application",
+          "paid_to": "Government agencies or third parties"
+        },
+        {
+          "name": "Insurance",
+          "low": 5500,
+          "high": 7000,
+          "method": "As incurred",
+          "when_due": "Monthly",
+          "paid_to": "Insurance companies"
+        },
+        {
+          "name": "Professional fees",
+          "low": 500,
+          "high": 6000,
+          "method": "As incurred",
+          "when_due": "As agreed",
+          "paid_to": "Attorneys, accountants and other consultants"
+        },
+        {
+          "name": "Miscellaneous opening costs",
+          "low": 2000,
+          "high": 4500,
+          "method": "As incurred",
+          "when_due": "Varied times",
+          "paid_to": "Suppliers, vendors"
+        },
+        {
+          "name": "Additional Funds (3 months)",
+          "low": 30000,
+          "high": 45000,
+          "method": "As incurred",
+          "when_due": "Varied times",
+          "paid_to": "Suppliers, utilities, vendors"
+        }
+      ],
+      "total_low": 131997,
+      "total_high": 223797,
+      "total_midpoint": 177897
+    },
+    {
+      "type": "Mini AHS Business",
+      "categories": [
+        {
+          "name": "Initial Franchise Fee",
+          "low": 35000,
+          "high": 45000,
+          "method": "Lump sum",
+          "when_due": "At signing of Franchise Agreement",
+          "paid_to": "Us"
+        }
+      ],
+      "total_low": 61997,
+      "total_high": 123797,
+      "total_midpoint": 92897
+    }
+  ],
+  "assumptions_stated": "The Initial Franchise Fee increases by $1.00 for each additional household in your Territory over 70,000 households. The high end represents the Initial Franchise Fee for the maximum territory size of 100,000. There may be a discount available. The initial training program is tuition-free for up to four people, but trainees' expenses (lodging, meals, transportation, wages) are paid by the franchisee. A commercial lease normally requires payment of the first month\u2019s rent, a security deposit and a rent deposit equal to one month\u2019s rent. Lease deposits vary widely. Furnishings costs may include purchasing a desk, office chair, file cabinets, decorations, and other office items. Tools and equipment estimate assumes you may already own necessary tools; otherwise, purchase is required. Truck or Van is not required until three fulltime craftsmen are employed, but can be acquired earlier. Computer Hardware and Office Equipment includes a computer and software meeting minimum specifications, workstation, laser printer, fax software, hub-router, network, wiring, and a smart phone or approved device. Software and Internet Fees cover scheduling software, e-mail, location website, and online marketing services for the first three months. Initial Marketing Spend includes collateral marketing materials and a Grand Opening event. Licenses and permits estimate includes costs for LRRP Certification and associated training. Insurance requirements are detailed, including specific coverage types and limits. Additional Funds estimate covers operating expenses for three months, including an Office Manager's salary ($24-$30/hour for 40 hours/week for 12 weeks). The estimated initial investment assumes acquisition of one AHS Business with a Territory of up to 100,000 households. Estimates are based on over 75 years of combined experience in the handyman service business. No payments to the franchisor are refundable; payments to third parties may or may not be refundable.",
+  "payment_terms_clarity": "detailed"
+}

@@ -1,0 +1,2636 @@
+{
+  "franchise_name": "Ace Handyman Services",
+  "description": "Provides handyman, repair, and maintenance services, and sales to residential and commercial customers. Services include carpentry, plumbing, electrical, drywall, painting, flooring, landscaping, and other miscellaneous repairs.",
+  "industry": "Home Services - Handyman",
+  "initial_investment_low": 131997,
+  "initial_investment_high": 223797,
+  "initial_investment_midpoint": 177897,
+  "franchise_fee": 70000,
+  "royalty_fee": "6% of your actual Gross Revenues of the previous month, subject to annual reconciliation based on your Minimum Annual Gross Revenues requirements.",
+  "marketing_fee": "2% of your actual Gross Revenues, subject to annual reconciliation based on your Minimum Annual Gross Revenues requirements.",
+  "royalty_fee_percentage": 6.0,
+  "marketing_fee_percentage": 2.0,
+  "total_ongoing_fees_percentage": 8.0,
+  "investment_breakdown": [
+    {
+      "type": "Standard AHS Business",
+      "categories": [
+        {
+          "name": "Initial Franchise Fee",
+          "low": 70000,
+          "high": 100000,
+          "method": "Lump sum",
+          "when_due": "At signing of Franchise Agreement",
+          "paid_to": "Us"
+        },
+        {
+          "name": "Travel and living expense while training",
+          "low": 3500,
+          "high": 4500,
+          "method": "As incurred",
+          "when_due": "during training",
+          "paid_to": "Airlines, hotels, restaurants, auto rental"
+        },
+        {
+          "name": "Lease Deposit",
+          "low": 1000,
+          "high": 3200,
+          "method": "Lump sum",
+          "when_due": "At signing of lease and for term",
+          "paid_to": "Lessor"
+        },
+        {
+          "name": "Rent for first 3 months",
+          "low": 3500,
+          "high": 4800,
+          "method": "As incurred",
+          "when_due": "Monthly",
+          "paid_to": "Lessor"
+        },
+        {
+          "name": "Leasehold Improvements and Signage",
+          "low": 600,
+          "high": 4000,
+          "method": "Will vary",
+          "when_due": "As incurred",
+          "paid_to": "Contractor or Suppliers"
+        },
+        {
+          "name": "Furnishings",
+          "low": 600,
+          "high": 4000,
+          "method": "Will vary",
+          "when_due": "As incurred",
+          "paid_to": "Suppliers"
+        },
+        {
+          "name": "Tools and equipment",
+          "low": 0,
+          "high": 2500,
+          "method": "Lump sum",
+          "when_due": "At delivery",
+          "paid_to": "Suppliers"
+        },
+        {
+          "name": "Truck or Van",
+          "low": 0,
+          "high": 9000,
+          "method": "As incurred",
+          "when_due": "Monthly",
+          "paid_to": "Suppliers"
+        },
+        {
+          "name": "Computer Hardware and Office Equipment",
+          "low": 2500,
+          "high": 5500,
+          "method": "As needed",
+          "when_due": "Before training and as incurred",
+          "paid_to": "Third Party"
+        },
+        {
+          "name": "Software and Internet Fees (3 months)",
+          "low": 1797,
+          "high": 1797,
+          "method": "As incurred, monthly",
+          "when_due": "Monthly",
+          "paid_to": "Us"
+        },
+        {
+          "name": "Initial Marketing Spend",
+          "low": 9000,
+          "high": 16000,
+          "method": "As incurred",
+          "when_due": "Varied times from pre-opening to post-opening",
+          "paid_to": "Suppliers"
+        },
+        {
+          "name": "Utility deposits and fees",
+          "low": 500,
+          "high": 1000,
+          "method": "As incurred",
+          "when_due": "Monthly",
+          "paid_to": "Utility companies"
+        },
+        {
+          "name": "Licenses and permits",
+          "low": 1000,
+          "high": 5000,
+          "method": "Lump sum",
+          "when_due": "At time of application",
+          "paid_to": "Government agencies or third parties"
+        },
+        {
+          "name": "Insurance",
+          "low": 5500,
+          "high": 7000,
+          "method": "As incurred",
+          "when_due": "Monthly",
+          "paid_to": "Insurance companies"
+        },
+        {
+          "name": "Professional fees",
+          "low": 500,
+          "high": 6000,
+          "method": "As incurred",
+          "when_due": "As agreed",
+          "paid_to": "Attorneys, accountants and other consultants"
+        },
+        {
+          "name": "Miscellaneous opening costs",
+          "low": 2000,
+          "high": 4500,
+          "method": "As incurred",
+          "when_due": "Varied times",
+          "paid_to": "Suppliers, vendors"
+        },
+        {
+          "name": "Additional Funds (3 months)",
+          "low": 30000,
+          "high": 45000,
+          "method": "As incurred",
+          "when_due": "Varied times",
+          "paid_to": "Suppliers, utilities, vendors"
+        }
+      ],
+      "total_low": 131997,
+      "total_high": 223797,
+      "total_midpoint": 177897
+    },
+    {
+      "type": "Mini AHS Business",
+      "categories": [
+        {
+          "name": "Initial Franchise Fee",
+          "low": 35000,
+          "high": 45000,
+          "method": "Lump sum",
+          "when_due": "At signing of Franchise Agreement",
+          "paid_to": "Us"
+        }
+      ],
+      "total_low": 61997,
+      "total_high": 123797,
+      "total_midpoint": 92897
+    }
+  ],
+  "average_revenue": 760107,
+  "median_revenue": 698903,
+  "has_item19": true,
+  "revenue_data": {
+    "has_data": true,
+    "outlets_analyzed": 286,
+    "sample_size_percentage": null,
+    "time_period": "calendar year 2024",
+    "table_format": "multi_column_cohort",
+    "median_revenue": null,
+    "average_revenue": null,
+    "highest_revenue": null,
+    "lowest_revenue": null,
+    "has_profitability_data": true,
+    "tables": [
+      {
+        "table_name": "Table 1: Single Reporting Territories - Top Quartile",
+        "metric": "TOTAL REVENUE",
+        "average": 760107,
+        "median": 698903,
+        "high": 1026090,
+        "low": 548553,
+        "top_25_percent": null,
+        "third_quartile": null,
+        "second_quartile": null,
+        "bottom_25_percent": null,
+        "percent_achieving": 39.0,
+        "all_studios_value": null,
+        "year_over_year_trend": "not_applicable"
+      },
+      {
+        "table_name": "Table 1: Single Reporting Territories - Top Quartile",
+        "metric": "GROSS PROFIT",
+        "average": 370527,
+        "median": 354967,
+        "high": 394912,
+        "low": 297725,
+        "top_25_percent": null,
+        "third_quartile": null,
+        "second_quartile": null,
+        "bottom_25_percent": null,
+        "percent_achieving": 39.0,
+        "all_studios_value": null,
+        "year_over_year_trend": "not_applicable"
+      },
+      {
+        "table_name": "Table 1: Single Reporting Territories - Top Quartile",
+        "metric": "OWNER DISCRETIONARY INCOME",
+        "average": 105450,
+        "median": 100448,
+        "high": 100459,
+        "low": -18677,
+        "top_25_percent": null,
+        "third_quartile": null,
+        "second_quartile": null,
+        "bottom_25_percent": null,
+        "percent_achieving": 61.0,
+        "all_studios_value": null,
+        "year_over_year_trend": "not_applicable"
+      },
+      {
+        "table_name": "Table 2: Single Reporting Territories - Second Quartile",
+        "metric": "TOTAL REVENUE",
+        "average": 477307,
+        "median": 488503,
+        "high": 533293,
+        "low": 427227,
+        "top_25_percent": null,
+        "third_quartile": null,
+        "second_quartile": null,
+        "bottom_25_percent": null,
+        "percent_achieving": 39.0,
+        "all_studios_value": null,
+        "year_over_year_trend": "not_applicable"
+      },
+      {
+        "table_name": "Table 2: Single Reporting Territories - Second Quartile",
+        "metric": "GROSS PROFIT",
+        "average": 222116,
+        "median": 229801,
+        "high": 154962,
+        "low": 234973,
+        "top_25_percent": null,
+        "third_quartile": null,
+        "second_quartile": null,
+        "bottom_25_percent": null,
+        "percent_achieving": 44.0,
+        "all_studios_value": null,
+        "year_over_year_trend": "not_applicable"
+      },
+      {
+        "table_name": "Table 2: Single Reporting Territories - Second Quartile",
+        "metric": "OWNER DISCRETIONARY INCOME",
+        "average": 37639,
+        "median": 46244,
+        "high": -11365,
+        "low": 32847,
+        "top_25_percent": null,
+        "third_quartile": null,
+        "second_quartile": null,
+        "bottom_25_percent": null,
+        "percent_achieving": 39.0,
+        "all_studios_value": null,
+        "year_over_year_trend": "not_applicable"
+      },
+      {
+        "table_name": "Table 3: Single Reporting Territories - Third Quartile",
+        "metric": "TOTAL REVENUE",
+        "average": 351332,
+        "median": 333232,
+        "high": 417743,
+        "low": 295979,
+        "top_25_percent": null,
+        "third_quartile": null,
+        "second_quartile": null,
+        "bottom_25_percent": null,
+        "percent_achieving": 44.0,
+        "all_studios_value": null,
+        "year_over_year_trend": "not_applicable"
+      },
+      {
+        "table_name": "Table 3: Single Reporting Territories - Third Quartile",
+        "metric": "GROSS PROFIT",
+        "average": 175371,
+        "median": 163254,
+        "high": 208670,
+        "low": 128109,
+        "top_25_percent": null,
+        "third_quartile": null,
+        "second_quartile": null,
+        "bottom_25_percent": null,
+        "percent_achieving": 50.0,
+        "all_studios_value": null,
+        "year_over_year_trend": "not_applicable"
+      },
+      {
+        "table_name": "Table 3: Single Reporting Territories - Third Quartile",
+        "metric": "OWNER DISCRETIONARY INCOME",
+        "average": 21750,
+        "median": 22691,
+        "high": 49291,
+        "low": -36185,
+        "top_25_percent": null,
+        "third_quartile": null,
+        "second_quartile": null,
+        "bottom_25_percent": null,
+        "percent_achieving": 22.0,
+        "all_studios_value": null,
+        "year_over_year_trend": "not_applicable"
+      },
+      {
+        "table_name": "Table 4: Single Reporting Territories - Bottom Quartile",
+        "metric": "TOTAL REVENUE",
+        "average": 242018,
+        "median": 225770,
+        "high": 292241,
+        "low": 200982,
+        "top_25_percent": null,
+        "third_quartile": null,
+        "second_quartile": null,
+        "bottom_25_percent": null,
+        "percent_achieving": 39.0,
+        "all_studios_value": null,
+        "year_over_year_trend": "not_applicable"
+      },
+      {
+        "table_name": "Table 4: Single Reporting Territories - Bottom Quartile",
+        "metric": "GROSS PROFIT",
+        "average": 132956,
+        "median": 122742,
+        "high": 180875,
+        "low": 100377,
+        "top_25_percent": null,
+        "third_quartile": null,
+        "second_quartile": null,
+        "bottom_25_percent": null,
+        "percent_achieving": 44.0,
+        "all_studios_value": null,
+        "year_over_year_trend": "not_applicable"
+      },
+      {
+        "table_name": "Table 4: Single Reporting Territories - Bottom Quartile",
+        "metric": "OWNER DISCRETIONARY INCOME",
+        "average": 29913,
+        "median": 14928,
+        "high": 50324,
+        "low": -16559,
+        "top_25_percent": null,
+        "third_quartile": null,
+        "second_quartile": null,
+        "bottom_25_percent": null,
+        "percent_achieving": 50.0,
+        "all_studios_value": null,
+        "year_over_year_trend": "not_applicable"
+      },
+      {
+        "table_name": "Table 5: Multi-Territory Reporting Groups - Top Quartile",
+        "metric": "TOTAL REVENUE",
+        "average": 1278429,
+        "median": 1155881,
+        "high": 2636042,
+        "low": 805020,
+        "top_25_percent": null,
+        "third_quartile": null,
+        "second_quartile": null,
+        "bottom_25_percent": null,
+        "percent_achieving": 47.0,
+        "all_studios_value": null,
+        "year_over_year_trend": "not_applicable"
+      },
+      {
+        "table_name": "Table 5: Multi-Territory Reporting Groups - Top Quartile",
+        "metric": "GROSS PROFIT",
+        "average": 631093,
+        "median": 608144,
+        "high": 1192699,
+        "low": 429674,
+        "top_25_percent": null,
+        "third_quartile": null,
+        "second_quartile": null,
+        "bottom_25_percent": null,
+        "percent_achieving": 37.0,
+        "all_studios_value": null,
+        "year_over_year_trend": "not_applicable"
+      },
+      {
+        "table_name": "Table 5: Multi-Territory Reporting Groups - Top Quartile",
+        "metric": "OWNER DISCRETIONARY INCOME",
+        "average": 184927,
+        "median": 225918,
+        "high": 463828,
+        "low": 93636,
+        "top_25_percent": null,
+        "third_quartile": null,
+        "second_quartile": null,
+        "bottom_25_percent": null,
+        "percent_achieving": 37.0,
+        "all_studios_value": null,
+        "year_over_year_trend": "not_applicable"
+      },
+      {
+        "table_name": "Table 6: Multi-Territory Reporting Groups - Second Quartile",
+        "metric": "TOTAL REVENUE",
+        "average": 709583,
+        "median": 709540,
+        "high": 803462,
+        "low": 647048,
+        "top_25_percent": null,
+        "third_quartile": null,
+        "second_quartile": null,
+        "bottom_25_percent": null,
+        "percent_achieving": 42.0,
+        "all_studios_value": null,
+        "year_over_year_trend": "not_applicable"
+      },
+      {
+        "table_name": "Table 6: Multi-Territory Reporting Groups - Second Quartile",
+        "metric": "GROSS PROFIT",
+        "average": 366299,
+        "median": 380229,
+        "high": 410359,
+        "low": 321997,
+        "top_25_percent": null,
+        "third_quartile": null,
+        "second_quartile": null,
+        "bottom_25_percent": null,
+        "percent_achieving": 47.0,
+        "all_studios_value": null,
+        "year_over_year_trend": "not_applicable"
+      },
+      {
+        "table_name": "Table 6: Multi-Territory Reporting Groups - Second Quartile",
+        "metric": "OWNER DISCRETIONARY INCOME",
+        "average": 128969,
+        "median": 155033,
+        "high": 72269,
+        "low": 81253,
+        "top_25_percent": null,
+        "third_quartile": null,
+        "second_quartile": null,
+        "bottom_25_percent": null,
+        "percent_achieving": 53.0,
+        "all_studios_value": null,
+        "year_over_year_trend": "not_applicable"
+      },
+      {
+        "table_name": "Table 7: Multi-Territory Reporting Groups - Third Quartile",
+        "metric": "TOTAL REVENUE",
+        "average": 540168,
+        "median": 544900,
+        "high": 637397,
+        "low": 414941,
+        "top_25_percent": null,
+        "third_quartile": null,
+        "second_quartile": null,
+        "bottom_25_percent": null,
+        "percent_achieving": 47.0,
+        "all_studios_value": null,
+        "year_over_year_trend": "not_applicable"
+      },
+      {
+        "table_name": "Table 7: Multi-Territory Reporting Groups - Third Quartile",
+        "metric": "GROSS PROFIT",
+        "average": 302040,
+        "median": 315932,
+        "high": 286520,
+        "low": 247681,
+        "top_25_percent": null,
+        "third_quartile": null,
+        "second_quartile": null,
+        "bottom_25_percent": null,
+        "percent_achieving": 47.0,
+        "all_studios_value": null,
+        "year_over_year_trend": "not_applicable"
+      },
+      {
+        "table_name": "Table 7: Multi-Territory Reporting Groups - Third Quartile",
+        "metric": "OWNER DISCRETIONARY INCOME",
+        "average": 72514,
+        "median": 86082,
+        "high": 87952,
+        "low": 66461,
+        "top_25_percent": null,
+        "third_quartile": null,
+        "second_quartile": null,
+        "bottom_25_percent": null,
+        "percent_achieving": 47.0,
+        "all_studios_value": null,
+        "year_over_year_trend": "not_applicable"
+      },
+      {
+        "table_name": "Table 8: Multi-Territory Reporting Groups - Bottom Quartile",
+        "metric": "TOTAL REVENUE",
+        "average": 294345,
+        "median": 288190,
+        "high": 410548,
+        "low": 86125,
+        "top_25_percent": null,
+        "third_quartile": null,
+        "second_quartile": null,
+        "bottom_25_percent": null,
+        "percent_achieving": 58.0,
+        "all_studios_value": null,
+        "year_over_year_trend": "not_applicable"
+      },
+      {
+        "table_name": "Table 8: Multi-Territory Reporting Groups - Bottom Quartile",
+        "metric": "GROSS PROFIT",
+        "average": 137573,
+        "median": 129469,
+        "high": 177606,
+        "low": 51462,
+        "top_25_percent": null,
+        "third_quartile": null,
+        "second_quartile": null,
+        "bottom_25_percent": null,
+        "percent_achieving": 58.0,
+        "all_studios_value": null,
+        "year_over_year_trend": "not_applicable"
+      },
+      {
+        "table_name": "Table 8: Multi-Territory Reporting Groups - Bottom Quartile",
+        "metric": "OWNER DISCRETIONARY INCOME",
+        "average": 16244,
+        "median": 13072,
+        "high": -7787,
+        "low": 17293,
+        "top_25_percent": null,
+        "third_quartile": null,
+        "second_quartile": null,
+        "bottom_25_percent": null,
+        "percent_achieving": 47.0,
+        "all_studios_value": null,
+        "year_over_year_trend": "not_applicable"
+      }
+    ],
+    "notes": "The data presented is for calendar year 2024 and is based on unaudited reports submitted by Reporting Operators. The tables are divided into Single Reporting Territories and Multi-Territory Reporting Groups, each further broken down into four quartiles based on Total Revenue. Owner Discretionary Income may include salaries and distributions and may not represent net profit.",
+    "disclosure_quality": "detailed",
+    "has_distribution_data": false
+  },
+  "total_units": 387,
+  "franchised_units": 369,
+  "company_owned_units": 18,
+  "units_opened_last_year": 35,
+  "units_closed_last_year": 15,
+  "support_training": {
+    "pre_opening_assistance": "The franchisor or its designee will designate the territory, provide access to scheduling software, an internet site for prospective customers, an e-mail account, and an intranet site. They will also provide specifications for equipment, inventory, and supplies, a list of approved suppliers, pre-opening and opening activities, and access to a proprietary project management start-up onboarding program. A copy of the Operations Manual will be made available electronically.",
+    "initial_training": {
+      "duration_weeks": null,
+      "duration_hours": 20,
+      "duration_description": "20-29 hour initial training program, plus approximately 10 to 12 weeks of onboarding work and study prior to the initial business training program. The initial business training program itself lasts approximately three business days.",
+      "location": "Denver, Colorado metropolitan area, or another location designated by the franchisor, or via video conference.",
+      "topics": [
+        "Introduction and Orientation",
+        "History, Mission, and Brand",
+        "Franchisor/Franchisee Relations",
+        "Start-up and Daily Operations",
+        "Brand, Culture & Service Path (Customer Service)",
+        "Employee/Craftsman Hiring & Retention",
+        "Technology Tools and Scheduling Software",
+        "Accounting & Software",
+        "Advertising and Marketing",
+        "Corporate Communications",
+        "Week-in-Review, Testing"
+      ],
+      "topics_count": 11,
+      "required_attendees": "You or your Franchise Manager, and your Office Manager, plus up to two other individuals designated by you (for a total of four individuals). You or your Franchise Manager, and your Office Manager, must successfully complete the initial business training program.",
+      "trainer_qualifications": "Supervised by the President, Chris Bue, who has over 11 years of experience with the franchisor and more than 25 years of experience in the field across multiple industries. Each instructor has demonstrated satisfactory knowledge of the topics and is overseen and reviewed by Mr. Bue.",
+      "cost_covered_by": "franchisee"
+    },
+    "ongoing_training": {
+      "available": true,
+      "frequency": "annual",
+      "types": [
+        "telephone calls",
+        "webinars",
+        "video conferences",
+        "e-mail",
+        "other electronic communications",
+        "internal blogs",
+        "seminars",
+        "national or regional conventions",
+        "continuing development programs",
+        "other additional or refresher training programs",
+        "other meetings"
+      ],
+      "description": "Regular communications on current best practices are provided. Annual conferences are held. Additional training programs may be conducted at a designated location or virtually. Mandatory seminars, programs, or meetings may be conducted, not lasting more than three days at a time. Attendance at one regional meeting and the annual national convention is required each year. Up to one additional mandatory convention or meeting every 24 months may be required."
+    },
+    "field_support": {
+      "provided": true,
+      "visit_frequency": "Within the first 90 days of operation",
+      "representative_ratio": null,
+      "description": "Within the first 90 days of operation, 18 to 24 hours of on-site training will be provided at the Business Location. This may be divided into two separate sessions. A field support TEAM member is assigned to assist with startup list completion during pre-opening."
+    },
+    "support_hotline": {
+      "available": true,
+      "hours": "business hours",
+      "contact_methods": [
+        "telephone",
+        "text",
+        "e-mail"
+      ]
+    },
+    "technology_systems": {
+      "pos_system": null,
+      "software_provided": [
+        "scheduling software",
+        "e-mail account",
+        "Internet site for prospective customers",
+        "Intranet site",
+        "social media accounts"
+      ],
+      "ongoing_tech_support": "The franchisor provides access to scheduling software and all upgrades. They also provide an e-mail account and an Internet site for prospective customers. A monthly Software and Internet Fee of $599 covers these services."
+    },
+    "operations_manual": {
+      "provided": true,
+      "format": "electronically, online",
+      "update_frequency": "as needed",
+      "page_count": 70
+    },
+    "advertising_support": "The franchisor provides access to marketing programs, advertising designs, advertising campaigns, and camera-ready artwork. They may charge for these materials. A suggested marketing plan, marketing materials, advertising designs, advertising campaigns, camera-ready artwork, and budgeting templates are provided at initial training. A National Brand Fund is established, to which franchisees pay 2 percent of Gross Revenues. This fund is used for advertising, promotion, and marketing of goods and services. The franchisor may use outside advertising and marketing agencies. They may require franchisees to join a Local Advertising Group. Franchisees must submit promotional and advertising materials for prior written approval.",
+    "conferences_conventions": "Annual conferences are held to discuss sales techniques, new product developments, new service suggestions, accounting, inventory control, performance standards, advertising programs, merchandising procedures, and other relevant topics. Attendance may be required. Mandatory seminars, national or regional conventions, continuing development programs, other additional or refresher training programs, or other meetings may be conducted. Mandatory attendance is required for some events."
+  },
+  "renewal_termination": {
+    "renewal": {
+      "term_length": "10 years",
+      "conditions": [
+        "No less than 120 days\u2019 notice, nor more than one year notice",
+        "Sign the current form of the Franchise Agreement",
+        "Be in compliance with current Franchise Agreement",
+        "Be current in payments",
+        "Satisfy current standards for new franchisees",
+        "Modify your AHS Business and operations to conform with current Operations Manual",
+        "Pay successor franchise fee",
+        "Execute a Successor Franchise Rider"
+      ],
+      "fees": "successor franchise fee",
+      "franchisee_must_sign_current_agreement": true
+    },
+    "termination_by_franchisor": [
+      "Force majeure event that prevents franchisor from performing obligations and continues for longer than six months",
+      "Inability or unwillingness to operate your AHS Business",
+      "Certain violations of the Franchise Agreement",
+      "Engaging in illegal or unethical practices",
+      "Unauthorized disclosures",
+      "Repeated defaults even if cured",
+      "Abandonment",
+      "Unapproved transfers",
+      "Sales activity in the territory of another AHS Business",
+      "Sexual harassment or discrimination",
+      "Violation of non-compete or other in-term restrictive covenant",
+      "Breach of related agreement",
+      "A guaranty becomes unenforceable or inadequate",
+      "Bankruptcy"
+    ],
+    "termination_by_franchisee": [
+      "Franchisor materially breaches the Franchise Agreement",
+      "Franchisor provides written notice within 30 days of the breach and a reasonable opportunity to cure of not less than 90 days (subject to state law)"
+    ],
+    "transfer_rights": {
+      "allowed": true,
+      "conditions": [
+        "New franchisee qualified",
+        "Transfer fee paid, if applicable",
+        "Purchase agreement approved",
+        "Training completed by transferee",
+        "Current agreement signed by transferee",
+        "Escrow of an amount equal to 1% of the greater of the Gross Revenues or your Minimum Annual Gross Revenues for the prior 12 months to cover warranty and customer dispute issues",
+        "Release signed by you (except where prohibited by law)"
+      ],
+      "transfer_fee": "if applicable",
+      "franchisor_approval_required": true,
+      "training_required_for_transferee": true
+    },
+    "dispute_resolution": {
+      "mediation": "required",
+      "mediation_details": "Except for certain claims, all disputes must be arbitrated in Denver, Colorado (subject to state law). If a claim can be brought in court, both you and we agree to waive our rights to a jury trial.",
+      "arbitration": "required",
+      "arbitration_details": "Except for certain claims, all disputes must be arbitrated in Denver, Colorado (subject to state law). If a claim can be brought in court, both you and we agree to waive our rights to a jury trial.",
+      "litigation_allowed": null,
+      "governing_law": "Federal and Colorado law applies (subject to state law)",
+      "venue": "Denver, Colorado"
+    },
+    "non_compete": {
+      "applies": true,
+      "duration": "24 months",
+      "geographic_scope": "within 25 miles from the closest point to the former Territory or the Territory of any other AHS Business (including after assignment)",
+      "activities_restricted": "Owning, operating or performing service for a competing business"
+    },
+    "post_termination_obligations": [
+      "Escrow of an amount equal to 1% of the greater of the Gross Revenues or your Minimum Annual Gross Revenues for the prior 12 months to cover warranty and customer dispute issues",
+      "Complete de-identification",
+      "Return of proprietary materials",
+      "Payment of amounts due",
+      "Payment of an amount equal to the Royalty Fees based on the Minimum Annual Gross Revenues due over the remaining term under the Franchise Agreement, if terminated due to your default",
+      "Inspection of books",
+      "Assign all pending and contract business to us"
+    ]
+  },
+  "all_items": {
+    "1": {
+      "franchise_name": "Ace Handyman Services",
+      "description": "Provides handyman, repair, and maintenance services, and sales to residential and commercial customers. Services include carpentry, plumbing, electrical, drywall, painting, flooring, landscaping, and other miscellaneous repairs.",
+      "industry": "Home Services - Handyman",
+      "parent_company": "Ace Hardware Corporation",
+      "year_founded": 2000,
+      "year_franchising_began": 2001,
+      "years_in_franchising": 23,
+      "has_predecessor": false,
+      "predecessor_name": null,
+      "year_acquired": null,
+      "predecessor_franchising_years": null,
+      "business_experience": "We are a Colorado corporation that was incorporated on August 22, 2000 under the name Handyman Matters Franchise Corporation. On September 5, 2019, Handyman Matters, Inc., which was our former direct parent company, was acquired by Ace Services Holdings LLC (\u201cAce Services\u201d), a wholly-owned subsidiary of Ace Hardware Corporation, our ultimate parent company. We changed our name to Ace Handyman Franchising, Inc. on September 18, 2019. We do business under our corporate name and under the name and service mark: ACE HANDYMAN SERVICES. We are a franchising company that sells and grants franchises for the operation of businesses (an \u201cAHS Business\u201d) using the name \u201cACE HANDYMAN SERVICES.\u201d We have been offering franchised businesses similar to an AHS Businesses since February 2001."
+    },
+    "2": {
+      "executives": [
+        {
+          "name": "William Guzik",
+          "title": "Director",
+          "franchise_experience_years": null,
+          "tenure_with_franchisor_years": 4.75,
+          "previous_franchise_brands": [],
+          "industry_expertise": "Finance, Risk Management",
+          "background_summary": "Director since September 2019. Executive Vice President, Chief Financial Officer and Chief Risk Officer for Ace Hardware since January 2014. Served as Vice President, Finance of APF between November 2021 and June 2023. Director of AHHS since June 2023."
+        },
+        {
+          "name": "Andy Bell",
+          "title": "Chief Executive Officer and Founder",
+          "franchise_experience_years": 23.75,
+          "tenure_with_franchisor_years": 23.75,
+          "previous_franchise_brands": [],
+          "industry_expertise": "Franchise Sales and Operations",
+          "background_summary": "Founder of Ace Handyman Services System. Served as Chief Executive Officer, President, or Director since inception in 2000 to September 2019. Vice President, Ace Hardware Home Services \u2013 Ace Handyman Services Division of AHHS since June 2023. Chief Executive Officer of APF since December 2021. Manager of Bell Franchising, LLC since July 2023. Served on the Board of Directors of Tetras Properties, LLC from March 2005 until September 2023. Retains management responsibility for franchise sales and operations."
+        },
+        {
+          "name": "Chris Bue",
+          "title": "President",
+          "franchise_experience_years": 9.75,
+          "tenure_with_franchisor_years": 9.75,
+          "previous_franchise_brands": [],
+          "industry_expertise": "Operations, Management",
+          "background_summary": "Employed since September 2014. Served as Chief Operating Officer, Chief Executive Officer (September 2018 to September 2019), and currently President. Served in similar positions for former operating entities merged into AHHS from September 2019 to June 2023."
+        },
+        {
+          "name": "Colette Bell",
+          "title": "Vice President of Franchise Development",
+          "franchise_experience_years": 5.75,
+          "tenure_with_franchisor_years": 5.75,
+          "previous_franchise_brands": [],
+          "industry_expertise": "Franchise Development",
+          "background_summary": "Employed as Vice President of Franchise Development since January 2019. Served in similar positions for former operating entities merged into AHHS from September 2019 to June 2023. Manager of Bell Franchising, LLC since July 2023. Vice President, Franchise Development for APF since December 2021."
+        },
+        {
+          "name": "LaShelle L. Taylor",
+          "title": "Vice President of Franchise Operations",
+          "franchise_experience_years": 2.41,
+          "tenure_with_franchisor_years": 2.75,
+          "previous_franchise_brands": [],
+          "industry_expertise": "Franchise Operations",
+          "background_summary": "Vice President of Franchise Operations since August 2021. Served as Franchise Consultant from March 2021 to August 2021."
+        },
+        {
+          "name": "Karen T. Bloomfield",
+          "title": "Vice President, Marketing",
+          "franchise_experience_years": 7.08,
+          "tenure_with_franchisor_years": 0.25,
+          "previous_franchise_brands": [],
+          "industry_expertise": "Marketing, Merchandising, E-commerce",
+          "background_summary": "Vice President, Marketing since September 2023. Served in the same position for AHHS and APF since September 2023. Previously engaged by Ace Hardware as Director of Merchandising Management - Ecommerce (January 2022 to August 2023) and Director of Merchandising Management - Plumbing Division (January 2021 to December 2021). Served as Vice President of Merchandising for Power Equipment Direct from August 2016 to January 2021."
+        },
+        {
+          "name": "Jeff A. Klos",
+          "title": "Vice President, Finance",
+          "franchise_experience_years": 3.25,
+          "tenure_with_franchisor_years": 0.5,
+          "previous_franchise_brands": [],
+          "industry_expertise": "Finance, Financial Planning and Analysis, Strategy",
+          "background_summary": "Vice President, Finance since June 2023. Served in the same position for APF since June 2023. Employed by Ace Hardware since April 2000. Serves as Vice President Finance, Ace Hardware Home Services (since June 2023). Previously held positions of Corporate Vice President, Financial Planning and Analysis and Strategy (July 2020 to May 2023) and Director, Financial Planning and Analysis (March 2017 to June 2020)."
+        }
+      ],
+      "overall_team_assessment": {
+        "highly_experienced_count": 1,
+        "experienced_count": 2,
+        "limited_experience_count": 4,
+        "has_multi_brand_experience": false
+      }
+    },
+    "3": {
+      "has_litigation": true,
+      "total_cases": 3,
+      "clean_record": false,
+      "cases": [
+        {
+          "case_type": "franchisee",
+          "party_involved": "direct_franchisor",
+          "status": "settled",
+          "year_filed": 2020,
+          "year_resolved": 2020,
+          "nature": "Trademark infringement and unfair competition related to the use of the mark 'ACE HANDYMAN SERVICES'.",
+          "resolution": "Plaintiff was paid $150,000 for franchisees and franchisor to use the mark and for plaintiff to discontinue its use of 'ACE' and 'ACE HANDYMAN SERVICES'."
+        },
+        {
+          "case_type": "other",
+          "party_involved": "parent_company",
+          "status": "settled",
+          "year_filed": 2017,
+          "year_resolved": 2022,
+          "nature": "Allegations of wrongful payments to a former vendor (Sentron International, Inc.) for products belonging to Sentron.",
+          "resolution": "Settled for $1.1 million, with $650,000 paid by Ace Hardware. Plaintiffs' complaint and Ace Hardware's cross-complaint were dismissed."
+        },
+        {
+          "case_type": "franchisee",
+          "party_involved": "parent_company",
+          "status": "settled",
+          "year_filed": 2012,
+          "year_resolved": 2017,
+          "nature": "Allegations of fraud in connection with becoming an Ace Hardware member and operating a Vision 21 store, including violations of the Illinois Franchise Disclosure Act.",
+          "resolution": "Settled with fifteen corporate entities and seven bankruptcy trustees for $25,000 each. Case dismissed with prejudice."
+        }
+      ],
+      "summary_by_type": {
+        "direct_franchisor_cases": 1,
+        "parent_affiliate_cases": 2,
+        "franchisee_disputes": 2,
+        "regulatory_actions": 0
+      }
+    },
+    "4": {
+      "has_bankruptcy": false,
+      "total_cases": 0,
+      "clean_record": true,
+      "cases": []
+    },
+    "5": {
+      "initial_franchise_fee": 70000,
+      "fee_variations": [
+        {
+          "type": "Territory Size Adjustment (Single AHS Business)",
+          "amount": 1.0,
+          "description": "For Territory sizes exceeding 70,000 households, an additional $1.00 per household is added up to 100,000 households."
+        },
+        {
+          "type": "Multi-Territory Discount",
+          "amount": null,
+          "description": "Negotiated reduced Initial Franchise Fee for acquiring more than five Territories at the same time."
+        },
+        {
+          "type": "Mini AHS Business",
+          "amount": 35000,
+          "description": "For a Territory size of up to 35,000 households. If Territory size exceeds 35,000 households, an additional $1.00 per household is added up to 45,000 households."
+        },
+        {
+          "type": "Additional Territory Discount",
+          "amount": 14000,
+          "description": "For existing franchisees operating an AHS Business for at least six months, meeting qualifications, and purchasing an additional Territory."
+        },
+        {
+          "type": "Additional Concept Discount",
+          "amount": 14000,
+          "description": "For owners of an existing affiliate-acquired franchise in compliance for at least one year, meeting qualifications."
+        },
+        {
+          "type": "VetFran Discount",
+          "amount": 7000,
+          "description": "For veterans of the United States Armed Forces with an honorable discharge, applied to the first Franchise Agreement."
+        }
+      ],
+      "refund_policy": "All of the initial fees described in this ITEM 5 are fully earned by us on signing of the Franchise Agreement and are entirely non-refundable in all events.",
+      "refundable": false,
+      "payment_terms": "Due in full upon the signing of the Franchise Agreement."
+    },
+    "6": {
+      "royalty_fee": "6% of your actual Gross Revenues of the previous month, subject to annual reconciliation based on your Minimum Annual Gross Revenues requirements.",
+      "royalty_fee_percentage": 6.0,
+      "royalty_calculation_method": "Percentage of actual Gross Revenues, payable monthly, with an annual reconciliation based on Minimum Annual Gross Revenues. Gross Revenues include all revenues from customers for labor and materials, net of sales/use tax, customer discounts, cash refunds, credits, and uncollected receivables over 120 days. Royalty fee is due for services performed and completed, with provisions for partially complete jobs.",
+      "marketing_fee": "2% of your actual Gross Revenues, subject to annual reconciliation based on your Minimum Annual Gross Revenues requirements.",
+      "marketing_fee_percentage": 2.0,
+      "marketing_calculation_method": "Percentage of actual Gross Revenues, payable monthly, with an annual reconciliation based on Minimum Annual Gross Revenues.",
+      "technology_fees": "Currently $599 per month, but may be changed by us upon 30 days\u2019 notice. For use of our scheduling software, e-mail, location website, online marketing services, for our expenses associated with maintenance of our e-mail and Intranet sites, and for the website development, search engine optimization, and related online marketing services provided by our designated suppliers.",
+      "other_fees": [
+        {
+          "name": "Minimum Individual Marketing Expenditure",
+          "amount": "$30,000 (first year), $40,000 (second year), $50,000 (subsequent years) for a standard business. For a Mini AHS Business: $15,000 (first year), $20,000 (second year), $25,000 (subsequent years).",
+          "frequency": "Annual basis",
+          "refundable": null,
+          "calculation_method": "Minimum required spending on local marketing on an annual basis. An initial marketing expense of $8,000 to $12,000 is required in the period starting 30 days before and continuing through the end of the second full month after opening. A required Grand Opening event of $1,000 to $4,000 is also required."
+        },
+        {
+          "name": "Meeting and Convention Fees",
+          "amount": "$1,500 per meeting (if you do not attend), $750 per meeting (if you attend but do not stay at the designated hotel or do not stay for the entire meeting or convention).",
+          "frequency": "As incurred",
+          "refundable": null,
+          "calculation_method": "Fee imposed for non-attendance or partial attendance at meetings and conventions."
+        },
+        {
+          "name": "Transfer Fee",
+          "amount": "$10,000 (standard), $3,500 (for transfers to a family member).",
+          "frequency": "Before acceptance of transfer",
+          "refundable": null,
+          "calculation_method": "One-time fee payable before the transfer of the franchise. Additional fees may apply if the franchisor or its resources find the buyer."
+        },
+        {
+          "name": "Audit Fee",
+          "amount": "Cost of audit (estimated $2,500 to $5,000, but may be more).",
+          "frequency": "Upon completion of audit",
+          "refundable": null,
+          "calculation_method": "Fee charged for an audit. The franchisee also pays the cost of the audit if it shows an understatement of at least 2% of Gross Revenues during the audit period."
+        },
+        {
+          "name": "Returned Electronic Funds Transfer Fee",
+          "amount": "$100",
+          "frequency": "Upon notice",
+          "refundable": null,
+          "calculation_method": "Fee imposed when an Electronic Funds Transfer transaction is not honored."
+        },
+        {
+          "name": "Successor Franchise (Renewal) Fee",
+          "amount": "$5,500",
+          "frequency": "Upon execution of successor Franchise Agreement",
+          "refundable": null,
+          "calculation_method": "Fee to acquire a successor franchise after the initial term."
+        },
+        {
+          "name": "Supplier Approval Fee",
+          "amount": "Currently none.",
+          "frequency": "As incurred",
+          "refundable": null,
+          "calculation_method": "Fee may be charged in the future if the franchisee requests approval of a supplier for which the franchisor has previously designated an approved supplier."
+        },
+        {
+          "name": "Additional training",
+          "amount": "Our then current rate. The current rate as of the date of this Disclosure Document is $55 per hour per person plus out-of-pocket expenses.",
+          "frequency": "Payable within 30 days of date of invoice",
+          "refundable": null,
+          "calculation_method": "Hourly rate for additional training beyond the opening training, plus out-of-pocket expenses."
+        },
+        {
+          "name": "Interest and late fees on late payments and/or reports",
+          "amount": "Not to exceed 18% per annum on all amounts owed. $75 per occurrence per late report.",
+          "frequency": "Due upon payment of late fee or submittal of late report",
+          "refundable": null,
+          "calculation_method": "Interest at a rate not exceeding 18% per annum on overdue amounts, and a flat fee for late reports."
+        },
+        {
+          "name": "Costs and Attorneys\u2019 Fees",
+          "amount": "Will vary under circumstances",
+          "frequency": "As incurred",
+          "refundable": null,
+          "calculation_method": "May be payable if the franchisee does not prevail in an action based on the Franchise Agreement."
+        },
+        {
+          "name": "Indemnification",
+          "amount": "Will vary under circumstances",
+          "frequency": "As incurred",
+          "refundable": null,
+          "calculation_method": "Reimbursement to the franchisor if they are held liable for claims arising from the franchisee's business."
+        }
+      ],
+      "total_ongoing_fees_percentage": 8.0,
+      "fee_refund_policies": "All fees are non-refundable. The only exception for potential credit is for overpayments of Royalty Fees and National Brand Fees due to reconciliation, which will apply to future fees due."
+    },
+    "7": {
+      "total_categories": 17,
+      "facility_types": [
+        {
+          "type": "Standard AHS Business",
+          "categories": [
+            {
+              "name": "Initial Franchise Fee",
+              "low": 70000,
+              "high": 100000,
+              "method": "Lump sum",
+              "when_due": "At signing of Franchise Agreement",
+              "paid_to": "Us"
+            },
+            {
+              "name": "Travel and living expense while training",
+              "low": 3500,
+              "high": 4500,
+              "method": "As incurred",
+              "when_due": "during training",
+              "paid_to": "Airlines, hotels, restaurants, auto rental"
+            },
+            {
+              "name": "Lease Deposit",
+              "low": 1000,
+              "high": 3200,
+              "method": "Lump sum",
+              "when_due": "At signing of lease and for term",
+              "paid_to": "Lessor"
+            },
+            {
+              "name": "Rent for first 3 months",
+              "low": 3500,
+              "high": 4800,
+              "method": "As incurred",
+              "when_due": "Monthly",
+              "paid_to": "Lessor"
+            },
+            {
+              "name": "Leasehold Improvements and Signage",
+              "low": 600,
+              "high": 4000,
+              "method": "Will vary",
+              "when_due": "As incurred",
+              "paid_to": "Contractor or Suppliers"
+            },
+            {
+              "name": "Furnishings",
+              "low": 600,
+              "high": 4000,
+              "method": "Will vary",
+              "when_due": "As incurred",
+              "paid_to": "Suppliers"
+            },
+            {
+              "name": "Tools and equipment",
+              "low": 0,
+              "high": 2500,
+              "method": "Lump sum",
+              "when_due": "At delivery",
+              "paid_to": "Suppliers"
+            },
+            {
+              "name": "Truck or Van",
+              "low": 0,
+              "high": 9000,
+              "method": "As incurred",
+              "when_due": "Monthly",
+              "paid_to": "Suppliers"
+            },
+            {
+              "name": "Computer Hardware and Office Equipment",
+              "low": 2500,
+              "high": 5500,
+              "method": "As needed",
+              "when_due": "Before training and as incurred",
+              "paid_to": "Third Party"
+            },
+            {
+              "name": "Software and Internet Fees (3 months)",
+              "low": 1797,
+              "high": 1797,
+              "method": "As incurred, monthly",
+              "when_due": "Monthly",
+              "paid_to": "Us"
+            },
+            {
+              "name": "Initial Marketing Spend",
+              "low": 9000,
+              "high": 16000,
+              "method": "As incurred",
+              "when_due": "Varied times from pre-opening to post-opening",
+              "paid_to": "Suppliers"
+            },
+            {
+              "name": "Utility deposits and fees",
+              "low": 500,
+              "high": 1000,
+              "method": "As incurred",
+              "when_due": "Monthly",
+              "paid_to": "Utility companies"
+            },
+            {
+              "name": "Licenses and permits",
+              "low": 1000,
+              "high": 5000,
+              "method": "Lump sum",
+              "when_due": "At time of application",
+              "paid_to": "Government agencies or third parties"
+            },
+            {
+              "name": "Insurance",
+              "low": 5500,
+              "high": 7000,
+              "method": "As incurred",
+              "when_due": "Monthly",
+              "paid_to": "Insurance companies"
+            },
+            {
+              "name": "Professional fees",
+              "low": 500,
+              "high": 6000,
+              "method": "As incurred",
+              "when_due": "As agreed",
+              "paid_to": "Attorneys, accountants and other consultants"
+            },
+            {
+              "name": "Miscellaneous opening costs",
+              "low": 2000,
+              "high": 4500,
+              "method": "As incurred",
+              "when_due": "Varied times",
+              "paid_to": "Suppliers, vendors"
+            },
+            {
+              "name": "Additional Funds (3 months)",
+              "low": 30000,
+              "high": 45000,
+              "method": "As incurred",
+              "when_due": "Varied times",
+              "paid_to": "Suppliers, utilities, vendors"
+            }
+          ],
+          "total_low": 131997,
+          "total_high": 223797,
+          "total_midpoint": 177897
+        },
+        {
+          "type": "Mini AHS Business",
+          "categories": [
+            {
+              "name": "Initial Franchise Fee",
+              "low": 35000,
+              "high": 45000,
+              "method": "Lump sum",
+              "when_due": "At signing of Franchise Agreement",
+              "paid_to": "Us"
+            }
+          ],
+          "total_low": 61997,
+          "total_high": 123797,
+          "total_midpoint": 92897
+        }
+      ],
+      "assumptions_stated": "The Initial Franchise Fee increases by $1.00 for each additional household in your Territory over 70,000 households. The high end represents the Initial Franchise Fee for the maximum territory size of 100,000. There may be a discount available. The initial training program is tuition-free for up to four people, but trainees' expenses (lodging, meals, transportation, wages) are paid by the franchisee. A commercial lease normally requires payment of the first month\u2019s rent, a security deposit and a rent deposit equal to one month\u2019s rent. Lease deposits vary widely. Furnishings costs may include purchasing a desk, office chair, file cabinets, decorations, and other office items. Tools and equipment estimate assumes you may already own necessary tools; otherwise, purchase is required. Truck or Van is not required until three fulltime craftsmen are employed, but can be acquired earlier. Computer Hardware and Office Equipment includes a computer and software meeting minimum specifications, workstation, laser printer, fax software, hub-router, network, wiring, and a smart phone or approved device. Software and Internet Fees cover scheduling software, e-mail, location website, and online marketing services for the first three months. Initial Marketing Spend includes collateral marketing materials and a Grand Opening event. Licenses and permits estimate includes costs for LRRP Certification and associated training. Insurance requirements are detailed, including specific coverage types and limits. Additional Funds estimate covers operating expenses for three months, including an Office Manager's salary ($24-$30/hour for 40 hours/week for 12 weeks). The estimated initial investment assumes acquisition of one AHS Business with a Territory of up to 100,000 households. Estimates are based on over 75 years of combined experience in the handyman service business. No payments to the franchisor are refundable; payments to third parties may or may not be refundable.",
+      "payment_terms_clarity": "detailed"
+    },
+    "8": {
+      "item_8_analysis": {
+        "title": "Restrictions on Sources of Products and Services",
+        "operations_manual": {
+          "requirement": "Establish and operate AHS Business in compliance with Franchise Agreement and standards/specifications in Operations Manual.",
+          "purpose": "Protect reputation and goodwill of the Marks.",
+          "scope": "Not designed to control day-to-day operations."
+        },
+        "software_and_internet_fee": {
+          "requirement": "Use franchisor's scheduling software.",
+          "cost": "Payment of Software and Internet Fee.",
+          "provider": "Third party designated vendor."
+        },
+        "online_services": {
+          "requirement": "Obtain website development, search engine optimization, and other online marketing services from designated suppliers.",
+          "provider_type": "Independent third parties.",
+          "billing": "Currently billed via Software and Internet Fee, franchisor pays suppliers."
+        },
+        "website_maintenance": {
+          "current_provider": "Ingeniux Corporation (IGX).",
+          "franchisee_obligation": "Enter into a Participation Agreement with IGX for Vendor SaaS Services.",
+          "agreement_location": "Attachment N of Disclosure Document."
+        },
+        "computer_hardware_and_software": {
+          "requirement": "Obtain computer hardware and software meeting franchisor's minimum specifications.",
+          "condition": "If not already possessed."
+        },
+        "mobile_device": {
+          "requirement": "Obtain a smart phone or other approved device meeting minimum specifications for remote email access.",
+          "condition": "Unless an existing device is used for the AHS Business."
+        },
+        "phone_answering": {
+          "requirement": "Answer AHS Business phone during regular business hours by a live person.",
+          "options": "Office Manager or answering service."
+        },
+        "approved_suppliers": {
+          "general_requirement": "Purchase certain materials, supplies, services, and equipment from approved suppliers.",
+          "digital_advertising_and_merchant_processing": "Purchase from approved suppliers.",
+          "information_provision": "Franchisor provides supplier information after Franchise Agreement signing."
+        },
+        "ace_hardware_suppliers": {
+          "approved_for": "Certain goods, materials, supplies, fixtures, equipment, and inventory.",
+          "franchisee_obligation": "Required to purchase all materials, supplies, and goods needed from an Ace Supplier.",
+          "conditions": "Only when item is in stock or readily available, and competitively priced."
+        },
+        "future_approved_suppliers": {
+          "franchisor_right": "May require purchase from other approved suppliers in the future.",
+          "notification": "Franchisor will advise franchisees of these suppliers."
+        },
+        "purchasing_flexibility": {
+          "general_rule": "Except as noted, may purchase products, services, supplies, fixtures, equipment, and inventory from any supplier.",
+          "new_supplier_approval": "If a particular supplier is designated, any similar materials/services from a previously unapproved supplier require franchisor approval."
+        },
+        "supplier_approval_process": {
+          "criteria": "No written criteria for supplier approval.",
+          "franchisee_submission": "May be required to submit specifications, information, or samples for review.",
+          "review_basis": "To determine if items meet franchisor's specifications and standards (quality, content, composition, service) set forth in Operations Manual.",
+          "decision_timeline": "Franchisor advises within 30 days of receiving required information.",
+          "fees": "No fee currently required for supplier approval, but may be required in the future.",
+          "expense_reimbursement": "Franchisor may require supplier to reimburse expenses incurred in determining compliance.",
+          "revocation": "Franchisor may revoke approval with written notice."
+        },
+        "franchisor_as_supplier": {
+          "current_status": "Neither franchisor nor affiliate is currently an approved supplier.",
+          "future_right": "Reserves the right to designate itself or affiliates as approved suppliers."
+        },
+        "vehicle_requirements": {
+          "ratio": "Purchase or lease one vehicle for every three craftsmen employed working an average of 30 hours per week or more.",
+          "example": "3 craftsmen = 1 vehicle, 6 craftsmen = 2 vehicles, 9 craftsmen = 3 vehicles."
+        },
+        "vehicle_specifications": {
+          "current_recommendation": "White, gray, red, or black van or truck capable of displaying required vehicle designs and logo.",
+          "future_changes": "Franchisor may change requirements."
+        },
+        "additional_vehicles": {
+          "approval": "All vans and trucks used must be approved by franchisor.",
+          "branding": "Must display approved vehicle design advertising and logo.",
+          "personal_vehicle_use": "If a personal vehicle is used, franchisor may require a vehicle magnet with logo/name."
+        },
+        "franchisor_revenue_from_suppliers": {
+          "potential_source": "Revenue from purchases or leases of inventory and equipment from approved suppliers.",
+          "last_fiscal_year_ending_dec_28_2024": {
+            "materials_sold_to_franchisees": "Did not derive any revenues.",
+            "real_estate_leases": "Does not derive revenues."
+          },
+          "officer_ownership": "No officer owns an interest in approved suppliers."
+        },
+        "ace_hardware_financials_fy_ending_dec_28_2024": {
+          "total_revenue": "$9.5 billion.",
+          "revenue_from_ace_hardware_retail_stores_merchandise_and_services": "$8.3 billion (includes subsidiaries Westlake and GLA).",
+          "revenue_from_sales_to_franchisees": "$977,000."
+        },
+        "estimated_costs": {
+          "establishing_franchise": "Purchases of materials meeting specifications represent approximately 8 to 15 percent of total purchases.",
+          "ongoing_operations": "Purchases in accordance with standards and specifications comprise 80 to 90 percent of product purchase requirements."
+        },
+        "private_labeling": {
+          "current_status": "Does not privately label any products.",
+          "future_right": "Reserves the right to do so."
+        },
+        "negotiated_purchase_arrangements": {
+          "current_status": "Does not negotiate purchase arrangements (including preferred pricing) with suppliers for franchisee benefit.",
+          "future_right": "Reserves the right to do so."
+        },
+        "payments_from_suppliers": {
+          "current_status": "Does not receive payments from approved suppliers regarding franchisee purchases.",
+          "future_right": "Reserves the right to do so."
+        },
+        "franchisee_benefit_from_sources": {
+          "general_statement": "Except as described, franchisee does not receive a material benefit from franchisor based on use of designated/approved sources or purchase of particular products/services."
+        }
+      }
+    },
+    "9": {
+      "item_9_franchisee_obligations": {
+        "title": "Franchisee's Obligations",
+        "description": "This section lists the principal obligations of the franchisee under the Franchise Agreement and other agreements. It directs the franchisee to find more detailed information in those agreements and in other items of this Disclosure Document.",
+        "obligations": [
+          {
+            "obligation": "Site selection and acquisition/lease",
+            "agreement_section": "Section 4.1",
+            "related_disclosure_items": [
+              "ITEM 7",
+              "ITEM 11"
+            ]
+          },
+          {
+            "obligation": "Pre-opening purchases/leases",
+            "agreement_section": "Sections 7.1 and 11.1",
+            "related_disclosure_items": [
+              "ITEM 7",
+              "ITEM 8",
+              "ITEM 11"
+            ]
+          },
+          {
+            "obligation": "Site development and other pre-opening requirements",
+            "agreement_section": "Article 7",
+            "related_disclosure_items": [
+              "ITEM 6",
+              "ITEM 7",
+              "ITEM 11"
+            ]
+          },
+          {
+            "obligation": "Initial and ongoing training",
+            "agreement_section": "Article 6",
+            "related_disclosure_items": [
+              "ITEM 11"
+            ]
+          },
+          {
+            "obligation": "Opening",
+            "agreement_section": "Section 7.3",
+            "related_disclosure_items": [
+              "ITEM 11"
+            ]
+          },
+          {
+            "obligation": "Fees",
+            "agreement_section": "Articles 5 and 12, Section 13.5",
+            "related_disclosure_items": [
+              "ITEM 5",
+              "ITEM 6"
+            ]
+          },
+          {
+            "obligation": "Compliance with standards and policies/Operations Manual",
+            "agreement_section": "Article 9 and Section 11.1",
+            "related_disclosure_items": [
+              "ITEM 1",
+              "ITEM 11"
+            ]
+          },
+          {
+            "obligation": "Trademarks and proprietary information",
+            "agreement_section": "Article 15 and Sections 18.6 and 20.4",
+            "related_disclosure_items": [
+              "ITEM 13",
+              "ITEM 14"
+            ]
+          },
+          {
+            "obligation": "Restrictions on products/services offered",
+            "agreement_section": "Sections 11.1, 14.2, 18.2 and 20.1",
+            "related_disclosure_items": [
+              "ITEM 8",
+              "ITEM 16"
+            ]
+          },
+          {
+            "obligation": "Warranty and customer service requirements",
+            "agreement_section": "Section 11.1",
+            "related_disclosure_items": [
+              "ITEM 11"
+            ]
+          },
+          {
+            "obligation": "Territorial development and sales quotas",
+            "agreement_section": "Article 4 and Section 12.4",
+            "related_disclosure_items": [
+              "ITEM 11",
+              "ITEM 12"
+            ]
+          },
+          {
+            "obligation": "Ongoing product/service purchases",
+            "agreement_section": "Sections 11.1 and 14.2",
+            "related_disclosure_items": [
+              "ITEM 8",
+              "ITEM 16"
+            ]
+          },
+          {
+            "obligation": "Maintenance, appearance and remodeling requirements",
+            "agreement_section": "Section 11.1",
+            "related_disclosure_items": [
+              "ITEM 7"
+            ]
+          },
+          {
+            "obligation": "Insurance",
+            "agreement_section": "Article 21",
+            "related_disclosure_items": [
+              "ITEM 7"
+            ]
+          },
+          {
+            "obligation": "Advertising",
+            "agreement_section": "Article 13 and Section 12.2",
+            "related_disclosure_items": [
+              "ITEM 11"
+            ]
+          },
+          {
+            "obligation": "Indemnification",
+            "agreement_section": "Section 19.3",
+            "related_disclosure_items": [
+              "ITEM 6",
+              "ITEM 14"
+            ]
+          },
+          {
+            "obligation": "Owners participation/management/staffing",
+            "agreement_section": "Section 11.1",
+            "related_disclosure_items": [
+              "ITEM 15"
+            ]
+          },
+          {
+            "obligation": "Records and reports",
+            "agreement_section": "Article 16 and Section 18.1",
+            "related_disclosure_items": [
+              "ITEM 6",
+              "ITEM 17"
+            ]
+          },
+          {
+            "obligation": "Inspection and audits",
+            "agreement_section": "Section 16.3",
+            "related_disclosure_items": [
+              "ITEM 6"
+            ]
+          },
+          {
+            "obligation": "Transfer",
+            "agreement_section": "Article 17",
+            "related_disclosure_items": [
+              "ITEM 17"
+            ]
+          },
+          {
+            "obligation": "Renewal",
+            "agreement_section": "Sections 3.3 and 3.4",
+            "related_disclosure_items": [
+              "ITEM 17"
+            ]
+          },
+          {
+            "obligation": "Post-termination obligations",
+            "agreement_section": "Sections 18.6, 18.7, 18.8, 18.9, 20.2, 20.3, 20.4, and 20.5",
+            "related_disclosure_items": [
+              "ITEM 17"
+            ]
+          },
+          {
+            "obligation": "Non-competition covenants",
+            "agreement_section": "Article 20",
+            "related_disclosure_items": [
+              "ITEM 17"
+            ]
+          },
+          {
+            "obligation": "Dispute resolution",
+            "agreement_section": "Article 22",
+            "related_disclosure_items": [
+              "ITEM 17"
+            ]
+          },
+          {
+            "obligation": "Guaranty by Owners and Other Individuals",
+            "agreement_section": "Sections 11.1 and 11.2, and Exhibit III",
+            "related_disclosure_items": [
+              "ITEM 15"
+            ]
+          }
+        ]
+      }
+    },
+    "10": {
+      "item_number": 10,
+      "section_title": "FINANCING",
+      "financing_offered": "The franchisor does not offer direct or indirect financing.",
+      "guarantees": "The franchisor does not guarantee the franchisee's note, lease, or obligation."
+    },
+    "11": {
+      "pre_opening_assistance": "The franchisor or its designee will designate the territory, provide access to scheduling software, an internet site for prospective customers, an e-mail account, and an intranet site. They will also provide specifications for equipment, inventory, and supplies, a list of approved suppliers, pre-opening and opening activities, and access to a proprietary project management start-up onboarding program. A copy of the Operations Manual will be made available electronically.",
+      "initial_training": {
+        "duration_weeks": null,
+        "duration_hours": 20,
+        "duration_description": "20-29 hour initial training program, plus approximately 10 to 12 weeks of onboarding work and study prior to the initial business training program. The initial business training program itself lasts approximately three business days.",
+        "location": "Denver, Colorado metropolitan area, or another location designated by the franchisor, or via video conference.",
+        "topics": [
+          "Introduction and Orientation",
+          "History, Mission, and Brand",
+          "Franchisor/Franchisee Relations",
+          "Start-up and Daily Operations",
+          "Brand, Culture & Service Path (Customer Service)",
+          "Employee/Craftsman Hiring & Retention",
+          "Technology Tools and Scheduling Software",
+          "Accounting & Software",
+          "Advertising and Marketing",
+          "Corporate Communications",
+          "Week-in-Review, Testing"
+        ],
+        "topics_count": 11,
+        "required_attendees": "You or your Franchise Manager, and your Office Manager, plus up to two other individuals designated by you (for a total of four individuals). You or your Franchise Manager, and your Office Manager, must successfully complete the initial business training program.",
+        "trainer_qualifications": "Supervised by the President, Chris Bue, who has over 11 years of experience with the franchisor and more than 25 years of experience in the field across multiple industries. Each instructor has demonstrated satisfactory knowledge of the topics and is overseen and reviewed by Mr. Bue.",
+        "cost_covered_by": "franchisee"
+      },
+      "ongoing_training": {
+        "available": true,
+        "frequency": "annual",
+        "types": [
+          "telephone calls",
+          "webinars",
+          "video conferences",
+          "e-mail",
+          "other electronic communications",
+          "internal blogs",
+          "seminars",
+          "national or regional conventions",
+          "continuing development programs",
+          "other additional or refresher training programs",
+          "other meetings"
+        ],
+        "description": "Regular communications on current best practices are provided. Annual conferences are held. Additional training programs may be conducted at a designated location or virtually. Mandatory seminars, programs, or meetings may be conducted, not lasting more than three days at a time. Attendance at one regional meeting and the annual national convention is required each year. Up to one additional mandatory convention or meeting every 24 months may be required."
+      },
+      "field_support": {
+        "provided": true,
+        "visit_frequency": "Within the first 90 days of operation",
+        "representative_ratio": null,
+        "description": "Within the first 90 days of operation, 18 to 24 hours of on-site training will be provided at the Business Location. This may be divided into two separate sessions. A field support TEAM member is assigned to assist with startup list completion during pre-opening."
+      },
+      "support_hotline": {
+        "available": true,
+        "hours": "business hours",
+        "contact_methods": [
+          "telephone",
+          "text",
+          "e-mail"
+        ]
+      },
+      "technology_systems": {
+        "pos_system": null,
+        "software_provided": [
+          "scheduling software",
+          "e-mail account",
+          "Internet site for prospective customers",
+          "Intranet site",
+          "social media accounts"
+        ],
+        "ongoing_tech_support": "The franchisor provides access to scheduling software and all upgrades. They also provide an e-mail account and an Internet site for prospective customers. A monthly Software and Internet Fee of $599 covers these services."
+      },
+      "operations_manual": {
+        "provided": true,
+        "format": "electronically, online",
+        "update_frequency": "as needed",
+        "page_count": 70
+      },
+      "advertising_support": "The franchisor provides access to marketing programs, advertising designs, advertising campaigns, and camera-ready artwork. They may charge for these materials. A suggested marketing plan, marketing materials, advertising designs, advertising campaigns, camera-ready artwork, and budgeting templates are provided at initial training. A National Brand Fund is established, to which franchisees pay 2 percent of Gross Revenues. This fund is used for advertising, promotion, and marketing of goods and services. The franchisor may use outside advertising and marketing agencies. They may require franchisees to join a Local Advertising Group. Franchisees must submit promotional and advertising materials for prior written approval.",
+      "conferences_conventions": "Annual conferences are held to discuss sales techniques, new product developments, new service suggestions, accounting, inventory control, performance standards, advertising programs, merchandising procedures, and other relevant topics. Attendance may be required. Mandatory seminars, national or regional conventions, continuing development programs, other additional or refresher training programs, or other meetings may be conducted. Mandatory attendance is required for some events."
+    },
+    "12": {
+      "has_territory_protection": true,
+      "exclusive_territory": false,
+      "territory_definition": {
+        "type": "zip_codes",
+        "radius_miles": null,
+        "minimum_population": null,
+        "description": "Delineated by zip codes as determined by business map software. Size and configuration based on the number of households."
+      },
+      "exclusivity_provisions": "The franchisor will not operate or permit another AHS Business to operate within the designated protected territory, provided the franchisee is not in default.",
+      "exceptions_to_exclusivity": {
+        "ecommerce_sales": "franchisor_reserved",
+        "online_ordering": "franchisor_reserved",
+        "mobile_services": "not_mentioned",
+        "delivery_services": "franchisor_reserved",
+        "other_exceptions": [
+          "Competition from other franchisees, company-owned outlets, or other distribution channels or competitive brands controlled by the franchisor.",
+          "Franchisor's right to develop and establish other franchise systems for similar, same, or different products or services.",
+          "Franchisor's right to grant licenses for other franchise or license systems.",
+          "Franchisor's right to open, operate, sell, manage and/or franchise AHS Businesses outside the Territory.",
+          "Franchisor is not restricted from pursuing any other business concept or distributing proprietary equipment and supplies to wholesalers or other distribution outlets (other than AHS Businesses) or by Internet, catalog, mail order, telemarketing, other direct marketing sales or otherwise, whether inside or outside the Territory.",
+          "Franchisor may use its Marks and Ace Handyman Services System in connection with the provision of other services and products or in alternative channels of distribution (including by Internet, catalog, mail order, telemarketing or other direct marketing sales), inside or outside of the Territory.",
+          "Franchisor's affiliate may operate Ace Hardware Painting Services businesses, which may solicit and accept orders in the franchisee's Territory.",
+          "Franchisor's affiliate may operate Ace Hardware Plumbing Services businesses, which may solicit and accept orders in the franchisee's Territory.",
+          "Franchisor's affiliate may operate HVAC businesses, which may solicit and accept orders in the franchisee's Territory.",
+          "Franchisor can develop, acquire or be acquired by, or engage in any other transaction with other businesses, companies and/or units (competitive or not), that are or will be located anywhere, including arrangements where other units are (or are not) converted to the Ace Handyman Services System or other format, or in which company-owned, franchised or other businesses (including your AHS Business) are (or are not) converted to another format (whether competitive or not), or both, and is maintained as the same concept, as a new concept, or as a separate concept in your protected Territory."
+        ]
+      },
+      "franchisor_reserved_rights": "The franchisor retains the right to operate or permit another AHS Business to operate within the Territory if the franchisee is in default. The franchisor also retains the right to develop and establish other franchise systems, grant licenses for these systems, open and operate AHS Businesses outside the Territory, and engage in any other business concept. The franchisor and its affiliates may use their Marks and System in alternative channels of distribution, including online sales, inside or outside the Territory. Affiliated businesses (Ace Hardware Painting Services, Ace Hardware Plumbing Services, HVAC businesses) may solicit and accept orders within the franchisee's Territory. The franchisor can engage in various business transactions, including conversions of businesses, within the franchisee's protected Territory.",
+      "other_franchisee_competition": "allowed",
+      "relocation_rights": "The franchisee must obtain the franchisor's prior written approval for any Business Location, including any relocation. Relocation will generally be approved if the Business Location is within the Territory and meets current standards.",
+      "territory_scoring_category": "limited_protection"
+    },
+    "13": {
+      "item_number": 13,
+      "title": "Trademarks",
+      "franchisor_grant": {
+        "right_granted": "The right to operate a business under the Marks.",
+        "ownership": "Marks are owned by Ace Hardware, the ultimate parent.",
+        "brand_equity_factor": "Strict compliance to the proper use of the Marks is a key factor in growing the equity behind the Ace Handyman Services brand."
+      },
+      "registered_marks": [
+        {
+          "mark_description": "Ace Hardware has filed for registration on the Principal Register of the United States Patent and Trademark Office.",
+          "registration_details": [
+            {
+              "serial_number": "6,071,158",
+              "registration_date": "June 2, 2020"
+            },
+            {
+              "serial_number": "6,241,209",
+              "registration_date": "January 5, 2021"
+            },
+            {
+              "serial_number": "6,241,296",
+              "registration_date": "January 5, 2021"
+            },
+            {
+              "serial_number": "7,711,957",
+              "registration_date": "March 4, 2025"
+            }
+          ]
+        }
+      ],
+      "license_agreement_with_ace_hardware": {
+        "agreement_date": "September 18, 2019",
+        "license_type": "Nonexclusive, royalty-free",
+        "territory": "United States of America",
+        "term": "20 years commencing September 18, 2019",
+        "renewal": "Automatically renews for successive 20-year periods if no material breach occurs.",
+        "termination_provision": "If the license is terminated, Ace Hardware will permit existing franchisees with effective Franchise Agreements to continue using the Marks, provided the franchisor assigns the agreements to Ace Hardware or its successor."
+      },
+      "unregistered_marks": {
+        "franchisor_use": "The franchisor also uses other unregistered trademarks and service marks, in which it claims common law trademark rights.",
+        "federal_registration_status": "No federal registration for these principal trademarks.",
+        "legal_benefits": "Do not have as many legal benefits and rights as federally registered trademarks.",
+        "potential_impact_of_challenge": "If the right to use these trademarks is challenged, franchisees may have to change to an alternative trademark, which may increase expenses."
+      },
+      "definition_of_marks": "The Marks owned by Ace Hardware and the franchisor's other trademarks and service marks are collectively referred to as the \u201cMarks\u201d or individually as a \u201cMark.\u201d",
+      "franchisee_obligations_for_mark_use": [
+        "Must follow the franchisor's rules when using any of the Marks.",
+        "Cannot use the Marks as part of a business entity name or with modifying words, designs, or symbols except as licensed.",
+        "May not use the Marks or any unregistered mark or variation thereof with the sale of an unauthorized product or service or in a manner not authorized in writing by the franchisor.",
+        "Must notify the franchisor immediately when learning about an infringement of or challenge to their use of the Marks.",
+        "Must use the Marks only in accordance with the Franchise Agreement.",
+        "Must modify or discontinue the use of a Mark if the franchisor modifies or discontinues it.",
+        "Must not directly or indirectly contest the franchisor's right to its Marks."
+      ],
+      "franchisor_reserved_rights": {
+        "internet_sites": "Rights to any Internet sites utilizing a domain name incorporating specific keywords (e.g., \u201cAce Handyman,\u201d \u201cAce Hardware Home Services,\u201d \u201cAHS,\u201d \u201cHandyman Matters,\u201d or derivatives using \u201cAce\u201d or \u201cHandyman\u201d).",
+        "internet_advertising": "To advertise the Ace Handyman Services System on the Internet.",
+        "domain_name_ownership": "Owner of all right, title, and interest in and to any domain names designated in the Operations Manual."
+      },
+      "franchisee_internet_site_restrictions": {
+        "requirement": "Cannot establish an Internet site without the franchisor's prior written consent.",
+        "scope": "Includes any site using a domain name containing specific keywords (e.g., \u201cAce,\u201d in conjunction with \u201cHandyman,\u201d or \u201cMatters,\u201d or any variation thereof).",
+        "consent_discretion": "The franchisor may withhold consent in its sole discretion."
+      },
+      "pending_litigation_or_determinations": {
+        "status": "No currently effective material determinations of the United States Patent and Trademark Office, trademark trial and appeal board, the trademark administrator of any state or court pending infringement, opposition or cancellation, or pending material litigation involving the principal Marks."
+      },
+      "agreements_limiting_use": {
+        "status": "No currently effective agreements limit the franchisor's right to use or license the use of the Marks, except that the franchisor may not violate the terms of existing License Agreements between Ace Hardware and the franchisor."
+      },
+      "litigation_control_and_benefits": {
+        "franchisor_control": "The franchisor has the exclusive right to control any litigation, arbitration, or administrative proceeding arising out of any infringement of, or challenge or claim to, any of the Marks or in any way related to the Marks.",
+        "damages_accrual": "Any damages or benefits arising out of any infringement, challenge, or claim shall accrue exclusively to the franchisor."
+      },
+      "modification_or_discontinuation_of_marks": {
+        "franchisee_obligation": "Must modify or discontinue the use of a Mark if the franchisor modifies or discontinues it.",
+        "franchisor_reimbursement": "The franchisor will reimburse franchisees for reasonable out-of-pocket costs (if any) of changing main identifying signage and other signage.",
+        "limitation_of_liability": "The franchisor will not be liable for any other costs, expenses, or damages incurred by the franchisee as a result of the franchisor's decision to modify or discontinue use of a Mark."
+      },
+      "research_recommendation_for_franchisee": {
+        "recommendation": "The franchisor strongly urges franchisees to research the possibility of businesses similar to an AHS Business operating in or near their potential business area, with names and/or marks similar to the franchisor's and with superior rights.",
+        "research_methods": "Using telephone directories, internet searches, local filings, and other means.",
+        "timing": "Before signing the Franchise Agreement or any other related documents, or expending sums or making commitments concerning the business.",
+        "risk_of_failure_to_research": "Failure to do so may put the franchisee at risk."
+      }
+    },
+    "14": {
+      "item_14_analysis": {
+        "patents": {
+          "disclosure": "No patents or pending patent applications are material to the franchise."
+        },
+        "copyrights": {
+          "disclosure": "No copyrights, other than common law copyrights in the Operations Manual, are material to the franchise."
+        },
+        "operations_manual": {
+          "content": "Contains confidential and proprietary information and trade secrets regarding the operations of an AHS Business.",
+          "modification": "The franchisor may modify the Operations Manual in its sole discretion. Modifications will not alter the franchisee's status and rights under the Franchise Agreement.",
+          "attachment": "A copy of the Table of Contents for the Operations Manual is included as Attachment G.",
+          "usage_restriction": "Proprietary information in the Operations Manual can only be used as permitted by the Franchise Agreement.",
+          "confidentiality_obligation": "The franchisee must maintain the confidentiality of the Operations Manual and adopt reasonable procedures to prevent unauthorized disclosure.",
+          "reporting_unauthorized_use": "The franchisee is required to promptly inform the franchisor of any unauthorized use of proprietary information.",
+          "franchisor_response_to_unauthorized_use": "The franchisor is not obligated to take action but will respond as it deems appropriate.",
+          "franchisor_indemnification": "The franchisor will indemnify the franchisee against losses claimed by a third party concerning the franchisee's use of this information.",
+          "franchisor_rights_limitation": "The franchisor's right to use or license this information is not materially limited by any agreement or known infringing use.",
+          "administrative_determinations": "There are no determinations of any administrative office or court regarding these copyrighted materials or proprietary information."
+        },
+        "records_ownership": {
+          "franchisor_owned": [
+            "All records concerning customers, suppliers, and independent contractors and other service professionals of, and/or related in any way to, the AHS Business.",
+            "Includes all databases (print, electronic, or other form) with customer and potential customer names, addresses, phone numbers, and e-mail addresses.",
+            "Includes customer purchase records."
+          ],
+          "franchisee_owned": [
+            "All records concerning the franchisee's employees."
+          ]
+        },
+        "franchisor_record_usage": {
+          "rights": "The franchisor may use, permit any third party to use, or transfer its records in any way it wishes, both before and after any termination, expiration, repurchase, transfer, or otherwise.",
+          "contact_customers_suppliers_contractors": "The franchisor has the right to contact customers, suppliers, and independent contractors and other service professionals for quality control, market research, and other purposes it deems appropriate, in its sole and absolute discretion.",
+          "inspection_and_audit": "The franchisor has the right to inspect and audit the franchisee's records, the records of certain affiliated individuals and companies, and the records of immediate family members (spouses, parents, siblings, and adult children) of the franchisee and affiliated individuals."
+        },
+        "nondisclosure_noncompetition_agreement": {
+          "requirement": "The franchisor may require the franchisee to cause each of its officers, directors, partners or shareholders, and any member of their immediate families, as applicable, to execute the franchisor's standard Nondisclosure and Noncompetition Agreement.",
+          "attachment": "A copy of the Nondisclosure and Noncompetition Agreement is attached as Attachment B.",
+          "submission_requirement": "The franchisee must provide the franchisor a copy of each Nondisclosure and Noncompetition Agreement at the time it is signed and thereafter upon request."
+        },
+        "disclosure_to_others": "The franchisee will not disclose the contents of any materials the franchisor deems confidential to anyone other than those persons who have an obligation of confidentiality to the franchisee."
+      }
+    },
+    "15": {
+      "item_number": 15,
+      "title": "Obligation to Participate in the Actual Operation of the Franchise Business",
+      "franchisee_responsibilities": [
+        {
+          "point": "Direct supervision of daily operations",
+          "details": "An individual franchisee or a designated and approved Franchise Manager must directly supervise the daily operation of the franchise at the Business Location. If the franchisor believes the franchisee lacks business experience, a Franchise Manager will be required."
+        },
+        {
+          "point": "Franchise Manager requirements",
+          "details": "The Franchise Manager must be approved by the franchisor and perform direct, on-site supervision. A Franchise Manager is not required to have an ownership interest in a business entity franchisee. The Franchise Manager must attend and complete the initial business training program and abide by the Franchise Agreement and Operations Manual."
+        },
+        {
+          "point": "Employee management",
+          "details": "The franchisee is responsible for recruiting, appointing, hiring, firing, and supervising employees, independent agents, Office Managers, Franchise Managers, and other representatives. The franchisee has sole authority and control over day-to-day operations and employee training."
+        },
+        {
+          "point": "Use of independent contractors",
+          "details": "The franchisee has sole authority and control over the decision to use independent contractors. The franchisor recommends that independent contractors do not exceed 40 percent of the work force. The franchisee is solely responsible and liable for decisions regarding independent contractors and compliance with related laws and regulations."
+        },
+        {
+          "point": "Background checks",
+          "details": "The franchisee must conduct background checks on all employees, contractors, and subcontractors utilized in the AHS Business and System. These checks must comply with all applicable laws, including the Fair Credit Reporting Act and state equivalents. No person without a successfully completed background check should enter a customer's home or business."
+        },
+        {
+          "point": "Office Manager requirement",
+          "details": "An experienced Office Manager must be hired to assist with phone answering, job scheduling, employment applications, paperwork check-in, and other customer service and office duties. The Office Manager must complete the initial business training program and on-site training program."
+        },
+        {
+          "point": "LRRP Certification",
+          "details": "At least one representative of the AHS Business must maintain LRRP Certification at all times. The franchisor recommends the franchisee or Franchise Manager obtain this certification. If the certified representative leaves or their certification is terminated, another representative must immediately obtain it."
+        },
+        {
+          "point": "Time commitment",
+          "details": "The franchisee or Franchise Manager is required to devote full time and best efforts on a daily basis, in person, to the supervision and conduct of the AHS Business, not less than 40 hours per week. An exception may be made for franchisees operating multiple AHS Businesses in adjacent territories, allowing one Franchise Manager to dedicate full time to all businesses."
+        },
+        {
+          "point": "Operating other businesses",
+          "details": "Prior approval from the franchisor is required to operate another business, including any e-commerce business."
+        },
+        {
+          "point": "Guaranty and Assumption of Franchisee's Obligations",
+          "details": "Unless waived, individuals owning an interest in the franchisee entity will sign a Guaranty and Assumption of Franchisee\u2019s Obligations, agreeing to discharge all franchisee obligations and comply with all restrictions."
+        }
+      ],
+      "franchisor_role": {
+        "advice_and_training": "The franchisor may provide advice, suggestions, and certain training programs to protect its brand and Marks, but this does not constitute control over the day-to-day operation of the AHS Business. The franchisor is not a joint employer."
+      }
+    },
+    "16": {
+      "item_16_analysis": {
+        "title": "Restrictions on What You May Sell",
+        "main_points": [
+          {
+            "point": "Franchisees must operate in conformity with franchisor standards and specifications to maintain system uniformity."
+          },
+          {
+            "point": "Only approved products and services, or those meeting franchisor standards, may be offered and sold."
+          },
+          {
+            "point": "Franchisees are required to offer all designated handyman, repair, and maintenance services within their market area."
+          },
+          {
+            "point": "Franchisees must offer, honor, and comply with terms of any established subscription package programs."
+          },
+          {
+            "point": "Franchisees are responsible for obtaining all necessary licenses and permits."
+          },
+          {
+            "point": "Franchisees cannot engage in activities not covered by liability or workers compensation insurance."
+          },
+          {
+            "point": "Franchisees cannot engage in activities harmful to goodwill, reflecting unfavorably on reputation, constituting deceptive/unfair competition, or violating applicable law."
+          },
+          {
+            "point": "Certain inventory, supplies, and equipment must be purchased from the franchisor or an approved vendor."
+          },
+          {
+            "point": "There is a purchasing arrangement with Ace Hardware requiring purchase of materials, supplies, and goods from an Ace Supplier when in stock, readily available, and competitively priced."
+          },
+          {
+            "point": "Other items can be purchased from local hardware stores, big box outlets, and other sources."
+          },
+          {
+            "point": "The franchisor may impose restrictions limiting access to customers outside of the Territory and to commercial customers within the Territory, as discussed in ITEM 12."
+          }
+        ],
+        "requirements": [
+          "Operate in conformity with franchisor standards and specifications.",
+          "Offer and sell only approved products and services or those meeting franchisor standards.",
+          "Offer all designated required services within the market area.",
+          "Offer, honor, and comply with subscription package programs.",
+          "Promptly obtain all necessary licenses and permits.",
+          "Purchase certain inventory, supplies, and equipment from the franchisor or an approved vendor.",
+          "Purchase materials, supplies, and goods from an Ace Supplier under specific conditions.",
+          "Not engage in activities not covered by insurance.",
+          "Not engage in activities harmful to goodwill, reputation, or that violate law."
+        ],
+        "obligations": [
+          "Maintain uniformity throughout the system.",
+          "Ensure offerings meet franchisor standards.",
+          "Provide designated services.",
+          "Comply with subscription programs.",
+          "Secure necessary permits.",
+          "Adhere to insurance coverage limitations.",
+          "Avoid detrimental business practices.",
+          "Source specific items from approved channels.",
+          "Comply with purchasing arrangements."
+        ],
+        "important_details": [
+          "The Operations Manual or other writings may specify standards and specifications.",
+          "The franchisor may change required services with prior notice.",
+          "The purchasing arrangement with Ace Hardware is conditional on items being in stock, readily available, and competitively priced.",
+          "The franchisor reserves the right to terminate or modify the Franchisee Advisory Council.",
+          "Restrictions on customer access are limited to those discussed in ITEM 12."
+        ]
+      }
+    },
+    "17": {
+      "renewal": {
+        "term_length": "10 years",
+        "conditions": [
+          "No less than 120 days\u2019 notice, nor more than one year notice",
+          "Sign the current form of the Franchise Agreement",
+          "Be in compliance with current Franchise Agreement",
+          "Be current in payments",
+          "Satisfy current standards for new franchisees",
+          "Modify your AHS Business and operations to conform with current Operations Manual",
+          "Pay successor franchise fee",
+          "Execute a Successor Franchise Rider"
+        ],
+        "fees": "successor franchise fee",
+        "franchisee_must_sign_current_agreement": true
+      },
+      "termination_by_franchisor": [
+        "Force majeure event that prevents franchisor from performing obligations and continues for longer than six months",
+        "Inability or unwillingness to operate your AHS Business",
+        "Certain violations of the Franchise Agreement",
+        "Engaging in illegal or unethical practices",
+        "Unauthorized disclosures",
+        "Repeated defaults even if cured",
+        "Abandonment",
+        "Unapproved transfers",
+        "Sales activity in the territory of another AHS Business",
+        "Sexual harassment or discrimination",
+        "Violation of non-compete or other in-term restrictive covenant",
+        "Breach of related agreement",
+        "A guaranty becomes unenforceable or inadequate",
+        "Bankruptcy"
+      ],
+      "termination_by_franchisee": [
+        "Franchisor materially breaches the Franchise Agreement",
+        "Franchisor provides written notice within 30 days of the breach and a reasonable opportunity to cure of not less than 90 days (subject to state law)"
+      ],
+      "transfer_rights": {
+        "allowed": true,
+        "conditions": [
+          "New franchisee qualified",
+          "Transfer fee paid, if applicable",
+          "Purchase agreement approved",
+          "Training completed by transferee",
+          "Current agreement signed by transferee",
+          "Escrow of an amount equal to 1% of the greater of the Gross Revenues or your Minimum Annual Gross Revenues for the prior 12 months to cover warranty and customer dispute issues",
+          "Release signed by you (except where prohibited by law)"
+        ],
+        "transfer_fee": "if applicable",
+        "franchisor_approval_required": true,
+        "training_required_for_transferee": true
+      },
+      "dispute_resolution": {
+        "mediation": "required",
+        "mediation_details": "Except for certain claims, all disputes must be arbitrated in Denver, Colorado (subject to state law). If a claim can be brought in court, both you and we agree to waive our rights to a jury trial.",
+        "arbitration": "required",
+        "arbitration_details": "Except for certain claims, all disputes must be arbitrated in Denver, Colorado (subject to state law). If a claim can be brought in court, both you and we agree to waive our rights to a jury trial.",
+        "litigation_allowed": null,
+        "governing_law": "Federal and Colorado law applies (subject to state law)",
+        "venue": "Denver, Colorado"
+      },
+      "non_compete": {
+        "applies": true,
+        "duration": "24 months",
+        "geographic_scope": "within 25 miles from the closest point to the former Territory or the Territory of any other AHS Business (including after assignment)",
+        "activities_restricted": "Owning, operating or performing service for a competing business"
+      },
+      "post_termination_obligations": [
+        "Escrow of an amount equal to 1% of the greater of the Gross Revenues or your Minimum Annual Gross Revenues for the prior 12 months to cover warranty and customer dispute issues",
+        "Complete de-identification",
+        "Return of proprietary materials",
+        "Payment of amounts due",
+        "Payment of an amount equal to the Royalty Fees based on the Minimum Annual Gross Revenues due over the remaining term under the Franchise Agreement, if terminated due to your default",
+        "Inspection of books",
+        "Assign all pending and contract business to us"
+      ]
+    },
+    "18": {
+      "item_18": {
+        "title": "PUBLIC FIGURES",
+        "content": "We do not currently use any public figure to promote the Ace Handyman Services System.",
+        "main_points": [
+          "The franchisor does not currently utilize public figures for promotion."
+        ],
+        "requirements": [],
+        "obligations": [],
+        "important_details": [
+          "This disclosure pertains to the current promotional practices of the Ace Handyman Services System."
+        ]
+      }
+    },
+    "19": {
+      "has_data": true,
+      "outlets_analyzed": 286,
+      "sample_size_percentage": null,
+      "time_period": "calendar year 2024",
+      "table_format": "multi_column_cohort",
+      "median_revenue": null,
+      "average_revenue": null,
+      "highest_revenue": null,
+      "lowest_revenue": null,
+      "has_profitability_data": true,
+      "tables": [
+        {
+          "table_name": "Table 1: Single Reporting Territories - Top Quartile",
+          "metric": "TOTAL REVENUE",
+          "average": 760107,
+          "median": 698903,
+          "high": 1026090,
+          "low": 548553,
+          "top_25_percent": null,
+          "third_quartile": null,
+          "second_quartile": null,
+          "bottom_25_percent": null,
+          "percent_achieving": 39.0,
+          "all_studios_value": null,
+          "year_over_year_trend": "not_applicable"
+        },
+        {
+          "table_name": "Table 1: Single Reporting Territories - Top Quartile",
+          "metric": "GROSS PROFIT",
+          "average": 370527,
+          "median": 354967,
+          "high": 394912,
+          "low": 297725,
+          "top_25_percent": null,
+          "third_quartile": null,
+          "second_quartile": null,
+          "bottom_25_percent": null,
+          "percent_achieving": 39.0,
+          "all_studios_value": null,
+          "year_over_year_trend": "not_applicable"
+        },
+        {
+          "table_name": "Table 1: Single Reporting Territories - Top Quartile",
+          "metric": "OWNER DISCRETIONARY INCOME",
+          "average": 105450,
+          "median": 100448,
+          "high": 100459,
+          "low": -18677,
+          "top_25_percent": null,
+          "third_quartile": null,
+          "second_quartile": null,
+          "bottom_25_percent": null,
+          "percent_achieving": 61.0,
+          "all_studios_value": null,
+          "year_over_year_trend": "not_applicable"
+        },
+        {
+          "table_name": "Table 2: Single Reporting Territories - Second Quartile",
+          "metric": "TOTAL REVENUE",
+          "average": 477307,
+          "median": 488503,
+          "high": 533293,
+          "low": 427227,
+          "top_25_percent": null,
+          "third_quartile": null,
+          "second_quartile": null,
+          "bottom_25_percent": null,
+          "percent_achieving": 39.0,
+          "all_studios_value": null,
+          "year_over_year_trend": "not_applicable"
+        },
+        {
+          "table_name": "Table 2: Single Reporting Territories - Second Quartile",
+          "metric": "GROSS PROFIT",
+          "average": 222116,
+          "median": 229801,
+          "high": 154962,
+          "low": 234973,
+          "top_25_percent": null,
+          "third_quartile": null,
+          "second_quartile": null,
+          "bottom_25_percent": null,
+          "percent_achieving": 44.0,
+          "all_studios_value": null,
+          "year_over_year_trend": "not_applicable"
+        },
+        {
+          "table_name": "Table 2: Single Reporting Territories - Second Quartile",
+          "metric": "OWNER DISCRETIONARY INCOME",
+          "average": 37639,
+          "median": 46244,
+          "high": -11365,
+          "low": 32847,
+          "top_25_percent": null,
+          "third_quartile": null,
+          "second_quartile": null,
+          "bottom_25_percent": null,
+          "percent_achieving": 39.0,
+          "all_studios_value": null,
+          "year_over_year_trend": "not_applicable"
+        },
+        {
+          "table_name": "Table 3: Single Reporting Territories - Third Quartile",
+          "metric": "TOTAL REVENUE",
+          "average": 351332,
+          "median": 333232,
+          "high": 417743,
+          "low": 295979,
+          "top_25_percent": null,
+          "third_quartile": null,
+          "second_quartile": null,
+          "bottom_25_percent": null,
+          "percent_achieving": 44.0,
+          "all_studios_value": null,
+          "year_over_year_trend": "not_applicable"
+        },
+        {
+          "table_name": "Table 3: Single Reporting Territories - Third Quartile",
+          "metric": "GROSS PROFIT",
+          "average": 175371,
+          "median": 163254,
+          "high": 208670,
+          "low": 128109,
+          "top_25_percent": null,
+          "third_quartile": null,
+          "second_quartile": null,
+          "bottom_25_percent": null,
+          "percent_achieving": 50.0,
+          "all_studios_value": null,
+          "year_over_year_trend": "not_applicable"
+        },
+        {
+          "table_name": "Table 3: Single Reporting Territories - Third Quartile",
+          "metric": "OWNER DISCRETIONARY INCOME",
+          "average": 21750,
+          "median": 22691,
+          "high": 49291,
+          "low": -36185,
+          "top_25_percent": null,
+          "third_quartile": null,
+          "second_quartile": null,
+          "bottom_25_percent": null,
+          "percent_achieving": 22.0,
+          "all_studios_value": null,
+          "year_over_year_trend": "not_applicable"
+        },
+        {
+          "table_name": "Table 4: Single Reporting Territories - Bottom Quartile",
+          "metric": "TOTAL REVENUE",
+          "average": 242018,
+          "median": 225770,
+          "high": 292241,
+          "low": 200982,
+          "top_25_percent": null,
+          "third_quartile": null,
+          "second_quartile": null,
+          "bottom_25_percent": null,
+          "percent_achieving": 39.0,
+          "all_studios_value": null,
+          "year_over_year_trend": "not_applicable"
+        },
+        {
+          "table_name": "Table 4: Single Reporting Territories - Bottom Quartile",
+          "metric": "GROSS PROFIT",
+          "average": 132956,
+          "median": 122742,
+          "high": 180875,
+          "low": 100377,
+          "top_25_percent": null,
+          "third_quartile": null,
+          "second_quartile": null,
+          "bottom_25_percent": null,
+          "percent_achieving": 44.0,
+          "all_studios_value": null,
+          "year_over_year_trend": "not_applicable"
+        },
+        {
+          "table_name": "Table 4: Single Reporting Territories - Bottom Quartile",
+          "metric": "OWNER DISCRETIONARY INCOME",
+          "average": 29913,
+          "median": 14928,
+          "high": 50324,
+          "low": -16559,
+          "top_25_percent": null,
+          "third_quartile": null,
+          "second_quartile": null,
+          "bottom_25_percent": null,
+          "percent_achieving": 50.0,
+          "all_studios_value": null,
+          "year_over_year_trend": "not_applicable"
+        },
+        {
+          "table_name": "Table 5: Multi-Territory Reporting Groups - Top Quartile",
+          "metric": "TOTAL REVENUE",
+          "average": 1278429,
+          "median": 1155881,
+          "high": 2636042,
+          "low": 805020,
+          "top_25_percent": null,
+          "third_quartile": null,
+          "second_quartile": null,
+          "bottom_25_percent": null,
+          "percent_achieving": 47.0,
+          "all_studios_value": null,
+          "year_over_year_trend": "not_applicable"
+        },
+        {
+          "table_name": "Table 5: Multi-Territory Reporting Groups - Top Quartile",
+          "metric": "GROSS PROFIT",
+          "average": 631093,
+          "median": 608144,
+          "high": 1192699,
+          "low": 429674,
+          "top_25_percent": null,
+          "third_quartile": null,
+          "second_quartile": null,
+          "bottom_25_percent": null,
+          "percent_achieving": 37.0,
+          "all_studios_value": null,
+          "year_over_year_trend": "not_applicable"
+        },
+        {
+          "table_name": "Table 5: Multi-Territory Reporting Groups - Top Quartile",
+          "metric": "OWNER DISCRETIONARY INCOME",
+          "average": 184927,
+          "median": 225918,
+          "high": 463828,
+          "low": 93636,
+          "top_25_percent": null,
+          "third_quartile": null,
+          "second_quartile": null,
+          "bottom_25_percent": null,
+          "percent_achieving": 37.0,
+          "all_studios_value": null,
+          "year_over_year_trend": "not_applicable"
+        },
+        {
+          "table_name": "Table 6: Multi-Territory Reporting Groups - Second Quartile",
+          "metric": "TOTAL REVENUE",
+          "average": 709583,
+          "median": 709540,
+          "high": 803462,
+          "low": 647048,
+          "top_25_percent": null,
+          "third_quartile": null,
+          "second_quartile": null,
+          "bottom_25_percent": null,
+          "percent_achieving": 42.0,
+          "all_studios_value": null,
+          "year_over_year_trend": "not_applicable"
+        },
+        {
+          "table_name": "Table 6: Multi-Territory Reporting Groups - Second Quartile",
+          "metric": "GROSS PROFIT",
+          "average": 366299,
+          "median": 380229,
+          "high": 410359,
+          "low": 321997,
+          "top_25_percent": null,
+          "third_quartile": null,
+          "second_quartile": null,
+          "bottom_25_percent": null,
+          "percent_achieving": 47.0,
+          "all_studios_value": null,
+          "year_over_year_trend": "not_applicable"
+        },
+        {
+          "table_name": "Table 6: Multi-Territory Reporting Groups - Second Quartile",
+          "metric": "OWNER DISCRETIONARY INCOME",
+          "average": 128969,
+          "median": 155033,
+          "high": 72269,
+          "low": 81253,
+          "top_25_percent": null,
+          "third_quartile": null,
+          "second_quartile": null,
+          "bottom_25_percent": null,
+          "percent_achieving": 53.0,
+          "all_studios_value": null,
+          "year_over_year_trend": "not_applicable"
+        },
+        {
+          "table_name": "Table 7: Multi-Territory Reporting Groups - Third Quartile",
+          "metric": "TOTAL REVENUE",
+          "average": 540168,
+          "median": 544900,
+          "high": 637397,
+          "low": 414941,
+          "top_25_percent": null,
+          "third_quartile": null,
+          "second_quartile": null,
+          "bottom_25_percent": null,
+          "percent_achieving": 47.0,
+          "all_studios_value": null,
+          "year_over_year_trend": "not_applicable"
+        },
+        {
+          "table_name": "Table 7: Multi-Territory Reporting Groups - Third Quartile",
+          "metric": "GROSS PROFIT",
+          "average": 302040,
+          "median": 315932,
+          "high": 286520,
+          "low": 247681,
+          "top_25_percent": null,
+          "third_quartile": null,
+          "second_quartile": null,
+          "bottom_25_percent": null,
+          "percent_achieving": 47.0,
+          "all_studios_value": null,
+          "year_over_year_trend": "not_applicable"
+        },
+        {
+          "table_name": "Table 7: Multi-Territory Reporting Groups - Third Quartile",
+          "metric": "OWNER DISCRETIONARY INCOME",
+          "average": 72514,
+          "median": 86082,
+          "high": 87952,
+          "low": 66461,
+          "top_25_percent": null,
+          "third_quartile": null,
+          "second_quartile": null,
+          "bottom_25_percent": null,
+          "percent_achieving": 47.0,
+          "all_studios_value": null,
+          "year_over_year_trend": "not_applicable"
+        },
+        {
+          "table_name": "Table 8: Multi-Territory Reporting Groups - Bottom Quartile",
+          "metric": "TOTAL REVENUE",
+          "average": 294345,
+          "median": 288190,
+          "high": 410548,
+          "low": 86125,
+          "top_25_percent": null,
+          "third_quartile": null,
+          "second_quartile": null,
+          "bottom_25_percent": null,
+          "percent_achieving": 58.0,
+          "all_studios_value": null,
+          "year_over_year_trend": "not_applicable"
+        },
+        {
+          "table_name": "Table 8: Multi-Territory Reporting Groups - Bottom Quartile",
+          "metric": "GROSS PROFIT",
+          "average": 137573,
+          "median": 129469,
+          "high": 177606,
+          "low": 51462,
+          "top_25_percent": null,
+          "third_quartile": null,
+          "second_quartile": null,
+          "bottom_25_percent": null,
+          "percent_achieving": 58.0,
+          "all_studios_value": null,
+          "year_over_year_trend": "not_applicable"
+        },
+        {
+          "table_name": "Table 8: Multi-Territory Reporting Groups - Bottom Quartile",
+          "metric": "OWNER DISCRETIONARY INCOME",
+          "average": 16244,
+          "median": 13072,
+          "high": -7787,
+          "low": 17293,
+          "top_25_percent": null,
+          "third_quartile": null,
+          "second_quartile": null,
+          "bottom_25_percent": null,
+          "percent_achieving": 47.0,
+          "all_studios_value": null,
+          "year_over_year_trend": "not_applicable"
+        }
+      ],
+      "notes": "The data presented is for calendar year 2024 and is based on unaudited reports submitted by Reporting Operators. The tables are divided into Single Reporting Territories and Multi-Territory Reporting Groups, each further broken down into four quartiles based on Total Revenue. Owner Discretionary Income may include salaries and distributions and may not represent net profit.",
+      "disclosure_quality": "detailed",
+      "has_distribution_data": false
+    },
+    "20": {
+      "current_year": 2024,
+      "total_outlets": 387,
+      "franchised_outlets": 369,
+      "company_owned_outlets": 18,
+      "outlets_opened_last_year": 35,
+      "units_closed_last_year": 15,
+      "transfers_last_year": 12,
+      "reacquisitions_last_year": null,
+      "closure_rate": 3.88,
+      "states": [
+        "Alabama",
+        "Arizona",
+        "Arkansas",
+        "California",
+        "Colorado",
+        "Connecticut",
+        "Delaware",
+        "Florida",
+        "Georgia",
+        "Idaho",
+        "Illinois",
+        "Indiana",
+        "Iowa",
+        "Kansas",
+        "Kentucky",
+        "Louisiana",
+        "Maine",
+        "Maryland",
+        "Massachusetts",
+        "Michigan",
+        "Minnesota",
+        "Mississippi",
+        "Missouri",
+        "Montana",
+        "Nebraska",
+        "Nevada",
+        "New Hampshire",
+        "New Jersey",
+        "New Mexico",
+        "New York",
+        "North Carolina",
+        "North Dakota",
+        "Ohio",
+        "Oklahoma",
+        "Oregon",
+        "Pennsylvania",
+        "Rhode Island",
+        "South Carolina",
+        "South Dakota",
+        "Tennessee",
+        "Texas",
+        "Utah",
+        "Virginia",
+        "Washington",
+        "West Virginia",
+        "Wisconsin",
+        "Wyoming"
+      ],
+      "historical_data": [
+        {
+          "year": 2022,
+          "total": 312,
+          "franchised": 305,
+          "company_owned": 7,
+          "opened": 80,
+          "closed": 6,
+          "transfers": 7,
+          "reacquisitions": null,
+          "net_growth": 74
+        },
+        {
+          "year": 2023,
+          "total": 379,
+          "franchised": 367,
+          "company_owned": 12,
+          "opened": 82,
+          "closed": 4,
+          "transfers": 11,
+          "reacquisitions": null,
+          "net_growth": 78
+        },
+        {
+          "year": 2024,
+          "total": 387,
+          "franchised": 369,
+          "company_owned": 18,
+          "opened": 35,
+          "closed": 15,
+          "transfers": 12,
+          "reacquisitions": null,
+          "net_growth": 20
+        }
+      ],
+      "three_year_trend": "growing",
+      "multi_unit_ownership_mentioned": true,
+      "multi_unit_details": "As of December 31, 2024, five of the franchised outlets were Mini AHS Businesses."
+    },
+    "21": {
+      "item_21_analysis": {
+        "financial_statements": {
+          "availability": "Attached to this disclosure document as Attachment J.",
+          "type": "Audited consolidated financial statements.",
+          "entity": "Ace Hardware and its subsidiaries.",
+          "dates_as_of": [
+            "December 28, 2024",
+            "December 30, 2023",
+            "December 31, 2022"
+          ],
+          "years_ended": [
+            "2024",
+            "2023",
+            "2022"
+          ]
+        },
+        "ownership": "Owned indirectly by Ace Hardware.",
+        "tax_year": {
+          "structure": "52-53-week tax year.",
+          "end_date_definition": "Ends on the Saturday closest to December 31st."
+        },
+        "guaranty_of_performance": {
+          "provider": "Ace Hardware.",
+          "purpose": "Guaranty of performance of obligations under the Franchise Agreement.",
+          "location": "Included in Attachment J."
+        }
+      }
+    },
+    "22": {
+      "item_22": {
+        "title": "CONTRACTS",
+        "description": "This section lists the contracts the franchisor enters into with franchisees regarding franchise offerings in this state.",
+        "contracts": [
+          {
+            "attachment_letter": "A",
+            "name": "Franchise Agreement and Exhibits"
+          },
+          {
+            "attachment_letter": "B",
+            "name": "Nondisclosure and Noncompetition Agreement"
+          },
+          {
+            "attachment_letter": "C",
+            "name": "Statement of Prospective Franchisee"
+          },
+          {
+            "attachment_letter": "D",
+            "name": "Multi-Territory Addendum to Franchise Agreements"
+          },
+          {
+            "attachment_letter": "E",
+            "name": "Form of Successor Franchise Rider to Franchise Agreement"
+          },
+          {
+            "attachment_letter": "F",
+            "name": "Current Form of General Release"
+          },
+          {
+            "attachment_letter": "M",
+            "name": "AHF Data Collection Agreement"
+          },
+          {
+            "attachment_letter": "N",
+            "name": "IGX Participation Agreement"
+          }
+        ],
+        "disclosure_statement": "These are the only contracts the franchisor enters into with any franchisee regarding the offering of franchises in this state."
+      }
+    },
+    "23": {
+      "item_23": {
+        "title": "RECEIPTS",
+        "description": "This section outlines the process for acknowledging receipt of the Disclosure Document. It states that the last two pages are receipt pages that need to be signed and dated upon receipt of the Disclosure Document. The second receipt page should be detached and promptly returned as specified on that page.",
+        "key_information": [
+          {
+            "point": "Receipt pages are located on the last two pages of the Disclosure Document."
+          },
+          {
+            "point": "Franchisees must sign and date each receipt page as of the date they received the Disclosure Document."
+          },
+          {
+            "point": "The second receipt page should be detached and returned promptly as instructed."
+          }
+        ]
+      }
+    }
+  },
+  "years_in_franchising": 23,
+  "franchise_score": 552,
+  "franchise_score_breakdown": {
+    "financial_transparency": {
+      "total_score": 138,
+      "max_score": 150,
+      "metrics": [
+        {
+          "metric_name": "Item 19 Quality",
+          "score": 90,
+          "max_score": 90,
+          "rating": "Excellent",
+          "explanation": "Item 19 provides detailed financial performance data for calendar year 2024, including total revenue, gross profit, and owner discretionary income across multiple quartiles for both single and multi-territory reporting groups. It specifies the number of outlets analyzed (286) and includes notes on the data's nature and limitations.",
+          "formula_used": "Full Item 19 with detailed data = 90 points"
+        },
+        {
+          "metric_name": "Investment Clarity",
+          "score": 30,
+          "max_score": 30,
+          "rating": "Excellent",
+          "explanation": "Item 7 provides a comprehensive breakdown of the initial investment for both Standard and Mini AHS Businesses, detailing 17 cost categories with specific low and high ranges and clear assumptions. The document includes a detailed explanation of these estimates, referencing their basis in experience.",
+          "formula_used": "Comprehensive breakdown = 30 points"
+        },
+        {
+          "metric_name": "Fee Structure Transparency",
+          "score": 18,
+          "max_score": 30,
+          "rating": "Good",
+          "explanation": "Items 5 and 6 clearly disclose the initial franchise fee, royalty fee (6%), marketing fee (2%), and technology fees ($599/month). Other fees are listed with amounts and calculation methods, though some conditions for certain fees could be more explicit.",
+          "formula_used": "Standard disclosure = 18 points"
+        }
+      ]
+    },
+    "system_strength": {
+      "total_score": 150,
+      "max_score": 150,
+      "metrics": [
+        {
+          "metric_name": "System Growth Pattern",
+          "score": 60,
+          "max_score": 60,
+          "rating": "Excellent",
+          "explanation": "The system shows healthy growth, with a net positive growth rate over the last three years. In 2024, 35 units opened and 15 closed, resulting in a net growth of 20 units. The closure rate in 2024 was 3.88% (15/387), which is below the 5% threshold.",
+          "formula_used": "Net growth (2024): (35-15)/372 * 100 = 5.38%. Closure rate (2024): 15/387 * 100 = 3.88%. Healthy growth = 60 points"
+        },
+        {
+          "metric_name": "Franchisor Longevity",
+          "score": 48,
+          "max_score": 48,
+          "rating": "Excellent",
+          "explanation": "The franchisor began offering franchises in 2001, indicating 23 years of experience in the franchising industry. This longevity suggests a well-established system and operational history.",
+          "formula_used": "10+ years in franchising = 48 points"
+        },
+        {
+          "metric_name": "Clean Record",
+          "score": 42,
+          "max_score": 42,
+          "rating": "Excellent",
+          "explanation": "Items 3-4 disclose 0 recent litigation case(s) filed within last 3 years or still ongoing: 0 direct franchisor, 0 affiliate. (3 older case(s) not scored). No recent or ongoing cases found. Clean record = 42 points.",
+          "formula_used": "1-2 cases, settled favorably = 38-40 points. Applied 38 points due to 3 cases, with 2 involving parent company."
+        }
+      ]
+    },
+    "franchisee_support": {
+      "total_score": 132,
+      "max_score": 150,
+      "metrics": [
+        {
+          "metric_name": "Training Program Quality",
+          "score": 60,
+          "max_score": 60,
+          "rating": "Excellent",
+          "explanation": "The training program includes approximately 10-12 weeks of pre-training work and study, followed by a 3-day initial business training program (20-29 hours). It covers 11 topics, is available in Denver or via video conference, and requires attendance for key personnel. Ongoing training is available through various methods.",
+          "formula_used": "Comprehensive training = 60 points"
+        },
+        {
+          "metric_name": "Operational Support",
+          "score": 48,
+          "max_score": 48,
+          "rating": "Excellent",
+          "explanation": "Support includes 18-24 hours of on-site training within the first 90 days, a dedicated field support team member for startup assistance, a support hotline via phone, text, and email during business hours, and access to scheduling software, an internet site, and an intranet site. The operations manual is provided electronically.",
+          "formula_used": "Extensive support = 48 points"
+        },
+        {
+          "metric_name": "Territory Protection",
+          "score": 24,
+          "max_score": 42,
+          "rating": "Fair",
+          "explanation": "A protected territory is defined by zip codes, with exclusivity provided as long as the franchisee is not in default. However, the franchisor reserves significant rights, including for e-commerce, online ordering, and the operation of affiliated businesses (Ace Hardware Painting Services, Plumbing Services, HVAC) that can solicit orders within the territory.",
+          "formula_used": "Limited protection = 24 points"
+        }
+      ]
+    },
+    "business_foundation": {
+      "total_score": 132,
+      "max_score": 150,
+      "metrics": [
+        {
+          "metric_name": "Management Experience",
+          "score": 30,
+          "max_score": 48,
+          "rating": "Good",
+          "explanation": "The management team includes individuals with varying levels of franchise experience. Andy Bell has 23.75 years, Chris Bue has 9.75 years, and Colette Bell has 5.75 years. Other executives have less direct franchise experience, but possess relevant industry expertise.",
+          "formula_used": "Some franchise experience across management team = 30 points"
+        },
+        {
+          "metric_name": "Item 19 Performance Indicators",
+          "score": 72,
+          "max_score": 72,
+          "rating": "Excellent",
+          "explanation": "Item 19 shows positive revenue performance. For single reporting territories, the top quartile average revenue is $760,107, with 39% achieving this level. Owner discretionary income shows 61% achieving the top quartile benchmark. Multi-territory groups also show strong revenue averages.",
+          "formula_used": "Strong performance shown = 72 points"
+        },
+        {
+          "metric_name": "System Performance",
+          "score": 30,
+          "max_score": 30,
+          "rating": "Excellent",
+          "explanation": "The system shows positive signals with consistent growth and a low closure rate. While specific multi-unit ownership percentages are not detailed, the overall growth and low closure rate suggest franchisee satisfaction. Transfers (12 in 2024) are moderate compared to openings.",
+          "formula_used": "Positive signals = 30 points"
+        }
+      ]
+    }
+  },
+  "strengths": [
+    {
+      "title": "Detailed Financial Transparency",
+      "description": "Item 19 provides a comprehensive breakdown of revenue and owner discretionary income across quartiles for both single and multi-territory operations. Item 7 offers a detailed initial investment breakdown with clear assumptions for 17 cost categories.",
+      "citation": "Item 19, Item 7",
+      "impact": "High"
+    },
+    {
+      "title": "Established Franchisor Longevity and System Growth",
+      "description": "With 23 years in franchising and consistent net positive unit growth, the franchisor demonstrates a stable and expanding system. The low closure rate of 3.88% in 2024 indicates a healthy operational environment for franchisees.",
+      "citation": "Item 1, Item 20",
+      "impact": "High"
+    },
+    {
+      "title": "Comprehensive Training and Operational Support",
+      "description": "The franchise offers extensive initial training, including pre-training work and ongoing support, covering 11 topics. Franchisees receive significant operational assistance, including on-site visits, a support hotline, and access to essential technology systems.",
+      "citation": "Item 11",
+      "impact": "High"
+    }
+  ],
+  "considerations": [
+    {
+      "title": "Limited Territory Protection",
+      "description": "While a protected territory is defined, the franchisor retains broad rights, including for e-commerce and online sales. Affiliated businesses like Ace Hardware Painting Services and Plumbing Services can solicit orders within the franchisee's territory, potentially impacting exclusivity.",
+      "citation": "Item 12",
+      "impact": "Medium"
+    },
+    {
+      "title": "Management Team Experience Variation",
+      "description": "While some key executives have substantial franchise experience, others have limited direct franchise tenure. This variation in experience across the leadership team may present different levels of support and strategic guidance.",
+      "citation": "Item 2",
+      "impact": "Medium"
+    },
+    {
+      "title": "Litigation History",
+      "description": "Three litigation cases are disclosed, although all have been settled and are not recent. Two of these cases involved the parent company, indicating a history of disputes that, while resolved, warrant consideration.",
+      "citation": "Item 3",
+      "impact": "Low"
+    }
+  ],
+  "analytical_summary": "ACE HANDYMAN SERVICES scores 552 out of 600, indicating a franchise opportunity. The system demonstrates financial transparency with detailed Item 19 data and clear investment breakdowns, alongside robust franchisor longevity and system growth with a low closure rate. Franchisees benefit from training and operational support. However, considerations include limited territory protection due to franchisor reserved rights and affiliated business competition, varying management team experience, and a history of settled litigation. Overall, the franchise presents a well-supported business model with a proven track record, though potential franchisees should carefully evaluate the territory exclusivity and management team dynamics."
+}

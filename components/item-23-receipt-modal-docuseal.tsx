@@ -113,9 +113,10 @@ export function Item23ReceiptModalDocuSeal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl w-[95vw] h-[95vh] bg-white flex flex-col">
+      {/* Responsive: full screen on mobile, sized on desktop */}
+      <DialogContent className="w-full h-full max-w-none max-h-none md:max-w-6xl md:w-[95vw] md:h-[95vh] md:max-h-[95vh] bg-white flex flex-col rounded-none md:rounded-lg">
         <DialogHeader className="flex-shrink-0">
-          <DialogTitle>Item 23 Receipt - {franchiseName}</DialogTitle>
+          <DialogTitle className="text-base md:text-lg">Item 23 Receipt - {franchiseName}</DialogTitle>
         </DialogHeader>
 
         <div className="flex-1 min-h-0 overflow-auto">

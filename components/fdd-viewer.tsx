@@ -25,6 +25,7 @@ import {
   Info,
   ZoomIn,
   ZoomOut,
+  Menu,
 } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -179,6 +180,7 @@ export function FDDViewer({
   const [isToolbarExpanded, setIsToolbarExpanded] = useState(true)
   const [isQuickLinksExpanded, setIsQuickLinksExpanded] = useState(false)
   const [isEngagementExpanded, setIsEngagementExpanded] = useState(false)
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false) // Mobile sidebar overlay state
 
   const [numPages, setNumPages] = useState<number>(0)
   const [pageNumber, setPageNumber] = useState<number>(1)
@@ -1938,11 +1940,56 @@ export function FDDViewer({
       <div className="flex-1 overflow-hidden">
         {activeTab === "document" ? (
           // Document tab - show PDF viewer with analysis sidebar
-          isPdfVisible ? (
-            <ResizableDivider leftPanel={leftPanel} rightPanel={rightPanel} defaultLeftWidth={55} />
-          ) : (
-            <div className="h-full overflow-y-auto">{rightPanel}</div>
-          )
+          <>
+            {/* Desktop: Use ResizableDivider for side-by-side layout */}
+            <div className="hidden md:block h-full">
+              {isPdfVisible ? (
+                <ResizableDivider leftPanel={leftPanel} rightPanel={rightPanel} defaultLeftWidth={55} />
+              ) : (
+                <div className="h-full overflow-y-auto">{rightPanel}</div>
+              )}
+            </div>
+            
+            {/* Mobile: Show PDF only with floating toggle button */}
+            <div className="md:hidden h-full relative">
+              {leftPanel}
+              
+              {/* Mobile sidebar toggle button */}
+              <Button
+                onClick={() => setIsMobileSidebarOpen(true)}
+                className="fixed top-20 right-4 z-40 h-10 w-10 rounded-full bg-white dark:bg-slate-800 shadow-lg border border-border"
+                size="icon"
+                variant="outline"
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+              
+              {/* Mobile sidebar overlay */}
+              {isMobileSidebarOpen && (
+                <div className="fixed inset-0 z-50">
+                  {/* Backdrop */}
+                  <div 
+                    className="absolute inset-0 bg-black/50"
+                    onClick={() => setIsMobileSidebarOpen(false)}
+                  />
+                  {/* Sidebar panel */}
+                  <div className="absolute right-0 top-0 bottom-0 w-[85vw] max-w-md bg-white dark:bg-slate-900 shadow-xl overflow-y-auto">
+                    <div className="sticky top-0 bg-white dark:bg-slate-900 z-10 p-4 border-b flex items-center justify-between">
+                      <h3 className="font-semibold">FDD Navigation</h3>
+                      <Button
+                        onClick={() => setIsMobileSidebarOpen(false)}
+                        size="icon"
+                        variant="ghost"
+                      >
+                        <X className="h-5 w-5" />
+                      </Button>
+                    </div>
+                    {rightPanel}
+                  </div>
+                </div>
+              )}
+            </div>
+          </>
         ) : (
           // FranchiseScore tab - show full score analysis
           franchiseScoreTab
@@ -2004,6 +2051,7 @@ export function FDDViewer({
           setPageNumber(page)
           setIsPdfVisible(true)
           setActiveTab("document") // Switch to document tab when navigating
+          setIsMobileSidebarOpen(false) // Close mobile sidebar when navigating
         }}
       />
     </div>

@@ -197,15 +197,20 @@ export function FDDAIChat({
 
   return (
     <>
+      {/* AI Chat Button - Repositioned for mobile */}
       {!isOpen && (
         <Button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-20 right-24 h-20 w-20 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 shadow-xl hover:shadow-2xl hover:scale-105 transition-all z-50 border-2 border-blue-400/20"
+          className="fixed z-50 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 shadow-xl hover:shadow-2xl hover:scale-105 transition-all border-2 border-blue-400/20
+            /* Mobile: bottom center, smaller */
+            bottom-4 left-1/2 -translate-x-1/2 h-14 w-14
+            /* Desktop: bottom right, larger */
+            md:bottom-20 md:right-24 md:left-auto md:translate-x-0 md:h-20 md:w-20"
           size="icon"
           title="Ask AI Assistant"
         >
           {/* Paralex Logo Icon */}
-          <svg viewBox="200 250 500 500" className="h-16 w-16">
+          <svg viewBox="200 250 500 500" className="h-10 w-10 md:h-16 md:w-16">
             <circle cx="287.3" cy="500" r="25.58" fill="#fff" />
             <circle cx="389.64" cy="500" r="38.38" fill="#fff" />
             <circle cx="632.7" cy="699.41" r="25.58" fill="#fff" />
@@ -217,8 +222,13 @@ export function FDDAIChat({
         </Button>
       )}
 
+      {/* Chat Panel - Full screen on mobile, positioned on desktop */}
       {isOpen && (
-        <Card className="fixed bottom-20 right-24 w-[380px] h-[560px] flex flex-col shadow-2xl border-border/60 bg-white dark:bg-slate-900 z-50 rounded-2xl overflow-hidden">
+        <Card className="fixed z-50 flex flex-col shadow-2xl border-border/60 bg-white dark:bg-slate-900 overflow-hidden
+          /* Mobile: full screen with safe area padding */
+          inset-0 rounded-none
+          /* Desktop: positioned bottom right */
+          md:inset-auto md:bottom-20 md:right-24 md:w-[380px] md:h-[560px] md:rounded-2xl">
           <div className="flex items-center justify-between p-4 border-b border-border/60 bg-gradient-to-r from-blue-600 to-indigo-600">
             <div className="flex items-center gap-2.5">
               <div className="h-9 w-9 rounded-full bg-white/20 backdrop-blur flex items-center justify-center border border-white/30 p-1.5">
@@ -238,19 +248,6 @@ export function FDDAIChat({
               </div>
             </div>
             <div className="flex items-center gap-1">
-              {/* <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setUseWebSearch(!useWebSearch)}
-                className={`h-9 w-9 ${useWebSearch ? "bg-white/30 text-white" : "text-white/70 hover:bg-white/20 hover:text-white"}`}
-                title={
-                  useWebSearch
-                    ? "Web Search ON - Will search the web for additional context"
-                    : "Web Search OFF - Using FDD content only"
-                }
-              >
-                <Globe className="h-5 w-5" />
-              </Button> */}
               <Button
                 variant="ghost"
                 size="icon"
@@ -363,6 +360,10 @@ export function FDDAIChat({
                                 } else if (onNavigateToPage && pageNum) {
                                   console.log("[v0] AI Chat: Navigate to page:", pageNum)
                                   onNavigateToPage(pageNum)
+                                  // Close chat on mobile after navigation
+                                  if (window.innerWidth < 768) {
+                                    setIsOpen(false)
+                                  }
                                 }
                               }}
                               disabled={!pageNum && !url}
@@ -423,7 +424,7 @@ export function FDDAIChat({
             <div ref={messagesEndRef} />
           </div>
 
-          <div className="p-4 border-t border-border/60 bg-muted/30">
+          <div className="p-4 border-t border-border/60 bg-muted/30 pb-safe">
             <div className="flex gap-2">
               <Input
                 value={inputValue}
@@ -448,11 +449,6 @@ export function FDDAIChat({
                 {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
               </Button>
             </div>
-            {/* HIDDEN FOR DEMO - question counter
-            <p className="text-xs text-muted-foreground mt-2 text-center">
-              {questionsAsked.length}/3 questions asked {questionsAsked.length >= 3 && "✓"}
-            </p>
-            */}
           </div>
         </Card>
       )}
