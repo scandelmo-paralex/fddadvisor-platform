@@ -101,6 +101,7 @@ export function ProfileSettings({ profile, onUpdateProfile }: ProfileSettingsPro
       businessExperience: {
         ...editedProfile.businessExperience,
         yearsOfExperience: editedProfile.businessExperience?.yearsOfExperience ?? 0,
+        yearsOfExperienceRange: editedProfile.businessExperience?.yearsOfExperienceRange,
         industryExperience: parsed,
         hasOwnedBusiness: editedProfile.businessExperience?.hasOwnedBusiness || false,
         managementExperience: editedProfile.businessExperience?.managementExperience || false,
@@ -119,6 +120,7 @@ export function ProfileSettings({ profile, onUpdateProfile }: ProfileSettingsPro
       businessExperience: {
         ...editedProfile.businessExperience,
         yearsOfExperience: editedProfile.businessExperience?.yearsOfExperience ?? 0,
+        yearsOfExperienceRange: editedProfile.businessExperience?.yearsOfExperienceRange,
         industryExperience: editedProfile.businessExperience?.industryExperience || [],
         hasOwnedBusiness: editedProfile.businessExperience?.hasOwnedBusiness || false,
         managementExperience: editedProfile.businessExperience?.managementExperience || false,
@@ -236,6 +238,7 @@ export function ProfileSettings({ profile, onUpdateProfile }: ProfileSettingsPro
         businessExperience: {
           ...editedProfile.businessExperience,
           yearsOfExperience: editedProfile.businessExperience?.yearsOfExperience ?? 0,
+          yearsOfExperienceRange: editedProfile.businessExperience?.yearsOfExperienceRange,
           industryExperience: parseCommaSeparated(industryExperienceText),
           hasOwnedBusiness: editedProfile.businessExperience?.hasOwnedBusiness || false,
           managementExperience: editedProfile.businessExperience?.managementExperience || false,
@@ -581,13 +584,16 @@ export function ProfileSettings({ profile, onUpdateProfile }: ProfileSettingsPro
                 Years of Business Experience <span className="text-destructive">*</span>
               </Label>
               <Select
-                value={String(editedProfile.businessExperience?.yearsOfExperience ?? "")}
+                value={editedProfile.businessExperience?.yearsOfExperienceRange ?? ""}
                 onValueChange={(value) => {
+                  // Parse the numeric value for storage, but keep the range string for display
+                  const numericValue = value === "20+" ? 20 : value.includes("-") ? parseInt(value.split("-")[0]) : parseInt(value) || 0
                   setEditedProfile({
                     ...editedProfile,
                     businessExperience: {
                       ...editedProfile.businessExperience,
-                      yearsOfExperience: value === "20+" ? 20 : value.includes("-") ? parseInt(value.split("-")[0]) : parseInt(value) || 0,
+                      yearsOfExperience: numericValue,
+                      yearsOfExperienceRange: value, // Store the original range string
                       industryExperience: editedProfile.businessExperience?.industryExperience || [],
                       hasOwnedBusiness: editedProfile.businessExperience?.hasOwnedBusiness || false,
                       managementExperience: editedProfile.businessExperience?.managementExperience || false,
@@ -628,6 +634,7 @@ export function ProfileSettings({ profile, onUpdateProfile }: ProfileSettingsPro
                     businessExperience: {
                       ...editedProfile.businessExperience,
                       yearsOfExperience: editedProfile.businessExperience?.yearsOfExperience ?? 0,
+                      yearsOfExperienceRange: editedProfile.businessExperience?.yearsOfExperienceRange,
                       industryExperience: editedProfile.businessExperience?.industryExperience || [],
                       hasOwnedBusiness: editedProfile.businessExperience?.hasOwnedBusiness || false,
                       managementExperience: editedProfile.businessExperience?.managementExperience || false,
@@ -673,6 +680,7 @@ export function ProfileSettings({ profile, onUpdateProfile }: ProfileSettingsPro
                         businessExperience: {
                           ...editedProfile.businessExperience,
                           yearsOfExperience: editedProfile.businessExperience?.yearsOfExperience ?? 0,
+                          yearsOfExperienceRange: editedProfile.businessExperience?.yearsOfExperienceRange,
                           industryExperience: editedProfile.businessExperience?.industryExperience || [],
                           hasOwnedBusiness: true,
                           managementExperience: editedProfile.businessExperience?.managementExperience || false,
@@ -699,6 +707,7 @@ export function ProfileSettings({ profile, onUpdateProfile }: ProfileSettingsPro
                         businessExperience: {
                           ...editedProfile.businessExperience,
                           yearsOfExperience: editedProfile.businessExperience?.yearsOfExperience ?? 0,
+                          yearsOfExperienceRange: editedProfile.businessExperience?.yearsOfExperienceRange,
                           industryExperience: editedProfile.businessExperience?.industryExperience || [],
                           hasOwnedBusiness: false,
                           managementExperience: editedProfile.businessExperience?.managementExperience || false,
@@ -731,6 +740,7 @@ export function ProfileSettings({ profile, onUpdateProfile }: ProfileSettingsPro
                         businessExperience: {
                           ...editedProfile.businessExperience,
                           yearsOfExperience: editedProfile.businessExperience?.yearsOfExperience ?? 0,
+                          yearsOfExperienceRange: editedProfile.businessExperience?.yearsOfExperienceRange,
                           industryExperience: editedProfile.businessExperience?.industryExperience || [],
                           hasOwnedBusiness: editedProfile.businessExperience?.hasOwnedBusiness || false,
                           managementExperience: true,
@@ -757,6 +767,7 @@ export function ProfileSettings({ profile, onUpdateProfile }: ProfileSettingsPro
                         businessExperience: {
                           ...editedProfile.businessExperience,
                           yearsOfExperience: editedProfile.businessExperience?.yearsOfExperience ?? 0,
+                          yearsOfExperienceRange: editedProfile.businessExperience?.yearsOfExperienceRange,
                           industryExperience: editedProfile.businessExperience?.industryExperience || [],
                           hasOwnedBusiness: editedProfile.businessExperience?.hasOwnedBusiness || false,
                           managementExperience: false,
@@ -789,6 +800,7 @@ export function ProfileSettings({ profile, onUpdateProfile }: ProfileSettingsPro
                         businessExperience: {
                           ...editedProfile.businessExperience,
                           yearsOfExperience: editedProfile.businessExperience?.yearsOfExperience || 0,
+                          yearsOfExperienceRange: editedProfile.businessExperience?.yearsOfExperienceRange,
                           industryExperience: editedProfile.businessExperience?.industryExperience || [],
                           hasOwnedBusiness: editedProfile.businessExperience?.hasOwnedBusiness || false,
                           managementExperience: editedProfile.businessExperience?.managementExperience || false,
@@ -815,6 +827,7 @@ export function ProfileSettings({ profile, onUpdateProfile }: ProfileSettingsPro
                         businessExperience: {
                           ...editedProfile.businessExperience,
                           yearsOfExperience: editedProfile.businessExperience?.yearsOfExperience || 0,
+                          yearsOfExperienceRange: editedProfile.businessExperience?.yearsOfExperienceRange,
                           industryExperience: editedProfile.businessExperience?.industryExperience || [],
                           hasOwnedBusiness: editedProfile.businessExperience?.hasOwnedBusiness || false,
                           managementExperience: editedProfile.businessExperience?.managementExperience || false,

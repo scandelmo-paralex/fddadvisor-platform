@@ -87,6 +87,7 @@ export interface BuyerProfile {
   no_felony_attestation?: boolean
   no_bankruptcy_attestation?: boolean
   profile_completed_at?: string
+  is_veteran?: boolean | null // true = yes, false = no, null = not answered
 
   created_at: string
   updated_at: string

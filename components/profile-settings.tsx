@@ -70,6 +70,19 @@ const FUNDING_PLAN_OPTIONS = [
   { value: "Partner/Investors", label: "Partner or Investors" },
 ]
 
+const YEARS_EXPERIENCE_OPTIONS = [
+  { value: "0", label: "0 years (No business experience)" },
+  { value: "1", label: "1 year" },
+  { value: "2", label: "2 years" },
+  { value: "3", label: "3 years" },
+  { value: "4", label: "4 years" },
+  { value: "5", label: "5 years" },
+  { value: "6-10", label: "6-10 years" },
+  { value: "11-15", label: "11-15 years" },
+  { value: "16-20", label: "16-20 years" },
+  { value: "20+", label: "20+ years" },
+]
+
 export function ProfileSettings({ profile, onUpdateProfile }: ProfileSettingsProps) {
   const [editedProfile, setEditedProfile] = useState<BuyerProfile>(profile)
   const [isRunningCheck, setIsRunningCheck] = useState(false)
@@ -504,18 +517,14 @@ export function ProfileSettings({ profile, onUpdateProfile }: ProfileSettingsPro
           <div className="grid gap-6 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="yearsExperience">Years of Business Experience</Label>
-              <Input
-                id="yearsExperience"
-                type="number"
-                min="0"
-                placeholder="10"
-                value={editedProfile.businessExperience?.yearsOfExperience || ""}
-                onChange={(e) =>
+              <Select
+                value={String(editedProfile.businessExperience?.yearsOfExperience ?? "")}
+                onValueChange={(value) =>
                   setEditedProfile({
                     ...editedProfile,
                     businessExperience: {
                       ...editedProfile.businessExperience,
-                      yearsOfExperience: Number.parseInt(e.target.value) || 0,
+                      yearsOfExperience: value === "20+" ? 20 : value.includes("-") ? parseInt(value.split("-")[0]) : parseInt(value) || 0,
                       industryExperience: editedProfile.businessExperience?.industryExperience || [],
                       hasOwnedBusiness: editedProfile.businessExperience?.hasOwnedBusiness || false,
                       managementExperience: editedProfile.businessExperience?.managementExperience || false,
@@ -525,8 +534,18 @@ export function ProfileSettings({ profile, onUpdateProfile }: ProfileSettingsPro
                     },
                   })
                 }
-                className="h-11"
-              />
+              >
+                <SelectTrigger className="h-11">
+                  <SelectValue placeholder="Select years of experience" />
+                </SelectTrigger>
+                <SelectContent>
+                  {YEARS_EXPERIENCE_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">
@@ -625,6 +644,31 @@ export function ProfileSettings({ profile, onUpdateProfile }: ProfileSettingsPro
                 </p>
               </div>
             </div>
+          </div>
+
+          {/* Veteran Status */}
+          <div className="space-y-2">
+            <Label htmlFor="veteranStatus">Are you a veteran?</Label>
+            <Select
+              value={editedProfile.isVeteran === true ? "yes" : editedProfile.isVeteran === false ? "no" : ""}
+              onValueChange={(value) =>
+                setEditedProfile({
+                  ...editedProfile,
+                  isVeteran: value === "yes" ? true : value === "no" ? false : null,
+                })
+              }
+            >
+              <SelectTrigger className="h-11">
+                <SelectValue placeholder="Select yes or no" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="yes">Yes</SelectItem>
+                <SelectItem value="no">No</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-sm text-muted-foreground">
+              Many franchisors offer special incentives and discounts for military veterans
+            </p>
           </div>
 
           <div className="space-y-2">

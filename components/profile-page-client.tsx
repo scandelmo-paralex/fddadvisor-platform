@@ -92,6 +92,7 @@ export function ProfilePageClient({ userId, userEmail }: ProfilePageClientProps)
           },
           businessExperience: {
             yearsOfExperience: buyerProfileData?.years_of_experience || 0,
+            yearsOfExperienceRange: buyerProfileData?.years_of_experience_range || "",
             industryExperience: buyerProfileData?.industry_experience || [],
             hasOwnedBusiness: buyerProfileData?.has_owned_business || false,
             managementExperience: buyerProfileData?.management_experience || false,
@@ -145,6 +146,7 @@ export function ProfilePageClient({ userId, userEmail }: ProfilePageClientProps)
         
         // Business Experience
         years_of_experience: updatedProfile.businessExperience?.yearsOfExperience,
+        years_of_experience_range: updatedProfile.businessExperience?.yearsOfExperienceRange,
         industry_experience: updatedProfile.businessExperience?.industryExperience,
         has_owned_business: updatedProfile.businessExperience?.hasOwnedBusiness,
         management_experience: updatedProfile.businessExperience?.managementExperience,

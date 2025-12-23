@@ -154,6 +154,7 @@ export interface BuyerProfile {
   }
   businessExperience?: {
     yearsOfExperience: number
+    yearsOfExperienceRange?: string // Store the original dropdown value (e.g., "6-10", "20+")
     industryExperience: string[] // e.g., ["Retail", "Healthcare", "Technology"]
     hasOwnedBusiness: boolean
     managementExperience: boolean

@@ -95,18 +95,34 @@ def get_last_n_tokens(text: str, n: int) -> str:
 
 
 def load_page_mapping(page_mapping_file: Path) -> Dict[int, int]:
-    """Load page mappings from your pipeline output"""
+    """Load page mappings from your pipeline output
+    
+    Handles two formats:
+    1. Simple format: {"Item 1": 8, "Item 2": 12, ...}
+    2. Detailed format (Claudio's): {"items": {"1": 8, "2": 12, ...}, "exhibits": {...}, ...}
+    """
     with open(page_mapping_file, 'r') as f:
         mapping_data = json.load(f)
     
-    # Convert "Item 1" keys to integers
     page_mapping = {}
-    for key, page_num in mapping_data.items():
-        # Extract item number from "Item 1", "Item 19", etc.
-        match = re.search(r'Item\s+(\d+)', key, re.IGNORECASE)
-        if match:
-            item_num = int(match.group(1))
+    
+    # Check if this is Claudio's detailed format (has "items" key)
+    if "items" in mapping_data:
+        # Detailed format: {"items": {"1": 8, "2": 12, ...}}
+        items_data = mapping_data["items"]
+        for item_num_str, page_num in items_data.items():
+            item_num = int(item_num_str)
             page_mapping[item_num] = page_num
+        print(f"  (Using detailed page mapping format)")
+    else:
+        # Simple format: {"Item 1": 8, "Item 2": 12, ...}
+        for key, page_num in mapping_data.items():
+            # Extract item number from "Item 1", "Item 19", etc.
+            match = re.search(r'Item\s+(\d+)', key, re.IGNORECASE)
+            if match:
+                item_num = int(match.group(1))
+                page_mapping[item_num] = page_num
+        print(f"  (Using simple page mapping format)")
     
     return page_mapping
 
