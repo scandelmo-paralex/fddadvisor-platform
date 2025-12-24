@@ -656,8 +656,9 @@ export function FDDViewer({
           const { Document, Page, pdfjs } = reactPdf
 
           // Set worker source
-          // Use .js version for better Safari compatibility (Safari has issues with ES modules as workers)
-          pdfjs.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`
+          // Use unpkg with the exact version from pdfjs for consistency
+          // The .mjs extension is required for pdfjs-dist 4.x+
+          pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`
 
           setPdfComponents({ Document, Page, pdfjs })
           setPdfLoadError(null)
