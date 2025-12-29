@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Suspense } from "react"
 import { NotificationProvider } from "@/components/notification-provider"
+import { AppWrapper } from "@/components/app-wrapper"
 import { polyfillScript } from "@/lib/polyfill-script"
 import "./globals.css"
 
@@ -27,7 +28,9 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: polyfillScript }} />
       </head>
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
-        <NotificationProvider>{children}</NotificationProvider>
+        <NotificationProvider>
+          <AppWrapper>{children}</AppWrapper>
+        </NotificationProvider>
         <Suspense fallback={null}>
           <Analytics />
           <SpeedInsights />
