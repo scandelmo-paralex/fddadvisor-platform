@@ -125,3 +125,10 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Move Vercel preview toolbar away from AI chat button */
+[data-vercel-toolbar],
+[data-testid="vercel-toolbar"],
+iframe[src*="vercel"] {
+  bottom: 100px !important;
+}

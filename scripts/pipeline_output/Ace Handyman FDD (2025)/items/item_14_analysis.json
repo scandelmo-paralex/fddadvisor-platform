@@ -1,0 +1,43 @@
+{
+  "item_14_analysis": {
+    "patents": {
+      "disclosure": "No patents or pending patent applications are material to the franchise."
+    },
+    "copyrights": {
+      "disclosure": "No copyrights, other than common law copyrights in the Operations Manual, are material to the franchise."
+    },
+    "operations_manual": {
+      "content": "Contains confidential and proprietary information and trade secrets regarding the operations of an AHS Business.",
+      "modification": "The franchisor may modify the Operations Manual in its sole discretion. Modifications will not alter the franchisee's status and rights under the Franchise Agreement.",
+      "attachment": "A copy of the Table of Contents for the Operations Manual is included as Attachment G.",
+      "usage_restriction": "Proprietary information in the Operations Manual can only be used as permitted by the Franchise Agreement.",
+      "confidentiality_obligation": "The franchisee must maintain the confidentiality of the Operations Manual and adopt reasonable procedures to prevent unauthorized disclosure.",
+      "reporting_unauthorized_use": "The franchisee is required to promptly inform the franchisor of any unauthorized use of proprietary information.",
+      "franchisor_response_to_unauthorized_use": "The franchisor is not obligated to take action but will respond as it deems appropriate.",
+      "franchisor_indemnification": "The franchisor will indemnify the franchisee against losses claimed by a third party concerning the franchisee's use of this information.",
+      "franchisor_rights_limitation": "The franchisor's right to use or license this information is not materially limited by any agreement or known infringing use.",
+      "administrative_determinations": "There are no determinations of any administrative office or court regarding these copyrighted materials or proprietary information."
+    },
+    "records_ownership": {
+      "franchisor_owned": [
+        "All records concerning customers, suppliers, and independent contractors and other service professionals of, and/or related in any way to, the AHS Business.",
+        "Includes all databases (print, electronic, or other form) with customer and potential customer names, addresses, phone numbers, and e-mail addresses.",
+        "Includes customer purchase records."
+      ],
+      "franchisee_owned": [
+        "All records concerning the franchisee's employees."
+      ]
+    },
+    "franchisor_record_usage": {
+      "rights": "The franchisor may use, permit any third party to use, or transfer its records in any way it wishes, both before and after any termination, expiration, repurchase, transfer, or otherwise.",
+      "contact_customers_suppliers_contractors": "The franchisor has the right to contact customers, suppliers, and independent contractors and other service professionals for quality control, market research, and other purposes it deems appropriate, in its sole and absolute discretion.",
+      "inspection_and_audit": "The franchisor has the right to inspect and audit the franchisee's records, the records of certain affiliated individuals and companies, and the records of immediate family members (spouses, parents, siblings, and adult children) of the franchisee and affiliated individuals."
+    },
+    "nondisclosure_noncompetition_agreement": {
+      "requirement": "The franchisor may require the franchisee to cause each of its officers, directors, partners or shareholders, and any member of their immediate families, as applicable, to execute the franchisor's standard Nondisclosure and Noncompetition Agreement.",
+      "attachment": "A copy of the Nondisclosure and Noncompetition Agreement is attached as Attachment B.",
+      "submission_requirement": "The franchisee must provide the franchisor a copy of each Nondisclosure and Noncompetition Agreement at the time it is signed and thereafter upon request."
+    },
+    "disclosure_to_others": "The franchisee will not disclose the contents of any materials the franchisor deems confidential to anyone other than those persons who have an obligation of confidentiality to the franchisee."
+  }
+}

@@ -42,8 +42,8 @@ export async function createServerClient(): Promise<SupabaseClient | null> {
 // API ROUTE CLIENT (for app/api/**/route.ts)
 // CRITICAL: This is synchronous and maintains auth context properly
 // ----------------------------------------------------------------------------
-export function getSupabaseRouteClient() {
-  const cookieStore = cookies()
+export async function getSupabaseRouteClient() {
+  const cookieStore = await cookies()
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY

@@ -1,21 +1,41 @@
 import { createClient } from "@supabase/supabase-js"
 import { NextResponse } from "next/server"
 
-export async function GET(request: Request, { params }: { params: { token: string } }) {
+export async function GET(request: Request, context: { params: Promise<{ token: string }> }) {
   const debugMode = new URL(request.url).searchParams.get("debug") === "true"
+  
+  // Try to get token from params first, fallback to URL extraction
+  let token: string | undefined
+  
+  try {
+    const params = await context.params
+    token = params?.token
+  } catch (e) {
+    // params failed, will try URL extraction
+  }
+  
+  // Fallback: extract token from URL path
+  if (!token) {
+    const url = new URL(request.url)
+    const pathParts = url.pathname.split('/')
+    // URL: /api/hub/invite/[token] - token is the last segment
+    const lastSegment = pathParts[pathParts.length - 1]
+    if (lastSegment && lastSegment !== 'invite') {
+      token = lastSegment
+    }
+  }
+  
   const debugInfo: any = {
     routeHit: true,
     timestamp: new Date().toISOString(),
     requestUrl: request.url,
-    params: params,
+    token: token,
+    tokenLength: token?.length,
+    tokenType: typeof token,
+    tokenSource: token ? 'url_extraction' : 'none',
   }
 
   try {
-    const { token } = params
-    debugInfo.token = token
-    debugInfo.tokenLength = token?.length
-    debugInfo.tokenType = typeof token
-
     if (!token) {
       debugInfo.error = "Token is undefined or empty"
       if (debugMode) return NextResponse.json({ debug: debugInfo }, { status: 400 })

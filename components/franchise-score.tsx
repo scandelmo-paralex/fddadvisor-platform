@@ -30,9 +30,10 @@ interface FranchiseScoreProps {
       }
     }
   }
+  fddYear?: number | string
 }
 
-export function FranchiseScore({ score }: FranchiseScoreProps) {
+export function FranchiseScore({ score, fddYear }: FranchiseScoreProps) {
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
 
   useEffect(() => {
@@ -56,6 +57,12 @@ export function FranchiseScore({ score }: FranchiseScoreProps) {
 
   const getRatingColor = (rating: string) => {
     switch (rating) {
+      // New rating labels (Strong/Good/Fair/Limited)
+      case "Strong":
+        return "text-emerald-600"
+      case "Limited":
+        return "text-red-600"
+      // Legacy labels (kept for backward compatibility during transition)
       case "Excellent":
         return "text-emerald-600"
       case "Good":
@@ -64,6 +71,7 @@ export function FranchiseScore({ score }: FranchiseScoreProps) {
         return "text-amber-600"
       case "Poor":
         return "text-red-600"
+      // Not Available / Unknown
       default:
         return "text-muted-foreground"
     }
@@ -148,6 +156,11 @@ export function FranchiseScore({ score }: FranchiseScoreProps) {
                   {score.industryPercentile}% overall score
                 </span>
               </div>
+              {fddYear && (
+                <p className="text-xs text-muted-foreground mt-2">
+                  FDD Year: {fddYear}
+                </p>
+              )}
             </div>
           </div>
 

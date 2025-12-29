@@ -1,0 +1,29 @@
+{
+  "item_21_analysis": {
+    "financial_statements": {
+      "availability": "Attached to this disclosure document as Attachment J.",
+      "type": "Audited consolidated financial statements.",
+      "entity": "Ace Hardware and its subsidiaries.",
+      "dates_as_of": [
+        "December 28, 2024",
+        "December 30, 2023",
+        "December 31, 2022"
+      ],
+      "years_ended": [
+        "2024",
+        "2023",
+        "2022"
+      ]
+    },
+    "ownership": "Owned indirectly by Ace Hardware.",
+    "tax_year": {
+      "structure": "52-53-week tax year.",
+      "end_date_definition": "Ends on the Saturday closest to December 31st."
+    },
+    "guaranty_of_performance": {
+      "provider": "Ace Hardware.",
+      "purpose": "Guaranty of performance of obligations under the Franchise Agreement.",
+      "location": "Included in Attachment J."
+    }
+  }
+}

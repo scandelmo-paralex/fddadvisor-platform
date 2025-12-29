@@ -1,0 +1,38 @@
+{
+  "initial_franchise_fee": 70000,
+  "fee_variations": [
+    {
+      "type": "Territory Size Adjustment (Single AHS Business)",
+      "amount": 1.0,
+      "description": "For Territory sizes exceeding 70,000 households, an additional $1.00 per household is added up to 100,000 households."
+    },
+    {
+      "type": "Multi-Territory Discount",
+      "amount": null,
+      "description": "Negotiated reduced Initial Franchise Fee for acquiring more than five Territories at the same time."
+    },
+    {
+      "type": "Mini AHS Business",
+      "amount": 35000,
+      "description": "For a Territory size of up to 35,000 households. If Territory size exceeds 35,000 households, an additional $1.00 per household is added up to 45,000 households."
+    },
+    {
+      "type": "Additional Territory Discount",
+      "amount": 14000,
+      "description": "For existing franchisees operating an AHS Business for at least six months, meeting qualifications, and purchasing an additional Territory."
+    },
+    {
+      "type": "Additional Concept Discount",
+      "amount": 14000,
+      "description": "For owners of an existing affiliate-acquired franchise in compliance for at least one year, meeting qualifications."
+    },
+    {
+      "type": "VetFran Discount",
+      "amount": 7000,
+      "description": "For veterans of the United States Armed Forces with an honorable discharge, applied to the first Franchise Agreement."
+    }
+  ],
+  "refund_policy": "All of the initial fees described in this ITEM 5 are fully earned by us on signing of the Franchise Agreement and are entirely non-refundable in all events.",
+  "refundable": false,
+  "payment_terms": "Due in full upon the signing of the Franchise Agreement."
+}

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { ArrowLeft, Search, Bell, User, X, LogOut, Settings } from 'lucide-react'
+import { ArrowLeft, Search, Bell, User, X, LogOut } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
@@ -20,6 +20,13 @@ interface HeaderProps {
   whiteLabelCompanyName?: string | null
 }
 
+interface UserInfo {
+  name: string
+  email: string
+  role: "owner" | "admin" | "recruiter" | null
+  isTeamMember: boolean
+}
+
 export function Header({
   currentView,
   onViewChange,
@@ -36,12 +43,75 @@ export function Header({
   const [showResults, setShowResults] = useState(false)
   const [showUserMenu, setShowUserMenu] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
   const searchRef = useRef<HTMLDivElement>(null)
   const userMenuRef = useRef<HTMLDivElement>(null)
   const notificationRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
   const { notifications, unreadCount, markAsRead, markAllAsRead, clearNotification } = useNotifications()
+
+  // Fetch current user info
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const supabase = createBrowserClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+        )
+
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) return
+
+        // Check if franchisor owner
+        const { data: franchisorProfile } = await supabase
+          .from("franchisor_profiles")
+          .select("company_name, primary_contact_name")
+          .eq("user_id", user.id)
+          .single()
+
+        if (franchisorProfile) {
+          setUserInfo({
+            name: franchisorProfile.primary_contact_name || user.email?.split("@")[0] || "User",
+            email: user.email || "",
+            role: "owner",
+            isTeamMember: false,
+          })
+          return
+        }
+
+        // Check if team member
+        const { data: teamMember } = await supabase
+          .from("franchisor_team_members")
+          .select("full_name, email, role")
+          .eq("user_id", user.id)
+          .eq("is_active", true)
+          .single()
+
+        if (teamMember) {
+          setUserInfo({
+            name: teamMember.full_name,
+            email: teamMember.email,
+            role: teamMember.role as "admin" | "recruiter",
+            isTeamMember: true,
+          })
+          return
+        }
+
+        // Default
+        setUserInfo({
+          name: user.email?.split("@")[0] || "User",
+          email: user.email || "",
+          role: null,
+          isTeamMember: false,
+        })
+      } catch (error) {
+        console.error("[Header] Error fetching user info:", error)
+      }
+    }
+
+    fetchUserInfo()
+  }, [])
 
   useEffect(() => {
     if (searchQuery.trim().length > 0) {
@@ -143,49 +213,8 @@ export function Header({
               </h1>
             </div>
 
-            {currentView !== "fdd-viewer" && (
-              <nav className="hidden md:flex items-center gap-2 ml-6">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onViewChange("buyer-dashboard")}
-                  className={`font-medium transition-all duration-200 ${
-                    currentView.startsWith("buyer") ||
-                    currentView === "discovery" ||
-                    currentView === "upload" ||
-                    currentView === "fdd-viewer" ||
-                    currentView === "comparison"
-                      ? "bg-cta/10 text-cta hover:bg-cta/20"
-                      : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
-                  }`}
-                >
-                  Buyer
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onViewChange("franchisor-dashboard")}
-                  className={`font-medium transition-all duration-200 ${
-                    currentView === "franchisor-dashboard"
-                      ? "bg-cta/10 text-cta hover:bg-cta/20"
-                      : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
-                  }`}
-                >
-                  Franchisor
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => router.push("/admin/fdd-processing")}
-                  className="font-medium transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-accent/50 gap-2"
-                >
-                  <Settings className="h-4 w-4" />
-                  Admin
-                </Button>
-              </nav>
-            )}
 
-            {!hideSearch && (
+            {!hideSearch && currentView !== "franchisor-dashboard" && currentView !== "franchisor-profile" && (
               <div className="hidden lg:flex items-center flex-1 max-w-md ml-6" ref={searchRef}>
                 <div className="relative w-full">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
@@ -247,6 +276,20 @@ export function Header({
                       )}
                     </Card>
                   )}
+                </div>
+              </div>
+            )}
+
+            {/* Franchisor search - Search leads */}
+            {!hideSearch && (currentView === "franchisor-dashboard" || currentView === "franchisor-profile") && (
+              <div className="hidden lg:flex items-center flex-1 max-w-md ml-6">
+                <div className="relative w-full">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  <Input
+                    placeholder="Search leads..."
+                    className="pl-9 pr-9 h-10 bg-muted/50 border-border/50 focus-visible:ring-2 focus-visible:ring-cta transition-all duration-200"
+                    disabled
+                  />
                 </div>
               </div>
             )}
@@ -358,16 +401,35 @@ export function Header({
               {showUserMenu && (
                 <Card className="absolute right-0 top-full mt-2 w-56 border-border/50 shadow-xl z-50 animate-in fade-in slide-in-from-top-2 duration-200">
                   <div className="p-2">
-                    <button
-                      onClick={handleProfileClick}
-                      className="w-full text-left p-3 rounded-lg hover:bg-cta/10 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-cta focus-visible:ring-inset flex items-center gap-3"
-                    >
-                      <User className="h-4 w-4 text-cta" />
-                      <div>
-                        <p className="text-sm font-medium">Profile Settings</p>
-                        <p className="text-xs text-muted-foreground">Manage your account</p>
+                    {/* User info display */}
+                    <div className="px-3 py-2 mb-2">
+                      <p className="text-sm font-medium truncate">{userInfo?.name || "User"}</p>
+                      <p className="text-xs text-muted-foreground truncate">{userInfo?.email}</p>
+                      {userInfo?.role && (
+                        <Badge variant="outline" className="mt-1 text-xs capitalize">
+                          {userInfo.role}
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="h-px bg-border/50 mb-2" />
+                    {/* Only show Company Settings for owners and admins */}
+                    {(!userInfo?.isTeamMember || userInfo?.role === "admin") && (
+                      <button
+                        onClick={handleProfileClick}
+                        className="w-full text-left p-3 rounded-lg hover:bg-cta/10 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-cta focus-visible:ring-inset flex items-center gap-3"
+                      >
+                        <User className="h-4 w-4 text-cta" />
+                        <div>
+                          <p className="text-sm font-medium">Company Settings</p>
+                          <p className="text-xs text-muted-foreground">Manage your account</p>
+                        </div>
+                      </button>
+                    )}
+                    {userInfo?.isTeamMember && userInfo?.role === "recruiter" && (
+                      <div className="px-3 py-2 text-xs text-muted-foreground">
+                        Contact your admin for account changes
                       </div>
-                    </button>
+                    )}
                     <div className="my-2 h-px bg-border/50" />
                     <button
                       onClick={handleSignOut}

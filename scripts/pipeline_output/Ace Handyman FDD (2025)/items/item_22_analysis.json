@@ -1,0 +1,41 @@
+{
+  "item_22": {
+    "title": "CONTRACTS",
+    "description": "This section lists the contracts the franchisor enters into with franchisees regarding franchise offerings in this state.",
+    "contracts": [
+      {
+        "attachment_letter": "A",
+        "name": "Franchise Agreement and Exhibits"
+      },
+      {
+        "attachment_letter": "B",
+        "name": "Nondisclosure and Noncompetition Agreement"
+      },
+      {
+        "attachment_letter": "C",
+        "name": "Statement of Prospective Franchisee"
+      },
+      {
+        "attachment_letter": "D",
+        "name": "Multi-Territory Addendum to Franchise Agreements"
+      },
+      {
+        "attachment_letter": "E",
+        "name": "Form of Successor Franchise Rider to Franchise Agreement"
+      },
+      {
+        "attachment_letter": "F",
+        "name": "Current Form of General Release"
+      },
+      {
+        "attachment_letter": "M",
+        "name": "AHF Data Collection Agreement"
+      },
+      {
+        "attachment_letter": "N",
+        "name": "IGX Participation Agreement"
+      }
+    ],
+    "disclosure_statement": "These are the only contracts the franchisor enters into with any franchisee regarding the offering of franchises in this state."
+  }
+}

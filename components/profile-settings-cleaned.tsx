@@ -52,6 +52,19 @@ const FUNDING_PLAN_OPTIONS = [
   { value: "Partner/Investors", label: "Partner or Investors" },
 ]
 
+const YEARS_EXPERIENCE_OPTIONS = [
+  { value: "0", label: "0 years (No business experience)" },
+  { value: "1", label: "1 year" },
+  { value: "2", label: "2 years" },
+  { value: "3", label: "3 years" },
+  { value: "4", label: "4 years" },
+  { value: "5", label: "5 years" },
+  { value: "6-10", label: "6-10 years" },
+  { value: "11-15", label: "11-15 years" },
+  { value: "16-20", label: "16-20 years" },
+  { value: "20+", label: "20+ years" },
+]
+
 const US_STATES = [
   "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
   "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
@@ -66,6 +79,63 @@ export function ProfileSettings({ profile, onUpdateProfile }: ProfileSettingsPro
     profile.financialQualification?.fundingPlans || []
   )
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
+  
+  // Local string state for comma-separated inputs (prevents comma from being stripped while typing)
+  const [industryExperienceText, setIndustryExperienceText] = useState<string>(
+    profile.businessExperience?.industryExperience?.join(", ") || ""
+  )
+  const [relevantSkillsText, setRelevantSkillsText] = useState<string>(
+    profile.businessExperience?.relevantSkills?.join(", ") || ""
+  )
+
+  // Parse comma-separated text into array (used on blur)
+  const parseCommaSeparated = (text: string): string[] => {
+    return text.split(",").map(s => s.trim()).filter(Boolean)
+  }
+
+  // Update profile with parsed industry experience
+  const handleIndustryExperienceBlur = () => {
+    const parsed = parseCommaSeparated(industryExperienceText)
+    setEditedProfile({
+      ...editedProfile,
+      businessExperience: {
+        ...editedProfile.businessExperience,
+        yearsOfExperience: editedProfile.businessExperience?.yearsOfExperience ?? 0,
+        yearsOfExperienceRange: editedProfile.businessExperience?.yearsOfExperienceRange,
+        industryExperience: parsed,
+        hasOwnedBusiness: editedProfile.businessExperience?.hasOwnedBusiness || false,
+        managementExperience: editedProfile.businessExperience?.managementExperience || false,
+        currentEmploymentStatus: editedProfile.businessExperience?.currentEmploymentStatus || "Employed Full-Time",
+        relevantSkills: editedProfile.businessExperience?.relevantSkills || [],
+        isVeteran: editedProfile.businessExperience?.isVeteran,
+      },
+    })
+  }
+
+  // Update profile with parsed relevant skills
+  const handleRelevantSkillsBlur = () => {
+    const parsed = parseCommaSeparated(relevantSkillsText)
+    setEditedProfile({
+      ...editedProfile,
+      businessExperience: {
+        ...editedProfile.businessExperience,
+        yearsOfExperience: editedProfile.businessExperience?.yearsOfExperience ?? 0,
+        yearsOfExperienceRange: editedProfile.businessExperience?.yearsOfExperienceRange,
+        industryExperience: editedProfile.businessExperience?.industryExperience || [],
+        hasOwnedBusiness: editedProfile.businessExperience?.hasOwnedBusiness || false,
+        managementExperience: editedProfile.businessExperience?.managementExperience || false,
+        currentEmploymentStatus: editedProfile.businessExperience?.currentEmploymentStatus || "Employed Full-Time",
+        relevantSkills: parsed,
+        isVeteran: editedProfile.businessExperience?.isVeteran,
+      },
+    })
+  }
+
+  // Sync local text state when profile prop changes
+  useEffect(() => {
+    setIndustryExperienceText(profile.businessExperience?.industryExperience?.join(", ") || "")
+    setRelevantSkillsText(profile.businessExperience?.relevantSkills?.join(", ") || "")
+  }, [profile])
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -123,7 +193,9 @@ export function ProfileSettings({ profile, onUpdateProfile }: ProfileSettingsPro
     }
 
     // Business Experience - Required
-    if (!editedProfile.businessExperience?.yearsOfExperience || editedProfile.businessExperience.yearsOfExperience < 0) {
+    if (editedProfile.businessExperience?.yearsOfExperience === undefined || 
+        editedProfile.businessExperience?.yearsOfExperience === null || 
+        editedProfile.businessExperience.yearsOfExperience < 0) {
       errors.yearsOfExperience = "Years of experience is required"
     }
     if (!editedProfile.businessExperience?.currentEmploymentStatus) {
@@ -144,12 +216,14 @@ export function ProfileSettings({ profile, onUpdateProfile }: ProfileSettingsPro
       errors.fundingPlans = "Select at least one funding plan"
     }
 
-    // Background Attestation - Required
-    if (!editedProfile.backgroundAttestations?.noBankruptcyAttestation) {
-      errors.noBankruptcyAttestation = "Background attestation required"
+    // Background Attestation - Required (must have answered, not just be true)
+    if (editedProfile.backgroundAttestations?.noBankruptcyAttestation === undefined || 
+        editedProfile.backgroundAttestations?.noBankruptcyAttestation === null) {
+      errors.noBankruptcyAttestation = "Please answer this question"
     }
-    if (!editedProfile.backgroundAttestations?.noFelonyAttestation) {
-      errors.noFelonyAttestation = "Background attestation required"
+    if (editedProfile.backgroundAttestations?.noFelonyAttestation === undefined ||
+        editedProfile.backgroundAttestations?.noFelonyAttestation === null) {
+      errors.noFelonyAttestation = "Please answer this question"
     }
 
     setValidationErrors(errors)
@@ -158,7 +232,22 @@ export function ProfileSettings({ profile, onUpdateProfile }: ProfileSettingsPro
 
   const handleSave = () => {
     if (validateRequiredFields()) {
-      onUpdateProfile(editedProfile)
+      // Ensure comma-separated text inputs are parsed before saving
+      const profileToSave: BuyerProfile = {
+        ...editedProfile,
+        businessExperience: {
+          ...editedProfile.businessExperience,
+          yearsOfExperience: editedProfile.businessExperience?.yearsOfExperience ?? 0,
+          yearsOfExperienceRange: editedProfile.businessExperience?.yearsOfExperienceRange,
+          industryExperience: parseCommaSeparated(industryExperienceText),
+          hasOwnedBusiness: editedProfile.businessExperience?.hasOwnedBusiness || false,
+          managementExperience: editedProfile.businessExperience?.managementExperience || false,
+          currentEmploymentStatus: editedProfile.businessExperience?.currentEmploymentStatus || "Employed Full-Time",
+          relevantSkills: parseCommaSeparated(relevantSkillsText),
+          isVeteran: editedProfile.businessExperience?.isVeteran,
+        },
+      }
+      onUpdateProfile(profileToSave)
     } else {
       // Scroll to first error
       const firstErrorElement = document.querySelector('[data-error="true"]')
@@ -166,8 +255,27 @@ export function ProfileSettings({ profile, onUpdateProfile }: ProfileSettingsPro
     }
   }
 
+  // Check if profile is complete WITHOUT setting state (safe to call during render)
   const isProfileComplete = () => {
-    return validateRequiredFields()
+    if (!editedProfile.personalInfo.firstName?.trim()) return false
+    if (!editedProfile.personalInfo.lastName?.trim()) return false
+    if (!editedProfile.personalInfo.phone?.trim()) return false
+    if (!editedProfile.personalInfo.city?.trim()) return false
+    if (!editedProfile.personalInfo.state?.trim()) return false
+    if (!editedProfile.personalInfo.desiredTerritories?.trim()) return false
+    if (editedProfile.businessExperience?.yearsOfExperience === undefined || 
+        editedProfile.businessExperience?.yearsOfExperience === null || 
+        editedProfile.businessExperience.yearsOfExperience < 0) return false
+    if (!editedProfile.businessExperience?.currentEmploymentStatus) return false
+    if (!editedProfile.financialQualification?.ficoScoreRange) return false
+    if (!editedProfile.financialQualification?.liquidAssetsRange) return false
+    if (!editedProfile.financialQualification?.netWorthRange) return false
+    if (!selectedFundingPlans.length) return false
+    if (editedProfile.backgroundAttestations?.noBankruptcyAttestation === undefined ||
+        editedProfile.backgroundAttestations?.noBankruptcyAttestation === null) return false
+    if (editedProfile.backgroundAttestations?.noFelonyAttestation === undefined ||
+        editedProfile.backgroundAttestations?.noFelonyAttestation === null) return false
+    return true
   }
 
   const completionPercentage = () => {
@@ -180,14 +288,18 @@ export function ProfileSettings({ profile, onUpdateProfile }: ProfileSettingsPro
     if (editedProfile.personalInfo.city) completed++
     if (editedProfile.personalInfo.state) completed++
     if (editedProfile.personalInfo.desiredTerritories) completed++
-    if (editedProfile.businessExperience?.yearsOfExperience) completed++
+    if (editedProfile.businessExperience?.yearsOfExperience !== undefined && 
+        editedProfile.businessExperience?.yearsOfExperience !== null && 
+        editedProfile.businessExperience?.yearsOfExperience >= 0) completed++
     if (editedProfile.businessExperience?.currentEmploymentStatus) completed++
     if (editedProfile.financialQualification?.ficoScoreRange) completed++
     if (editedProfile.financialQualification?.liquidAssetsRange) completed++
     if (editedProfile.financialQualification?.netWorthRange) completed++
     if (selectedFundingPlans.length > 0) completed++
-    if (editedProfile.backgroundAttestations?.noBankruptcyAttestation && 
-        editedProfile.backgroundAttestations?.noFelonyAttestation) completed++
+    if (editedProfile.backgroundAttestations?.noBankruptcyAttestation !== undefined && 
+        editedProfile.backgroundAttestations?.noBankruptcyAttestation !== null &&
+        editedProfile.backgroundAttestations?.noFelonyAttestation !== undefined &&
+        editedProfile.backgroundAttestations?.noFelonyAttestation !== null) completed++
 
     return Math.round((completed / total) * 100)
   }
@@ -471,30 +583,40 @@ export function ProfileSettings({ profile, onUpdateProfile }: ProfileSettingsPro
               <Label htmlFor="yearsExperience" className="flex items-center gap-1">
                 Years of Business Experience <span className="text-destructive">*</span>
               </Label>
-              <Input
-                id="yearsExperience"
-                type="number"
-                min="0"
-                placeholder="10"
-                value={editedProfile.businessExperience?.yearsOfExperience || ""}
-                onChange={(e) => {
+              <Select
+                value={editedProfile.businessExperience?.yearsOfExperienceRange ?? ""}
+                onValueChange={(value) => {
+                  // Parse the numeric value for storage, but keep the range string for display
+                  const numericValue = value === "20+" ? 20 : value.includes("-") ? parseInt(value.split("-")[0]) : parseInt(value) || 0
                   setEditedProfile({
                     ...editedProfile,
                     businessExperience: {
                       ...editedProfile.businessExperience,
-                      yearsOfExperience: Number.parseInt(e.target.value) || 0,
+                      yearsOfExperience: numericValue,
+                      yearsOfExperienceRange: value, // Store the original range string
                       industryExperience: editedProfile.businessExperience?.industryExperience || [],
                       hasOwnedBusiness: editedProfile.businessExperience?.hasOwnedBusiness || false,
                       managementExperience: editedProfile.businessExperience?.managementExperience || false,
                       currentEmploymentStatus:
                         editedProfile.businessExperience?.currentEmploymentStatus || "Employed Full-Time",
                       relevantSkills: editedProfile.businessExperience?.relevantSkills || [],
+                      isVeteran: editedProfile.businessExperience?.isVeteran,
                     },
                   })
                   setValidationErrors({ ...validationErrors, yearsOfExperience: "" })
                 }}
-                className={`h-11 ${validationErrors.yearsOfExperience ? 'border-destructive' : ''}`}
-              />
+              >
+                <SelectTrigger className={`h-11 ${validationErrors.yearsOfExperience ? 'border-destructive' : ''}`}>
+                  <SelectValue placeholder="Select years of experience" />
+                </SelectTrigger>
+                <SelectContent>
+                  {YEARS_EXPERIENCE_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               {validationErrors.yearsOfExperience && (
                 <p className="text-sm text-destructive">{validationErrors.yearsOfExperience}</p>
               )}
@@ -511,12 +633,14 @@ export function ProfileSettings({ profile, onUpdateProfile }: ProfileSettingsPro
                     ...editedProfile,
                     businessExperience: {
                       ...editedProfile.businessExperience,
-                      yearsOfExperience: editedProfile.businessExperience?.yearsOfExperience || 0,
+                      yearsOfExperience: editedProfile.businessExperience?.yearsOfExperience ?? 0,
+                      yearsOfExperienceRange: editedProfile.businessExperience?.yearsOfExperienceRange,
                       industryExperience: editedProfile.businessExperience?.industryExperience || [],
                       hasOwnedBusiness: editedProfile.businessExperience?.hasOwnedBusiness || false,
                       managementExperience: editedProfile.businessExperience?.managementExperience || false,
                       currentEmploymentStatus: value as BuyerProfile["businessExperience"]["currentEmploymentStatus"],
                       relevantSkills: editedProfile.businessExperience?.relevantSkills || [],
+                      isVeteran: editedProfile.businessExperience?.isVeteran,
                     },
                   })
                   setValidationErrors({ ...validationErrors, currentEmploymentStatus: "" })
@@ -540,64 +664,184 @@ export function ProfileSettings({ profile, onUpdateProfile }: ProfileSettingsPro
           </div>
 
           <div className="grid gap-4 p-4 bg-muted/30 rounded-lg border border-border/50">
-            <div className="flex items-start gap-3">
-              <Checkbox
-                id="hasOwnedBusiness"
-                checked={editedProfile.businessExperience?.hasOwnedBusiness || false}
-                onCheckedChange={(checked) =>
-                  setEditedProfile({
-                    ...editedProfile,
-                    businessExperience: {
-                      ...editedProfile.businessExperience,
-                      yearsOfExperience: editedProfile.businessExperience?.yearsOfExperience || 0,
-                      industryExperience: editedProfile.businessExperience?.industryExperience || [],
-                      hasOwnedBusiness: checked as boolean,
-                      managementExperience: editedProfile.businessExperience?.managementExperience || false,
-                      currentEmploymentStatus:
-                        editedProfile.businessExperience?.currentEmploymentStatus || "Employed Full-Time",
-                      relevantSkills: editedProfile.businessExperience?.relevantSkills || [],
-                    },
-                  })
-                }
-                className="mt-1"
-              />
-              <div className="flex-1">
-                <Label htmlFor="hasOwnedBusiness" className="font-medium cursor-pointer">
-                  I have owned or operated a business before
-                </Label>
-                <p className="text-sm text-muted-foreground mt-0.5">
-                  Previous business ownership demonstrates entrepreneurial experience
-                </p>
+            <div className="space-y-3">
+              <Label className="font-medium">Have you owned or operated a business before?</Label>
+              <p className="text-sm text-muted-foreground">Previous business ownership demonstrates entrepreneurial experience</p>
+              <div className="flex gap-4">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    id="hasOwnedBusinessYes"
+                    name="hasOwnedBusiness"
+                    checked={editedProfile.businessExperience?.hasOwnedBusiness === true}
+                    onChange={() =>
+                      setEditedProfile({
+                        ...editedProfile,
+                        businessExperience: {
+                          ...editedProfile.businessExperience,
+                          yearsOfExperience: editedProfile.businessExperience?.yearsOfExperience ?? 0,
+                          yearsOfExperienceRange: editedProfile.businessExperience?.yearsOfExperienceRange,
+                          industryExperience: editedProfile.businessExperience?.industryExperience || [],
+                          hasOwnedBusiness: true,
+                          managementExperience: editedProfile.businessExperience?.managementExperience || false,
+                          currentEmploymentStatus:
+                            editedProfile.businessExperience?.currentEmploymentStatus || "Employed Full-Time",
+                          relevantSkills: editedProfile.businessExperience?.relevantSkills || [],
+                          isVeteran: editedProfile.businessExperience?.isVeteran,
+                        },
+                      })
+                    }
+                    className="h-4 w-4"
+                  />
+                  <Label htmlFor="hasOwnedBusinessYes" className="cursor-pointer">Yes</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    id="hasOwnedBusinessNo"
+                    name="hasOwnedBusiness"
+                    checked={editedProfile.businessExperience?.hasOwnedBusiness === false}
+                    onChange={() =>
+                      setEditedProfile({
+                        ...editedProfile,
+                        businessExperience: {
+                          ...editedProfile.businessExperience,
+                          yearsOfExperience: editedProfile.businessExperience?.yearsOfExperience ?? 0,
+                          yearsOfExperienceRange: editedProfile.businessExperience?.yearsOfExperienceRange,
+                          industryExperience: editedProfile.businessExperience?.industryExperience || [],
+                          hasOwnedBusiness: false,
+                          managementExperience: editedProfile.businessExperience?.managementExperience || false,
+                          currentEmploymentStatus:
+                            editedProfile.businessExperience?.currentEmploymentStatus || "Employed Full-Time",
+                          relevantSkills: editedProfile.businessExperience?.relevantSkills || [],
+                          isVeteran: editedProfile.businessExperience?.isVeteran,
+                        },
+                      })
+                    }
+                    className="h-4 w-4"
+                  />
+                  <Label htmlFor="hasOwnedBusinessNo" className="cursor-pointer">No</Label>
+                </div>
               </div>
             </div>
-            <div className="flex items-start gap-3">
-              <Checkbox
-                id="managementExperience"
-                checked={editedProfile.businessExperience?.managementExperience || false}
-                onCheckedChange={(checked) =>
-                  setEditedProfile({
-                    ...editedProfile,
-                    businessExperience: {
-                      ...editedProfile.businessExperience,
-                      yearsOfExperience: editedProfile.businessExperience?.yearsOfExperience || 0,
-                      industryExperience: editedProfile.businessExperience?.industryExperience || [],
-                      hasOwnedBusiness: editedProfile.businessExperience?.hasOwnedBusiness || false,
-                      managementExperience: checked as boolean,
-                      currentEmploymentStatus:
-                        editedProfile.businessExperience?.currentEmploymentStatus || "Employed Full-Time",
-                      relevantSkills: editedProfile.businessExperience?.relevantSkills || [],
-                    },
-                  })
-                }
-                className="mt-1"
-              />
-              <div className="flex-1">
-                <Label htmlFor="managementExperience" className="font-medium cursor-pointer">
-                  I have management or leadership experience
-                </Label>
-                <p className="text-sm text-muted-foreground mt-0.5">
-                  Managing teams and operations is valuable for franchise ownership
-                </p>
+            <div className="space-y-3">
+              <Label className="font-medium">Do you have management or leadership experience?</Label>
+              <p className="text-sm text-muted-foreground">Managing teams and operations is valuable for franchise ownership</p>
+              <div className="flex gap-4">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    id="managementExperienceYes"
+                    name="managementExperience"
+                    checked={editedProfile.businessExperience?.managementExperience === true}
+                    onChange={() =>
+                      setEditedProfile({
+                        ...editedProfile,
+                        businessExperience: {
+                          ...editedProfile.businessExperience,
+                          yearsOfExperience: editedProfile.businessExperience?.yearsOfExperience ?? 0,
+                          yearsOfExperienceRange: editedProfile.businessExperience?.yearsOfExperienceRange,
+                          industryExperience: editedProfile.businessExperience?.industryExperience || [],
+                          hasOwnedBusiness: editedProfile.businessExperience?.hasOwnedBusiness || false,
+                          managementExperience: true,
+                          currentEmploymentStatus:
+                            editedProfile.businessExperience?.currentEmploymentStatus || "Employed Full-Time",
+                          relevantSkills: editedProfile.businessExperience?.relevantSkills || [],
+                          isVeteran: editedProfile.businessExperience?.isVeteran,
+                        },
+                      })
+                    }
+                    className="h-4 w-4"
+                  />
+                  <Label htmlFor="managementExperienceYes" className="cursor-pointer">Yes</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    id="managementExperienceNo"
+                    name="managementExperience"
+                    checked={editedProfile.businessExperience?.managementExperience === false}
+                    onChange={() =>
+                      setEditedProfile({
+                        ...editedProfile,
+                        businessExperience: {
+                          ...editedProfile.businessExperience,
+                          yearsOfExperience: editedProfile.businessExperience?.yearsOfExperience ?? 0,
+                          yearsOfExperienceRange: editedProfile.businessExperience?.yearsOfExperienceRange,
+                          industryExperience: editedProfile.businessExperience?.industryExperience || [],
+                          hasOwnedBusiness: editedProfile.businessExperience?.hasOwnedBusiness || false,
+                          managementExperience: false,
+                          currentEmploymentStatus:
+                            editedProfile.businessExperience?.currentEmploymentStatus || "Employed Full-Time",
+                          relevantSkills: editedProfile.businessExperience?.relevantSkills || [],
+                          isVeteran: editedProfile.businessExperience?.isVeteran,
+                        },
+                      })
+                    }
+                    className="h-4 w-4"
+                  />
+                  <Label htmlFor="managementExperienceNo" className="cursor-pointer">No</Label>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-3">
+              <Label className="font-medium">Are you a military veteran?</Label>
+              <p className="text-sm text-muted-foreground">Many franchisors offer special incentives and discounts for military veterans</p>
+              <div className="flex gap-4">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    id="isVeteranYes"
+                    name="isVeteran"
+                    checked={editedProfile.businessExperience?.isVeteran === true}
+                    onChange={() =>
+                      setEditedProfile({
+                        ...editedProfile,
+                        businessExperience: {
+                          ...editedProfile.businessExperience,
+                          yearsOfExperience: editedProfile.businessExperience?.yearsOfExperience || 0,
+                          yearsOfExperienceRange: editedProfile.businessExperience?.yearsOfExperienceRange,
+                          industryExperience: editedProfile.businessExperience?.industryExperience || [],
+                          hasOwnedBusiness: editedProfile.businessExperience?.hasOwnedBusiness || false,
+                          managementExperience: editedProfile.businessExperience?.managementExperience || false,
+                          currentEmploymentStatus:
+                            editedProfile.businessExperience?.currentEmploymentStatus || "Employed Full-Time",
+                          relevantSkills: editedProfile.businessExperience?.relevantSkills || [],
+                          isVeteran: true,
+                        },
+                      })
+                    }
+                    className="h-4 w-4"
+                  />
+                  <Label htmlFor="isVeteranYes" className="cursor-pointer">Yes</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    id="isVeteranNo"
+                    name="isVeteran"
+                    checked={editedProfile.businessExperience?.isVeteran === false}
+                    onChange={() =>
+                      setEditedProfile({
+                        ...editedProfile,
+                        businessExperience: {
+                          ...editedProfile.businessExperience,
+                          yearsOfExperience: editedProfile.businessExperience?.yearsOfExperience || 0,
+                          yearsOfExperienceRange: editedProfile.businessExperience?.yearsOfExperienceRange,
+                          industryExperience: editedProfile.businessExperience?.industryExperience || [],
+                          hasOwnedBusiness: editedProfile.businessExperience?.hasOwnedBusiness || false,
+                          managementExperience: editedProfile.businessExperience?.managementExperience || false,
+                          currentEmploymentStatus:
+                            editedProfile.businessExperience?.currentEmploymentStatus || "Employed Full-Time",
+                          relevantSkills: editedProfile.businessExperience?.relevantSkills || [],
+                          isVeteran: false,
+                        },
+                      })
+                    }
+                    className="h-4 w-4"
+                  />
+                  <Label htmlFor="isVeteranNo" className="cursor-pointer">No</Label>
+                </div>
               </div>
             </div>
           </div>
@@ -609,25 +853,9 @@ export function ProfileSettings({ profile, onUpdateProfile }: ProfileSettingsPro
             <Input
               id="industryExperience"
               placeholder="e.g., Retail, Healthcare, Technology (comma-separated)"
-              value={editedProfile.businessExperience?.industryExperience?.join(", ") || ""}
-              onChange={(e) =>
-                setEditedProfile({
-                  ...editedProfile,
-                  businessExperience: {
-                    ...editedProfile.businessExperience,
-                    yearsOfExperience: editedProfile.businessExperience?.yearsOfExperience || 0,
-                    industryExperience: e.target.value
-                      .split(",")
-                      .map((s) => s.trim())
-                      .filter(Boolean),
-                    hasOwnedBusiness: editedProfile.businessExperience?.hasOwnedBusiness || false,
-                    managementExperience: editedProfile.businessExperience?.managementExperience || false,
-                    currentEmploymentStatus:
-                      editedProfile.businessExperience?.currentEmploymentStatus || "Employed Full-Time",
-                    relevantSkills: editedProfile.businessExperience?.relevantSkills || [],
-                  },
-                })
-              }
+              value={industryExperienceText}
+              onChange={(e) => setIndustryExperienceText(e.target.value)}
+              onBlur={handleIndustryExperienceBlur}
               className="h-11"
             />
             <p className="text-sm text-muted-foreground">
@@ -642,25 +870,9 @@ export function ProfileSettings({ profile, onUpdateProfile }: ProfileSettingsPro
             <Input
               id="relevantSkills"
               placeholder="e.g., Sales, Operations, Marketing, Finance (comma-separated)"
-              value={editedProfile.businessExperience?.relevantSkills?.join(", ") || ""}
-              onChange={(e) =>
-                setEditedProfile({
-                  ...editedProfile,
-                  businessExperience: {
-                    ...editedProfile.businessExperience,
-                    yearsOfExperience: editedProfile.businessExperience?.yearsOfExperience || 0,
-                    industryExperience: editedProfile.businessExperience?.industryExperience || [],
-                    hasOwnedBusiness: editedProfile.businessExperience?.hasOwnedBusiness || false,
-                    managementExperience: editedProfile.businessExperience?.managementExperience || false,
-                    currentEmploymentStatus:
-                      editedProfile.businessExperience?.currentEmploymentStatus || "Employed Full-Time",
-                    relevantSkills: e.target.value
-                      .split(",")
-                      .map((s) => s.trim())
-                      .filter(Boolean),
-                  },
-                })
-              }
+              value={relevantSkillsText}
+              onChange={(e) => setRelevantSkillsText(e.target.value)}
+              onBlur={handleRelevantSkillsBlur}
               className="h-11"
             />
             <p className="text-sm text-muted-foreground">
@@ -831,66 +1043,116 @@ export function ProfileSettings({ profile, onUpdateProfile }: ProfileSettingsPro
         </div>
 
         <div className="space-y-6">
-          <div className="grid gap-4 p-4 bg-muted/30 rounded-lg border border-border/50" 
+          <div className="grid gap-6 p-4 bg-muted/30 rounded-lg border border-border/50" 
                data-error={!!validationErrors.noBankruptcyAttestation || !!validationErrors.noFelonyAttestation}>
-            <div className="flex items-start gap-3">
-              <Checkbox
-                id="noBankruptcyAttestation"
-                checked={editedProfile.backgroundAttestations?.noBankruptcyAttestation || false}
-                onCheckedChange={(checked) => {
-                  setEditedProfile({
-                    ...editedProfile,
-                    backgroundAttestations: {
-                      ...editedProfile.backgroundAttestations,
-                      noBankruptcyAttestation: checked as boolean,
-                      noFelonyAttestation: editedProfile.backgroundAttestations?.noFelonyAttestation || false,
-                      attestedAt: new Date().toISOString(),
-                    },
-                  })
-                  setValidationErrors({ ...validationErrors, noBankruptcyAttestation: "" })
-                }}
-                className="mt-1"
-              />
-              <div className="flex-1">
-                <Label htmlFor="noBankruptcyAttestation" className="font-medium cursor-pointer flex items-center gap-1">
-                  I have not filed for bankruptcy in the past 7 years <span className="text-destructive">*</span>
-                </Label>
-                <p className="text-sm text-muted-foreground mt-0.5">
-                  This self-certification helps franchisors evaluate your financial stability
-                </p>
+            <div className="space-y-3">
+              <Label className="font-medium flex items-center gap-1">
+                Have you filed for bankruptcy in the past 7 years? <span className="text-destructive">*</span>
+              </Label>
+              <p className="text-sm text-muted-foreground">This helps franchisors evaluate your financial stability</p>
+              <div className="flex gap-4">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    id="bankruptcyYes"
+                    name="bankruptcy"
+                    checked={editedProfile.backgroundAttestations?.noBankruptcyAttestation === false}
+                    onChange={() => {
+                      setEditedProfile({
+                        ...editedProfile,
+                        backgroundAttestations: {
+                          ...editedProfile.backgroundAttestations,
+                          noBankruptcyAttestation: false,
+                          noFelonyAttestation: editedProfile.backgroundAttestations?.noFelonyAttestation ?? null,
+                          attestedAt: new Date().toISOString(),
+                        },
+                      })
+                      setValidationErrors({ ...validationErrors, noBankruptcyAttestation: "" })
+                    }}
+                    className="h-4 w-4"
+                  />
+                  <Label htmlFor="bankruptcyYes" className="cursor-pointer">Yes</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    id="bankruptcyNo"
+                    name="bankruptcy"
+                    checked={editedProfile.backgroundAttestations?.noBankruptcyAttestation === true}
+                    onChange={() => {
+                      setEditedProfile({
+                        ...editedProfile,
+                        backgroundAttestations: {
+                          ...editedProfile.backgroundAttestations,
+                          noBankruptcyAttestation: true,
+                          noFelonyAttestation: editedProfile.backgroundAttestations?.noFelonyAttestation ?? null,
+                          attestedAt: new Date().toISOString(),
+                        },
+                      })
+                      setValidationErrors({ ...validationErrors, noBankruptcyAttestation: "" })
+                    }}
+                    className="h-4 w-4"
+                  />
+                  <Label htmlFor="bankruptcyNo" className="cursor-pointer">No</Label>
+                </div>
               </div>
             </div>
 
-            <div className="flex items-start gap-3">
-              <Checkbox
-                id="noFelonyAttestation"
-                checked={editedProfile.backgroundAttestations?.noFelonyAttestation || false}
-                onCheckedChange={(checked) => {
-                  setEditedProfile({
-                    ...editedProfile,
-                    backgroundAttestations: {
-                      ...editedProfile.backgroundAttestations,
-                      noFelonyAttestation: checked as boolean,
-                      noBankruptcyAttestation: editedProfile.backgroundAttestations?.noBankruptcyAttestation || false,
-                      attestedAt: new Date().toISOString(),
-                    },
-                  })
-                  setValidationErrors({ ...validationErrors, noFelonyAttestation: "" })
-                }}
-                className="mt-1"
-              />
-              <div className="flex-1">
-                <Label htmlFor="noFelonyAttestation" className="font-medium cursor-pointer flex items-center gap-1">
-                  I have not been convicted of a felony in the past 10 years <span className="text-destructive">*</span>
-                </Label>
-                <p className="text-sm text-muted-foreground mt-0.5">
-                  This self-certification is required by most franchisors
-                </p>
+            <div className="space-y-3">
+              <Label className="font-medium flex items-center gap-1">
+                Have you been convicted of a felony in the past 10 years? <span className="text-destructive">*</span>
+              </Label>
+              <p className="text-sm text-muted-foreground">This information is required by most franchisors</p>
+              <div className="flex gap-4">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    id="felonyYes"
+                    name="felony"
+                    checked={editedProfile.backgroundAttestations?.noFelonyAttestation === false}
+                    onChange={() => {
+                      setEditedProfile({
+                        ...editedProfile,
+                        backgroundAttestations: {
+                          ...editedProfile.backgroundAttestations,
+                          noFelonyAttestation: false,
+                          noBankruptcyAttestation: editedProfile.backgroundAttestations?.noBankruptcyAttestation ?? null,
+                          attestedAt: new Date().toISOString(),
+                        },
+                      })
+                      setValidationErrors({ ...validationErrors, noFelonyAttestation: "" })
+                    }}
+                    className="h-4 w-4"
+                  />
+                  <Label htmlFor="felonyYes" className="cursor-pointer">Yes</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    id="felonyNo"
+                    name="felony"
+                    checked={editedProfile.backgroundAttestations?.noFelonyAttestation === true}
+                    onChange={() => {
+                      setEditedProfile({
+                        ...editedProfile,
+                        backgroundAttestations: {
+                          ...editedProfile.backgroundAttestations,
+                          noFelonyAttestation: true,
+                          noBankruptcyAttestation: editedProfile.backgroundAttestations?.noBankruptcyAttestation ?? null,
+                          attestedAt: new Date().toISOString(),
+                        },
+                      })
+                      setValidationErrors({ ...validationErrors, noFelonyAttestation: "" })
+                    }}
+                    className="h-4 w-4"
+                  />
+                  <Label htmlFor="felonyNo" className="cursor-pointer">No</Label>
+                </div>
               </div>
             </div>
 
             {(validationErrors.noBankruptcyAttestation || validationErrors.noFelonyAttestation) && (
-              <p className="text-sm text-destructive">Both attestations are required</p>
+              <p className="text-sm text-destructive">Please answer both questions</p>
             )}
           </div>
         </div>

@@ -21,6 +21,11 @@ import {
   StickyNote,
   Plus,
   X,
+  Pencil,
+  Info,
+  ZoomIn,
+  ZoomOut,
+  Menu,
 } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -38,6 +43,7 @@ import type { WhiteLabelSettings } from "@/lib/types/database"
 import { FDDCoverOverlay } from "@/components/fdd-cover-overlay"
 import { useSearchParams } from "next/navigation"
 import { FranchiseScoreConsentModal } from "@/components/franchisescore-consent-modal"
+import { FranchiseScoreDisclaimerModal } from "@/components/franchisescore-disclaimer-modal"
 import { FranchiseScore } from "@/components/franchise-score" // Import the new FranchiseScore component
 
 const pdfModules: {
@@ -167,12 +173,14 @@ export function FDDViewer({
 
   const [franchiseScoreConsent, setFranchiseScoreConsent] = useState<boolean | null>(null)
   const [showConsentModal, setShowConsentModal] = useState(false)
+  const [showDisclaimerModal, setShowDisclaimerModal] = useState(false)
   const [consentLoading, setConsentLoading] = useState(false)
   const [pdfLoadError, setPdfLoadError] = useState<string | null>(null) // Track PDF module load errors
 
   const [isToolbarExpanded, setIsToolbarExpanded] = useState(true)
   const [isQuickLinksExpanded, setIsQuickLinksExpanded] = useState(false)
   const [isEngagementExpanded, setIsEngagementExpanded] = useState(false)
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false) // Mobile sidebar overlay state
 
   const [numPages, setNumPages] = useState<number>(0)
   const [pageNumber, setPageNumber] = useState<number>(1)
@@ -181,6 +189,7 @@ export function FDDViewer({
   const [pdfBlobUrl, setPdfBlobUrl] = useState<string | null>(null) // Added state for PDF blob URL to bypass CORS
 
   const [pageInput, setPageInput] = useState<string>("")
+  const [pdfZoom, setPdfZoom] = useState<number>(1.0) // Zoom level: 0.5 to 2.0
 
   const [isPageVisible, setIsPageVisible] = useState(true)
   const [isUserActive, setIsUserActive] = useState(true)
@@ -236,6 +245,24 @@ export function FDDViewer({
   // State for thumbnail visibility range
   const [visibleThumbnailRange, setVisibleThumbnailRange] = useState({ start: 0, end: 30 })
   const thumbnailContainerRef = useRef<HTMLDivElement>(null)
+
+  // State for inline note editing
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null)
+  const [editingContent, setEditingContent] = useState<string>("")
+  const [previousNotesCount, setPreviousNotesCount] = useState<number>(0)
+
+  // Auto-open editing for newly created notes
+  useEffect(() => {
+    if (propNotes.length > previousNotesCount) {
+      // A new note was added - find the newest one (with empty content)
+      const newNote = propNotes.find(n => !n.content || n.content === "")
+      if (newNote && !editingNoteId) {
+        setEditingNoteId(newNote.id)
+        setEditingContent("")
+      }
+    }
+    setPreviousNotesCount(propNotes.length)
+  }, [propNotes, propNotes.length, previousNotesCount, editingNoteId])
 
   const [isMounted, setIsMounted] = useState(false)
   const [pdfComponents, setPdfComponents] = useState<{
@@ -367,6 +394,7 @@ export function FDDViewer({
               name: m.label,
               pageNumber: m.page_number,
             }))
+            .sort((a: any, b: any) => a.pageNumber - b.pageNumber) // Sort by page number
 
           console.log("[v0] ✓ Setting fddExhibits with", exhibits.length, "exhibits")
           setFddExhibits(exhibits)
@@ -628,7 +656,9 @@ export function FDDViewer({
           const { Document, Page, pdfjs } = reactPdf
 
           // Set worker source
-          pdfjs.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`
+          // Use unpkg with the exact version from pdfjs for consistency
+          // The .mjs extension is required for pdfjs-dist 4.x+
+          pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`
 
           setPdfComponents({ Document, Page, pdfjs })
           setPdfLoadError(null)
@@ -1085,6 +1115,28 @@ export function FDDViewer({
               )}
             </div>
             <div className="flex items-center gap-2">
+              {/* Zoom controls */}
+              <div className="flex items-center gap-1 border-r pr-2 mr-1">
+                <Button
+                  onClick={() => setPdfZoom((z) => Math.max(0.5, z - 0.25))}
+                  disabled={pdfZoom <= 0.5}
+                  variant="ghost"
+                  size="sm"
+                  title="Zoom out"
+                >
+                  <ZoomOut className="h-4 w-4" />
+                </Button>
+                <span className="text-xs text-muted-foreground w-12 text-center">{Math.round(pdfZoom * 100)}%</span>
+                <Button
+                  onClick={() => setPdfZoom((z) => Math.min(2.0, z + 0.25))}
+                  disabled={pdfZoom >= 2.0}
+                  variant="ghost"
+                  size="sm"
+                  title="Zoom in"
+                >
+                  <ZoomIn className="h-4 w-4" />
+                </Button>
+              </div>
               {/* Progress indicator */}
               {numPages > 0 && (
                 <div className="flex items-center gap-2">
@@ -1150,14 +1202,13 @@ export function FDDViewer({
                     </div>
                   </Card>
                 }
-                className="w-full"
               >
                 <div className="relative">
                   <pdfComponents.Page
                     pageNumber={pageNumber}
                     renderTextLayer={true}
                     renderAnnotationLayer={true}
-                    width={Math.min(window.innerWidth * 0.5, 750)}
+                    width={Math.min(window.innerWidth * 0.5, 750) * pdfZoom}
                     className="shadow-lg"
                   />
                   {showCoverOverlay && pageNumber === 1 && (franchise.coverImageUrl || franchise.cover_image_url) && (
@@ -1187,27 +1238,39 @@ export function FDDViewer({
   const franchiseScoreTab = (
     <div className="h-full overflow-y-auto bg-slate-50 dark:bg-slate-900/30">
       <div className="max-w-4xl mx-auto p-6 space-y-6">
-        {/* Header with logo */}
-        <div className="flex items-center gap-4">
-          {franchise.logoUrl ? (
-            <img
-              src={franchise.logoUrl || "/placeholder.svg"}
-              alt={`${franchise.name} logo`}
-              className="h-16 w-14 object-contain rounded-lg border border-border/50 bg-white dark:bg-slate-900 p-2 shadow-sm"
-            />
-          ) : (
-            <div className="h-16 w-14 rounded-lg border-2 border-dashed border-border/50 bg-muted/30 flex items-center justify-center">
-              <Upload className="h-6 w-6 text-muted-foreground" />
+        {/* Header with logo and Disclaimer link */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            {franchise.logoUrl ? (
+              <img
+                src={franchise.logoUrl || "/placeholder.svg"}
+                alt={`${franchise.name} logo`}
+                className="h-16 w-14 object-contain rounded-lg border border-border/50 bg-white dark:bg-slate-900 p-2 shadow-sm"
+              />
+            ) : (
+              <div className="h-16 w-14 rounded-lg border-2 border-dashed border-border/50 bg-muted/30 flex items-center justify-center">
+                <Upload className="h-6 w-6 text-muted-foreground" />
+              </div>
+            )}
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight">{franchise.name}</h1>
+              {franchise.industry && <p className="text-sm text-muted-foreground">{franchise.industry}</p>}
             </div>
-          )}
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">{franchise.name}</h1>
-            {franchise.industry && <p className="text-sm text-muted-foreground">{franchise.industry}</p>}
           </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowDisclaimerModal(true)}
+            className="text-sm text-muted-foreground hover:text-foreground"
+          >
+            <Info className="h-4 w-4 mr-1.5" />
+            Disclaimer
+          </Button>
         </div>
 
         {franchise.franchiseScore?.overall || franchise.franchise_score ? (
           <FranchiseScore
+            fddYear={franchise.fdd_year || franchise.fddYear || 2025}
             score={
               // If franchiseScore is already a properly structured object, use it directly
               typeof franchise.franchiseScore === "object" && franchise.franchiseScore?.overall
@@ -1666,7 +1729,7 @@ export function FDDViewer({
       </div>
 
       {/* My Notes - takes remaining space */}
-      {mode !== "hub-lead" && onAddNote && onUpdateNote && onDeleteNote && (
+      {onAddNote && onUpdateNote && onDeleteNote && (
         <div
           className={`min-h-[450px] max-h-[600px] overflow-hidden ${isPdfVisible ? "px-4 pb-4" : "mx-auto w-full max-w-5xl px-4 pb-4"}`}
         >
@@ -1680,7 +1743,16 @@ export function FDDViewer({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => onAddNote({ content: "", pageNumber })}
+                onClick={() => {
+                  console.log("[v0] Add Note button clicked")
+                  console.log("[v0] onAddNote function exists:", !!onAddNote)
+                  console.log("[v0] Current pageNumber:", pageNumber)
+                  if (onAddNote) {
+                    onAddNote({ content: "", pageNumber })
+                  } else {
+                    console.error("[v0] onAddNote is undefined!")
+                  }
+                }}
                 className="text-xs h-7"
               >
                 <Plus className="h-3 w-3 mr-1" />
@@ -1701,15 +1773,90 @@ export function FDDViewer({
                       key={note.id}
                       className="p-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30"
                     >
-                      <div className="flex items-start justify-between gap-2">
-                        <p className="text-sm flex-1">{note.content}</p>
-                        <div className="flex items-center gap-1">
-                          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => onDeleteNote(note.id)}>
-                            <X className="h-3 w-3" />
-                          </Button>
+                      {editingNoteId === note.id ? (
+                        // Editing mode
+                        <div className="space-y-2">
+                          <textarea
+                            value={editingContent}
+                            onChange={(e) => setEditingContent(e.target.value)}
+                            className="w-full p-2 text-sm border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                            rows={3}
+                            autoFocus
+                            placeholder="Enter your note..."
+                          />
+                          <div className="flex items-center justify-end gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 text-xs"
+                              onClick={() => {
+                                setEditingNoteId(null)
+                                setEditingContent("")
+                              }}
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              variant="default"
+                              size="sm"
+                              className="h-7 text-xs"
+                              onClick={() => {
+                                if (editingContent.trim()) {
+                                  onUpdateNote(note.id, note.title || "", editingContent.trim())
+                                }
+                                setEditingNoteId(null)
+                                setEditingContent("")
+                              }}
+                            >
+                              Save
+                            </Button>
+                          </div>
                         </div>
-                      </div>
-                      {note.pageNumber && <p className="text-xs text-muted-foreground mt-1">Page {note.pageNumber}</p>}
+                      ) : (
+                        // Display mode
+                        <>
+                          <div className="flex items-start justify-between gap-2">
+                            <p 
+                              className="text-sm flex-1 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded p-1 -m-1 transition-colors"
+                              onClick={() => {
+                                setEditingNoteId(note.id)
+                                setEditingContent(note.content)
+                              }}
+                              title="Click to edit"
+                            >
+                              {note.content || <span className="text-muted-foreground italic">Click to add content...</span>}
+                            </p>
+                            <div className="flex items-center gap-1">
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="h-6 w-6 text-muted-foreground hover:text-foreground" 
+                                onClick={() => {
+                                  setEditingNoteId(note.id)
+                                  setEditingContent(note.content)
+                                }}
+                                title="Edit note"
+                              >
+                                <Pencil className="h-3 w-3" />
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="h-6 w-6 text-muted-foreground hover:text-destructive" 
+                                onClick={() => onDeleteNote(note.id)}
+                                title="Delete note"
+                              >
+                                <X className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          </div>
+                          {note.pageNumber && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Page {note.pageNumber}
+                            </p>
+                          )}
+                        </>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -1741,6 +1888,11 @@ export function FDDViewer({
 
   const handleTabClick = (tab: "document" | "franchisescore") => {
     if (tab === "franchisescore") {
+      // Franchisors can access FranchiseScore directly without consent
+      if (mode === "hub-franchisor") {
+        setActiveTab(tab)
+        return
+      }
       if (franchiseScoreConsent === null) {
         // Still loading consent status
         return
@@ -1790,11 +1942,56 @@ export function FDDViewer({
       <div className="flex-1 overflow-hidden">
         {activeTab === "document" ? (
           // Document tab - show PDF viewer with analysis sidebar
-          isPdfVisible ? (
-            <ResizableDivider leftPanel={leftPanel} rightPanel={rightPanel} defaultLeftWidth={55} />
-          ) : (
-            <div className="h-full overflow-y-auto">{rightPanel}</div>
-          )
+          <>
+            {/* Desktop: Use ResizableDivider for side-by-side layout */}
+            <div className="hidden md:block h-full">
+              {isPdfVisible ? (
+                <ResizableDivider leftPanel={leftPanel} rightPanel={rightPanel} defaultLeftWidth={55} />
+              ) : (
+                <div className="h-full overflow-y-auto">{rightPanel}</div>
+              )}
+            </div>
+            
+            {/* Mobile: Show PDF only with floating toggle button */}
+            <div className="md:hidden h-full relative">
+              {leftPanel}
+              
+              {/* Mobile sidebar toggle button */}
+              <Button
+                onClick={() => setIsMobileSidebarOpen(true)}
+                className="fixed top-20 right-4 z-40 h-10 w-10 rounded-full bg-white dark:bg-slate-800 shadow-lg border border-border"
+                size="icon"
+                variant="outline"
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+              
+              {/* Mobile sidebar overlay */}
+              {isMobileSidebarOpen && (
+                <div className="fixed inset-0 z-50">
+                  {/* Backdrop */}
+                  <div 
+                    className="absolute inset-0 bg-black/50"
+                    onClick={() => setIsMobileSidebarOpen(false)}
+                  />
+                  {/* Sidebar panel */}
+                  <div className="absolute right-0 top-0 bottom-0 w-[85vw] max-w-md bg-white dark:bg-slate-900 shadow-xl overflow-y-auto">
+                    <div className="sticky top-0 bg-white dark:bg-slate-900 z-10 p-4 border-b flex items-center justify-between">
+                      <h3 className="font-semibold">FDD Navigation</h3>
+                      <Button
+                        onClick={() => setIsMobileSidebarOpen(false)}
+                        size="icon"
+                        variant="ghost"
+                      >
+                        <X className="h-5 w-5" />
+                      </Button>
+                    </div>
+                    {rightPanel}
+                  </div>
+                </div>
+              )}
+            </div>
+          </>
         ) : (
           // FranchiseScore tab - show full score analysis
           franchiseScoreTab
@@ -1806,6 +2003,12 @@ export function FDDViewer({
         onAccept={handleConsentComplete}
         onDecline={() => setShowConsentModal(false)}
         fddId={franchise?.slug || ""}
+        franchiseName={franchise?.name}
+      />
+
+      <FranchiseScoreDisclaimerModal
+        open={showDisclaimerModal}
+        onClose={() => setShowDisclaimerModal(false)}
         franchiseName={franchise?.name}
       />
 
@@ -1850,6 +2053,7 @@ export function FDDViewer({
           setPageNumber(page)
           setIsPdfVisible(true)
           setActiveTab("document") // Switch to document tab when navigating
+          setIsMobileSidebarOpen(false) // Close mobile sidebar when navigating
         }}
       />
     </div>

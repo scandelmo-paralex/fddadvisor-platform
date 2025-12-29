@@ -1,0 +1,113 @@
+{
+  "item_8_analysis": {
+    "title": "Restrictions on Sources of Products and Services",
+    "operations_manual": {
+      "requirement": "Establish and operate AHS Business in compliance with Franchise Agreement and standards/specifications in Operations Manual.",
+      "purpose": "Protect reputation and goodwill of the Marks.",
+      "scope": "Not designed to control day-to-day operations."
+    },
+    "software_and_internet_fee": {
+      "requirement": "Use franchisor's scheduling software.",
+      "cost": "Payment of Software and Internet Fee.",
+      "provider": "Third party designated vendor."
+    },
+    "online_services": {
+      "requirement": "Obtain website development, search engine optimization, and other online marketing services from designated suppliers.",
+      "provider_type": "Independent third parties.",
+      "billing": "Currently billed via Software and Internet Fee, franchisor pays suppliers."
+    },
+    "website_maintenance": {
+      "current_provider": "Ingeniux Corporation (IGX).",
+      "franchisee_obligation": "Enter into a Participation Agreement with IGX for Vendor SaaS Services.",
+      "agreement_location": "Attachment N of Disclosure Document."
+    },
+    "computer_hardware_and_software": {
+      "requirement": "Obtain computer hardware and software meeting franchisor's minimum specifications.",
+      "condition": "If not already possessed."
+    },
+    "mobile_device": {
+      "requirement": "Obtain a smart phone or other approved device meeting minimum specifications for remote email access.",
+      "condition": "Unless an existing device is used for the AHS Business."
+    },
+    "phone_answering": {
+      "requirement": "Answer AHS Business phone during regular business hours by a live person.",
+      "options": "Office Manager or answering service."
+    },
+    "approved_suppliers": {
+      "general_requirement": "Purchase certain materials, supplies, services, and equipment from approved suppliers.",
+      "digital_advertising_and_merchant_processing": "Purchase from approved suppliers.",
+      "information_provision": "Franchisor provides supplier information after Franchise Agreement signing."
+    },
+    "ace_hardware_suppliers": {
+      "approved_for": "Certain goods, materials, supplies, fixtures, equipment, and inventory.",
+      "franchisee_obligation": "Required to purchase all materials, supplies, and goods needed from an Ace Supplier.",
+      "conditions": "Only when item is in stock or readily available, and competitively priced."
+    },
+    "future_approved_suppliers": {
+      "franchisor_right": "May require purchase from other approved suppliers in the future.",
+      "notification": "Franchisor will advise franchisees of these suppliers."
+    },
+    "purchasing_flexibility": {
+      "general_rule": "Except as noted, may purchase products, services, supplies, fixtures, equipment, and inventory from any supplier.",
+      "new_supplier_approval": "If a particular supplier is designated, any similar materials/services from a previously unapproved supplier require franchisor approval."
+    },
+    "supplier_approval_process": {
+      "criteria": "No written criteria for supplier approval.",
+      "franchisee_submission": "May be required to submit specifications, information, or samples for review.",
+      "review_basis": "To determine if items meet franchisor's specifications and standards (quality, content, composition, service) set forth in Operations Manual.",
+      "decision_timeline": "Franchisor advises within 30 days of receiving required information.",
+      "fees": "No fee currently required for supplier approval, but may be required in the future.",
+      "expense_reimbursement": "Franchisor may require supplier to reimburse expenses incurred in determining compliance.",
+      "revocation": "Franchisor may revoke approval with written notice."
+    },
+    "franchisor_as_supplier": {
+      "current_status": "Neither franchisor nor affiliate is currently an approved supplier.",
+      "future_right": "Reserves the right to designate itself or affiliates as approved suppliers."
+    },
+    "vehicle_requirements": {
+      "ratio": "Purchase or lease one vehicle for every three craftsmen employed working an average of 30 hours per week or more.",
+      "example": "3 craftsmen = 1 vehicle, 6 craftsmen = 2 vehicles, 9 craftsmen = 3 vehicles."
+    },
+    "vehicle_specifications": {
+      "current_recommendation": "White, gray, red, or black van or truck capable of displaying required vehicle designs and logo.",
+      "future_changes": "Franchisor may change requirements."
+    },
+    "additional_vehicles": {
+      "approval": "All vans and trucks used must be approved by franchisor.",
+      "branding": "Must display approved vehicle design advertising and logo.",
+      "personal_vehicle_use": "If a personal vehicle is used, franchisor may require a vehicle magnet with logo/name."
+    },
+    "franchisor_revenue_from_suppliers": {
+      "potential_source": "Revenue from purchases or leases of inventory and equipment from approved suppliers.",
+      "last_fiscal_year_ending_dec_28_2024": {
+        "materials_sold_to_franchisees": "Did not derive any revenues.",
+        "real_estate_leases": "Does not derive revenues."
+      },
+      "officer_ownership": "No officer owns an interest in approved suppliers."
+    },
+    "ace_hardware_financials_fy_ending_dec_28_2024": {
+      "total_revenue": "$9.5 billion.",
+      "revenue_from_ace_hardware_retail_stores_merchandise_and_services": "$8.3 billion (includes subsidiaries Westlake and GLA).",
+      "revenue_from_sales_to_franchisees": "$977,000."
+    },
+    "estimated_costs": {
+      "establishing_franchise": "Purchases of materials meeting specifications represent approximately 8 to 15 percent of total purchases.",
+      "ongoing_operations": "Purchases in accordance with standards and specifications comprise 80 to 90 percent of product purchase requirements."
+    },
+    "private_labeling": {
+      "current_status": "Does not privately label any products.",
+      "future_right": "Reserves the right to do so."
+    },
+    "negotiated_purchase_arrangements": {
+      "current_status": "Does not negotiate purchase arrangements (including preferred pricing) with suppliers for franchisee benefit.",
+      "future_right": "Reserves the right to do so."
+    },
+    "payments_from_suppliers": {
+      "current_status": "Does not receive payments from approved suppliers regarding franchisee purchases.",
+      "future_right": "Reserves the right to do so."
+    },
+    "franchisee_benefit_from_sources": {
+      "general_statement": "Except as described, franchisee does not receive a material benefit from franchisor based on use of designated/approved sources or purchase of particular products/services."
+    }
+  }
+}

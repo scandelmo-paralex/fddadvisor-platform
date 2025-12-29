@@ -1,0 +1,33 @@
+{
+  "has_territory_protection": true,
+  "exclusive_territory": false,
+  "territory_definition": {
+    "type": "zip_codes",
+    "radius_miles": null,
+    "minimum_population": null,
+    "description": "Delineated by zip codes as determined by business map software. Size and configuration based on the number of households."
+  },
+  "exclusivity_provisions": "The franchisor will not operate or permit another AHS Business to operate within the designated protected territory, provided the franchisee is not in default.",
+  "exceptions_to_exclusivity": {
+    "ecommerce_sales": "franchisor_reserved",
+    "online_ordering": "franchisor_reserved",
+    "mobile_services": "not_mentioned",
+    "delivery_services": "franchisor_reserved",
+    "other_exceptions": [
+      "Competition from other franchisees, company-owned outlets, or other distribution channels or competitive brands controlled by the franchisor.",
+      "Franchisor's right to develop and establish other franchise systems for similar, same, or different products or services.",
+      "Franchisor's right to grant licenses for other franchise or license systems.",
+      "Franchisor's right to open, operate, sell, manage and/or franchise AHS Businesses outside the Territory.",
+      "Franchisor is not restricted from pursuing any other business concept or distributing proprietary equipment and supplies to wholesalers or other distribution outlets (other than AHS Businesses) or by Internet, catalog, mail order, telemarketing, other direct marketing sales or otherwise, whether inside or outside the Territory.",
+      "Franchisor may use its Marks and Ace Handyman Services System in connection with the provision of other services and products or in alternative channels of distribution (including by Internet, catalog, mail order, telemarketing or other direct marketing sales), inside or outside of the Territory.",
+      "Franchisor's affiliate may operate Ace Hardware Painting Services businesses, which may solicit and accept orders in the franchisee's Territory.",
+      "Franchisor's affiliate may operate Ace Hardware Plumbing Services businesses, which may solicit and accept orders in the franchisee's Territory.",
+      "Franchisor's affiliate may operate HVAC businesses, which may solicit and accept orders in the franchisee's Territory.",
+      "Franchisor can develop, acquire or be acquired by, or engage in any other transaction with other businesses, companies and/or units (competitive or not), that are or will be located anywhere, including arrangements where other units are (or are not) converted to the Ace Handyman Services System or other format, or in which company-owned, franchised or other businesses (including your AHS Business) are (or are not) converted to another format (whether competitive or not), or both, and is maintained as the same concept, as a new concept, or as a separate concept in your protected Territory."
+    ]
+  },
+  "franchisor_reserved_rights": "The franchisor retains the right to operate or permit another AHS Business to operate within the Territory if the franchisee is in default. The franchisor also retains the right to develop and establish other franchise systems, grant licenses for these systems, open and operate AHS Businesses outside the Territory, and engage in any other business concept. The franchisor and its affiliates may use their Marks and System in alternative channels of distribution, including online sales, inside or outside the Territory. Affiliated businesses (Ace Hardware Painting Services, Ace Hardware Plumbing Services, HVAC businesses) may solicit and accept orders within the franchisee's Territory. The franchisor can engage in various business transactions, including conversions of businesses, within the franchisee's protected Territory.",
+  "other_franchisee_competition": "allowed",
+  "relocation_rights": "The franchisee must obtain the franchisor's prior written approval for any Business Location, including any relocation. Relocation will generally be approved if the Business Location is within the Territory and meets current standards.",
+  "territory_scoring_category": "limited_protection"
+}

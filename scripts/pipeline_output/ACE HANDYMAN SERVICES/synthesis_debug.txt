@@ -1,0 +1,168 @@
+```json
+{
+  "franchise_score": 456,
+  "franchise_score_breakdown": {
+    "financial_transparency": {
+      "total_score": 138,
+      "max_score": 150,
+      "metrics": [
+        {
+          "metric_name": "Item 19 Quality",
+          "score": 90,
+          "max_score": 90,
+          "rating": "Excellent",
+          "explanation": "Item 19 provides detailed financial performance data for calendar year 2024, including total revenue, gross profit, and owner discretionary income across multiple quartiles for both single and multi-territory reporting groups. It specifies the number of outlets analyzed (286) and includes notes on the data's nature and limitations.",
+          "formula_used": "Full Item 19 with detailed data = 90 points"
+        },
+        {
+          "metric_name": "Investment Clarity",
+          "score": 30,
+          "max_score": 30,
+          "rating": "Excellent",
+          "explanation": "Item 7 provides a comprehensive breakdown of the initial investment for both Standard and Mini AHS Businesses, detailing 17 cost categories with specific low and high ranges and clear assumptions. The document includes a detailed explanation of these estimates, referencing their basis in experience.",
+          "formula_used": "Comprehensive breakdown = 30 points"
+        },
+        {
+          "metric_name": "Fee Structure Transparency",
+          "score": 18,
+          "max_score": 30,
+          "rating": "Good",
+          "explanation": "Items 5 and 6 clearly disclose the initial franchise fee, royalty fee (6%), marketing fee (2%), and technology fees ($599/month). Other fees are listed with amounts and calculation methods, though some conditions for certain fees could be more explicit.",
+          "formula_used": "Standard disclosure = 18 points"
+        }
+      ]
+    },
+    "system_strength": {
+      "total_score": 132,
+      "max_score": 150,
+      "metrics": [
+        {
+          "metric_name": "System Growth Pattern",
+          "score": 60,
+          "max_score": 60,
+          "rating": "Excellent",
+          "explanation": "The system shows healthy growth, with a net positive growth rate over the last three years. In 2024, 35 units opened and 15 closed, resulting in a net growth of 20 units. The closure rate in 2024 was 3.88% (15/387), which is below the 5% threshold.",
+          "formula_used": "Net growth (2024): (35-15)/372 * 100 = 5.38%. Closure rate (2024): 15/387 * 100 = 3.88%. Healthy growth = 60 points"
+        },
+        {
+          "metric_name": "Franchisor Longevity",
+          "score": 48,
+          "max_score": 48,
+          "rating": "Excellent",
+          "explanation": "The franchisor began offering franchises in 2001, indicating 23 years of experience in the franchising industry. This longevity suggests a well-established system and operational history.",
+          "formula_used": "10+ years in franchising = 48 points"
+        },
+        {
+          "metric_name": "Clean Record",
+          "score": 38,
+          "max_score": 42,
+          "rating": "Good",
+          "explanation": "Items 3 and 4 disclose 3 litigation cases. One case against the direct franchisor was settled in 2020. Two cases involving the parent company were settled between 2017-2022 and 2012-2017. No bankruptcy filings are disclosed. The cases are not recent and have been settled.",
+          "formula_used": "1-2 cases, settled favorably = 38-40 points. Applied 38 points due to 3 cases, with 2 involving parent company."
+        }
+      ]
+    },
+    "franchisee_support": {
+      "total_score": 132,
+      "max_score": 150,
+      "metrics": [
+        {
+          "metric_name": "Training Program Quality",
+          "score": 60,
+          "max_score": 60,
+          "rating": "Excellent",
+          "explanation": "The training program includes approximately 10-12 weeks of pre-training work and study, followed by a 3-day initial business training program (20-29 hours). It covers 11 topics, is available in Denver or via video conference, and requires attendance for key personnel. Ongoing training is available through various methods.",
+          "formula_used": "Comprehensive training = 60 points"
+        },
+        {
+          "metric_name": "Operational Support",
+          "score": 48,
+          "max_score": 48,
+          "rating": "Excellent",
+          "explanation": "Support includes 18-24 hours of on-site training within the first 90 days, a dedicated field support team member for startup assistance, a support hotline via phone, text, and email during business hours, and access to scheduling software, an internet site, and an intranet site. The operations manual is provided electronically.",
+          "formula_used": "Extensive support = 48 points"
+        },
+        {
+          "metric_name": "Territory Protection",
+          "score": 24,
+          "max_score": 42,
+          "rating": "Fair",
+          "explanation": "A protected territory is defined by zip codes, with exclusivity provided as long as the franchisee is not in default. However, the franchisor reserves significant rights, including for e-commerce, online ordering, and the operation of affiliated businesses (Ace Hardware Painting Services, Plumbing Services, HVAC) that can solicit orders within the territory.",
+          "formula_used": "Limited protection = 24 points"
+        }
+      ]
+    },
+    "business_foundation": {
+      "total_score": 154,
+      "max_score": 150,
+      "metrics": [
+        {
+          "metric_name": "Management Experience",
+          "score": 30,
+          "max_score": 48,
+          "rating": "Good",
+          "explanation": "The management team includes individuals with varying levels of franchise experience. Andy Bell has 23.75 years, Chris Bue has 9.75 years, and Colette Bell has 5.75 years. Other executives have less direct franchise experience, but possess relevant industry expertise.",
+          "formula_used": "Some franchise experience across management team = 30 points"
+        },
+        {
+          "metric_name": "Item 19 Performance Indicators",
+          "score": 72,
+          "max_score": 72,
+          "rating": "Excellent",
+          "explanation": "Item 19 shows positive revenue performance. For single reporting territories, the top quartile average revenue is $760,107, with 39% achieving this level. Owner discretionary income shows 61% achieving the top quartile benchmark. Multi-territory groups also show strong revenue averages.",
+          "formula_used": "Strong performance shown = 72 points"
+        },
+        {
+          "metric_name": "System Performance",
+          "score": 30,
+          "max_score": 30,
+          "rating": "Excellent",
+          "explanation": "The system shows positive signals with consistent growth and a low closure rate. While specific multi-unit ownership percentages are not detailed, the overall growth and low closure rate suggest franchisee satisfaction. Transfers (12 in 2024) are moderate compared to openings.",
+          "formula_used": "Positive signals = 30 points"
+        }
+      ]
+    }
+  },
+  "strengths": [
+    {
+      "title": "Detailed Financial Transparency",
+      "description": "Item 19 provides a comprehensive breakdown of revenue and owner discretionary income across quartiles for both single and multi-territory operations. Item 7 offers a detailed initial investment breakdown with clear assumptions for 17 cost categories.",
+      "citation": "Item 19, Item 7",
+      "impact": "High"
+    },
+    {
+      "title": "Established Franchisor Longevity and System Growth",
+      "description": "With 23 years in franchising and consistent net positive unit growth, the franchisor demonstrates a stable and expanding system. The low closure rate of 3.88% in 2024 indicates a healthy operational environment for franchisees.",
+      "citation": "Item 1, Item 20",
+      "impact": "High"
+    },
+    {
+      "title": "Comprehensive Training and Operational Support",
+      "description": "The franchise offers extensive initial training, including pre-training work and ongoing support, covering 11 topics. Franchisees receive significant operational assistance, including on-site visits, a support hotline, and access to essential technology systems.",
+      "citation": "Item 11",
+      "impact": "High"
+    }
+  ],
+  "considerations": [
+    {
+      "title": "Limited Territory Protection",
+      "description": "While a protected territory is defined, the franchisor retains broad rights, including for e-commerce and online sales. Affiliated businesses like Ace Hardware Painting Services and Plumbing Services can solicit orders within the franchisee's territory, potentially impacting exclusivity.",
+      "citation": "Item 12",
+      "impact": "Medium"
+    },
+    {
+      "title": "Management Team Experience Variation",
+      "description": "While some key executives have substantial franchise experience, others have limited direct franchise tenure. This variation in experience across the leadership team may present different levels of support and strategic guidance.",
+      "citation": "Item 2",
+      "impact": "Medium"
+    },
+    {
+      "title": "Litigation History",
+      "description": "Three litigation cases are disclosed, although all have been settled and are not recent. Two of these cases involved the parent company, indicating a history of disputes that, while resolved, warrant consideration.",
+      "citation": "Item 3",
+      "impact": "Low"
+    }
+  ],
+  "analytical_summary": "ACE HANDYMAN SERVICES scores 456 out of 600, indicating a strong franchise opportunity. The system demonstrates excellent financial transparency with detailed Item 19 data and clear investment breakdowns, alongside robust franchisor longevity and system growth with a low closure rate. Franchisees benefit from comprehensive training and operational support. However, considerations include limited territory protection due to franchisor reserved rights and affiliated business competition, varying management team experience, and a history of settled litigation. Overall, the franchise presents a well-supported business model with a proven track record, though potential franchisees should carefully evaluate the territory exclusivity and management team dynamics."
+}
+```

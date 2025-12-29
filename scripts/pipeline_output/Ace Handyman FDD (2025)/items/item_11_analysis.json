@@ -1,0 +1,78 @@
+{
+  "pre_opening_assistance": "The franchisor or its designee will designate the territory, provide access to scheduling software, an internet site for prospective customers, an e-mail account, and an intranet site. They will also provide specifications for equipment, inventory, and supplies, a list of approved suppliers, pre-opening and opening activities, and access to a proprietary project management start-up onboarding program. A copy of the Operations Manual will be made available electronically.",
+  "initial_training": {
+    "duration_weeks": null,
+    "duration_hours": 20,
+    "duration_description": "20-29 hour initial training program, plus approximately 10 to 12 weeks of onboarding work and study prior to the initial business training program. The initial business training program itself lasts approximately three business days.",
+    "location": "Denver, Colorado metropolitan area, or another location designated by the franchisor, or via video conference.",
+    "topics": [
+      "Introduction and Orientation",
+      "History, Mission, and Brand",
+      "Franchisor/Franchisee Relations",
+      "Start-up and Daily Operations",
+      "Brand, Culture & Service Path (Customer Service)",
+      "Employee/Craftsman Hiring & Retention",
+      "Technology Tools and Scheduling Software",
+      "Accounting & Software",
+      "Advertising and Marketing",
+      "Corporate Communications",
+      "Week-in-Review, Testing"
+    ],
+    "topics_count": 11,
+    "required_attendees": "You or your Franchise Manager, and your Office Manager, plus up to two other individuals designated by you (for a total of four individuals). You or your Franchise Manager, and your Office Manager, must successfully complete the initial business training program.",
+    "trainer_qualifications": "Supervised by the President, Chris Bue, who has over 11 years of experience with the franchisor and more than 25 years of experience in the field across multiple industries. Each instructor has demonstrated satisfactory knowledge of the topics and is overseen and reviewed by Mr. Bue.",
+    "cost_covered_by": "franchisee"
+  },
+  "ongoing_training": {
+    "available": true,
+    "frequency": "annual",
+    "types": [
+      "telephone calls",
+      "webinars",
+      "video conferences",
+      "e-mail",
+      "other electronic communications",
+      "internal blogs",
+      "seminars",
+      "national or regional conventions",
+      "continuing development programs",
+      "other additional or refresher training programs",
+      "other meetings"
+    ],
+    "description": "Regular communications on current best practices are provided. Annual conferences are held. Additional training programs may be conducted at a designated location or virtually. Mandatory seminars, programs, or meetings may be conducted, not lasting more than three days at a time. Attendance at one regional meeting and the annual national convention is required each year. Up to one additional mandatory convention or meeting every 24 months may be required."
+  },
+  "field_support": {
+    "provided": true,
+    "visit_frequency": "Within the first 90 days of operation",
+    "representative_ratio": null,
+    "description": "Within the first 90 days of operation, 18 to 24 hours of on-site training will be provided at the Business Location. This may be divided into two separate sessions. A field support TEAM member is assigned to assist with startup list completion during pre-opening."
+  },
+  "support_hotline": {
+    "available": true,
+    "hours": "business hours",
+    "contact_methods": [
+      "telephone",
+      "text",
+      "e-mail"
+    ]
+  },
+  "technology_systems": {
+    "pos_system": null,
+    "software_provided": [
+      "scheduling software",
+      "e-mail account",
+      "Internet site for prospective customers",
+      "Intranet site",
+      "social media accounts"
+    ],
+    "ongoing_tech_support": "The franchisor provides access to scheduling software and all upgrades. They also provide an e-mail account and an Internet site for prospective customers. A monthly Software and Internet Fee of $599 covers these services."
+  },
+  "operations_manual": {
+    "provided": true,
+    "format": "electronically, online",
+    "update_frequency": "as needed",
+    "page_count": 70
+  },
+  "advertising_support": "The franchisor provides access to marketing programs, advertising designs, advertising campaigns, and camera-ready artwork. They may charge for these materials. A suggested marketing plan, marketing materials, advertising designs, advertising campaigns, camera-ready artwork, and budgeting templates are provided at initial training. A National Brand Fund is established, to which franchisees pay 2 percent of Gross Revenues. This fund is used for advertising, promotion, and marketing of goods and services. The franchisor may use outside advertising and marketing agencies. They may require franchisees to join a Local Advertising Group. Franchisees must submit promotional and advertising materials for prior written approval.",
+  "conferences_conventions": "Annual conferences are held to discuss sales techniques, new product developments, new service suggestions, accounting, inventory control, performance standards, advertising programs, merchandising procedures, and other relevant topics. Attendance may be required. Mandatory seminars, national or regional conventions, continuing development programs, other additional or refresher training programs, or other meetings may be conducted. Mandatory attendance is required for some events."
+}

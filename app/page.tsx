@@ -77,13 +77,13 @@ export default function Home() {
           if (fddAccess && fddAccess.length > 0) {
             router.push("/hub/my-fdds")
           } else {
-            router.push("/discover")
+            router.push("/login")
           }
         } else {
-          router.push("/discover")
+          router.push("/login")
         }
       } else {
-        router.push("/discover")
+        router.push("/login")
       }
     }
 

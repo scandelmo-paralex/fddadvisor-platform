@@ -1,8 +1,8 @@
 "use client"
 
-// Build timestamp: 2025-11-17T18:22:00Z
+// Build timestamp: 2025-12-08T23:50:00Z
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { useRouter, useParams } from 'next/navigation'
 import { createBrowserClient } from "@/lib/supabase/client"
 import { Loader2 } from 'lucide-react'
@@ -13,6 +13,16 @@ import { InvestmentModal } from "@/components/investment-modal"
 import { RevenueModal } from "@/components/revenue-modal"
 import { FDDViewer } from "@/components/fdd-viewer"
 import type { Franchise } from "@/lib/data"
+import { toast } from "sonner"
+
+// Note type matching FDDViewer expectations
+interface Note {
+  id: string
+  pageNumber: number
+  content: string
+  createdAt: string
+  updatedAt?: string
+}
 
 const isUUID = (str: string) => {
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -30,6 +40,195 @@ export default function WhiteLabelFDDPage() {
   const [whiteLabelSettings, setWhiteLabelSettings] = useState<WhiteLabelSettings | null>(null)
   const [hasAccess, setHasAccess] = useState(false)
   const [activeModal, setActiveModal] = useState<string | null>(null)
+  const [notes, setNotes] = useState<Note[]>([])
+  const [fddId, setFddId] = useState<string | null>(null)
+
+  // Fetch notes for this FDD
+  const fetchNotes = useCallback(async (fddIdToFetch: string) => {
+    try {
+      const response = await fetch(`/api/notes?fdd_id=${fddIdToFetch}`)
+      if (!response.ok) {
+        console.error("[v0] Failed to fetch notes:", response.status)
+        return
+      }
+      const data = await response.json()
+      // Transform API response to match Note interface
+      const transformedNotes: Note[] = (data.notes || []).map((note: any) => ({
+        id: note.id,
+        pageNumber: note.pageNumber || 1,
+        content: note.content,
+        createdAt: note.createdAt,
+        updatedAt: note.updatedAt,
+      }))
+      setNotes(transformedNotes)
+      console.log("[v0] Fetched notes:", transformedNotes.length)
+    } catch (err) {
+      console.error("[v0] Error fetching notes:", err)
+    }
+  }, [])
+
+  // Add a new note - accepts object from fdd-viewer.tsx
+  const handleAddNote = useCallback(async (noteData: { content: string; pageNumber: number; franchiseId?: string }) => {
+    console.log("[v0] handleAddNote called with:", noteData)
+    console.log("[v0] Current fddId:", fddId)
+    
+    if (!fddId) {
+      console.error("[v0] handleAddNote - fddId is null!")
+      toast.error("Cannot save note - FDD not loaded")
+      return
+    }
+
+    const { content, pageNumber } = noteData
+    console.log("[v0] Creating note - content:", content, "pageNumber:", pageNumber)
+    
+    // If content is empty, this is just initializing the UI - don't save yet
+    if (!content || content.trim() === "") {
+      // Create a temporary note for UI editing
+      const tempNote: Note = {
+        id: `temp-${Date.now()}`,
+        pageNumber: pageNumber || 1,
+        content: "",
+        createdAt: new Date().toISOString(),
+      }
+      console.log("[v0] Creating temp note:", tempNote)
+      setNotes(prev => {
+        console.log("[v0] Previous notes count:", prev.length)
+        return [tempNote, ...prev]
+      })
+      console.log("[v0] Temporary note created for editing")
+      return
+    }
+    
+    try {
+      const response = await fetch("/api/notes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fddId,
+          pageNumber,
+          content,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || "Failed to save note")
+      }
+
+      const data = await response.json()
+      const newNote: Note = {
+        id: data.note.id,
+        pageNumber: data.note.pageNumber || pageNumber,
+        content: data.note.content,
+        createdAt: data.note.createdAt,
+        updatedAt: data.note.updatedAt,
+      }
+
+      setNotes(prev => [newNote, ...prev])
+      toast.success("Note saved")
+      console.log("[v0] Note added:", newNote.id)
+    } catch (err: any) {
+      console.error("[v0] Error adding note:", err)
+      toast.error(err.message || "Failed to save note")
+    }
+  }, [fddId])
+
+  // Update an existing note - signature matches fdd-viewer.tsx: (noteId, title, content)
+  const handleUpdateNote = useCallback(async (noteId: string, _title: string, content: string) => {
+    // Handle temp notes - replace with real saved note
+    if (noteId.startsWith('temp-')) {
+      // This is a temp note being saved for the first time
+      if (!fddId) {
+        toast.error("Cannot save note - FDD not loaded")
+        return
+      }
+      
+      try {
+        const response = await fetch("/api/notes", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fddId,
+            pageNumber: notes.find(n => n.id === noteId)?.pageNumber || 1,
+            content,
+          }),
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.error || "Failed to save note")
+        }
+
+        const data = await response.json()
+        const newNote: Note = {
+          id: data.note.id,
+          pageNumber: data.note.pageNumber || 1,
+          content: data.note.content,
+          createdAt: data.note.createdAt,
+          updatedAt: data.note.updatedAt,
+        }
+
+        // Replace temp note with real note
+        setNotes(prev => prev.map(note => 
+          note.id === noteId ? newNote : note
+        ))
+        toast.success("Note saved")
+        console.log("[v0] Temp note saved as:", newNote.id)
+        return
+      } catch (err: any) {
+        console.error("[v0] Error saving temp note:", err)
+        toast.error(err.message || "Failed to save note")
+        return
+      }
+    }
+    
+    // Regular update for existing notes
+    try {
+      const response = await fetch(`/api/notes/${noteId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || "Failed to update note")
+      }
+
+      const data = await response.json()
+      setNotes(prev => prev.map(note => 
+        note.id === noteId 
+          ? { ...note, content: data.note.content, updatedAt: data.note.updatedAt }
+          : note
+      ))
+      toast.success("Note updated")
+      console.log("[v0] Note updated:", noteId)
+    } catch (err: any) {
+      console.error("[v0] Error updating note:", err)
+      toast.error(err.message || "Failed to update note")
+    }
+  }, [fddId, notes])
+
+  // Delete a note
+  const handleDeleteNote = useCallback(async (noteId: string) => {
+    try {
+      const response = await fetch(`/api/notes/${noteId}`, {
+        method: "DELETE",
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || "Failed to delete note")
+      }
+
+      setNotes(prev => prev.filter(note => note.id !== noteId))
+      toast.success("Note deleted")
+      console.log("[v0] Note deleted:", noteId)
+    } catch (err: any) {
+      console.error("[v0] Error deleting note:", err)
+      toast.error(err.message || "Failed to delete note")
+    }
+  }, [])
 
   useEffect(() => {
     loadFDDData()
@@ -78,7 +277,7 @@ export default function WhiteLabelFDDPage() {
           item19_revenue_low, item19_revenue_high,
           item19_sample_size, franchise_score,
           risk_level, industry_percentile, status,
-          fdds!franchise_id(pdf_url)
+          fdds!franchise_id(id, pdf_url)
         `)
         .eq("id", franchiseId)
         .single()
@@ -93,6 +292,18 @@ export default function WhiteLabelFDDPage() {
       }
 
       const actualFranchiseId = franchiseData.id
+
+      // Extract FDD ID for notes and AI chat
+      const extractedFddId = Array.isArray(franchiseData.fdds) 
+        ? franchiseData.fdds[0]?.id 
+        : franchiseData.fdds?.id
+      
+      if (extractedFddId) {
+        setFddId(extractedFddId)
+        console.log("[v0] FDD ID set:", extractedFddId)
+        // Fetch notes for this FDD
+        fetchNotes(extractedFddId)
+      }
 
       const { data: access, error: accessError } = await supabase
         .from("lead_fdd_access")
@@ -376,10 +587,10 @@ export default function WhiteLabelFDDPage() {
         mode="hub-lead"
         whiteLabelSettings={whiteLabelSettings || undefined}
         onOpenModal={handleOpenModal}
-        notes={[]}
-        onAddNote={() => {}}
-        onUpdateNote={() => {}}
-        onDeleteNote={() => {}}
+        notes={notes}
+        onAddNote={handleAddNote}
+        onUpdateNote={handleUpdateNote}
+        onDeleteNote={handleDeleteNote}
         onUpdateEngagement={() => {}}
         showCoverOverlay={true}
       />

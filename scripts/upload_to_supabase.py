@@ -55,9 +55,9 @@ def upload_franchise(json_path: str, supabase_url: str = None, supabase_key: str
         "score_legal_compliance": breakdown.get("system_stability", {}).get("total_score"),  # Using system_stability as proxy
         "score_franchisee_satisfaction": breakdown.get("growth_trajectory", {}).get("total_score"),  # Using growth as proxy
         
-        # Opportunities and Concerns
-        "opportunities": data.get("opportunities", []),
-        "concerns": data.get("concerns", []),
+        # Opportunities and Concerns (handle both naming conventions)
+        "opportunities": data.get("opportunities") or data.get("strengths", []),
+        "concerns": data.get("concerns") or data.get("considerations", []),
         
         # Analytical Summary
         "analytical_summary": data.get("analytical_summary"),

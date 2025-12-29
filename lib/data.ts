@@ -154,11 +154,13 @@ export interface BuyerProfile {
   }
   businessExperience?: {
     yearsOfExperience: number
+    yearsOfExperienceRange?: string // Store the original dropdown value (e.g., "6-10", "20+")
     industryExperience: string[] // e.g., ["Retail", "Healthcare", "Technology"]
     hasOwnedBusiness: boolean
     managementExperience: boolean
     currentEmploymentStatus: "Employed Full-Time" | "Employed Part-Time" | "Self-Employed" | "Unemployed" | "Retired"
     relevantSkills: string[] // e.g., ["Sales", "Operations", "Marketing"]
+    isVeteran?: boolean | null // true = yes, false = no, null/undefined = not answered
   }
   financialQualification?: {
     ficoScoreRange?: string // Self-reported FICO score range

@@ -87,6 +87,7 @@ export interface BuyerProfile {
   no_felony_attestation?: boolean
   no_bankruptcy_attestation?: boolean
   profile_completed_at?: string
+  is_veteran?: boolean | null // true = yes, false = no, null = not answered
 
   created_at: string
   updated_at: string
@@ -320,4 +321,92 @@ export interface FDDChunkSearchResult {
   item_number?: number
   page_number: number
   similarity: number
+}
+
+// ============================================================================
+// TEAM MEMBER TYPES
+// ============================================================================
+
+export type TeamMemberRole = "owner" | "admin" | "recruiter"
+
+export interface FranchisorTeamMember {
+  id: string
+  franchisor_id: string
+  user_id?: string // NULL until invitation accepted
+  email: string
+  full_name: string
+  role: TeamMemberRole
+  is_active: boolean
+  invitation_token?: string
+  invited_at: string
+  accepted_at?: string
+  invited_by?: string
+  receives_notifications: boolean
+  notification_email?: string
+  created_at: string
+  updated_at: string
+}
+
+// For API responses with joined data
+export interface TeamMemberWithFranchisor extends FranchisorTeamMember {
+  franchisor?: {
+    id: string
+    company_name: string
+    logo_url?: string
+  }
+}
+
+// For invitation creation
+export interface TeamMemberInvitation {
+  email: string
+  full_name: string
+  role: TeamMemberRole
+  franchisor_id: string
+}
+
+// For the team management UI
+export interface TeamMemberListItem {
+  id: string
+  email: string
+  full_name: string
+  role: TeamMemberRole
+  is_active: boolean
+  status: "pending" | "active" | "deactivated"
+  invited_at: string
+  accepted_at?: string
+}
+
+// ============================================================================
+// USER CONSENT TYPES
+// ============================================================================
+
+export interface UserConsent {
+  id: string
+  user_id: string
+  tos_accepted: boolean
+  tos_accepted_at?: string
+  tos_version: string
+  privacy_accepted: boolean
+  privacy_accepted_at?: string
+  privacy_version: string
+  ip_address?: string
+  user_agent?: string
+  created_at: string
+  updated_at: string
+}
+
+// Extended LeadInvitation with team member assignment
+export interface LeadInvitationWithAssignment extends LeadInvitation {
+  assigned_to?: string
+  created_by?: string
+  assigned_team_member?: {
+    id: string
+    full_name: string
+    email: string
+  }
+  created_by_team_member?: {
+    id: string
+    full_name: string
+    email: string
+  }
 }

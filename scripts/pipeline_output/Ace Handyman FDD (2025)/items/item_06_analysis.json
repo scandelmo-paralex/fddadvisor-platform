@@ -1,0 +1,90 @@
+{
+  "royalty_fee": "6% of your actual Gross Revenues of the previous month, subject to annual reconciliation based on your Minimum Annual Gross Revenues requirements.",
+  "royalty_fee_percentage": 6.0,
+  "royalty_calculation_method": "Percentage of actual Gross Revenues, payable monthly, with an annual reconciliation based on Minimum Annual Gross Revenues. Gross Revenues include all revenues from customers for labor and materials, net of sales/use tax, customer discounts, cash refunds, credits, and uncollected receivables over 120 days. Royalty fee is due for services performed and completed, with provisions for partially complete jobs.",
+  "marketing_fee": "2% of your actual Gross Revenues, subject to annual reconciliation based on your Minimum Annual Gross Revenues requirements.",
+  "marketing_fee_percentage": 2.0,
+  "marketing_calculation_method": "Percentage of actual Gross Revenues, payable monthly, with an annual reconciliation based on Minimum Annual Gross Revenues.",
+  "technology_fees": "Currently $599 per month, but may be changed by us upon 30 days\u2019 notice. For use of our scheduling software, e-mail, location website, online marketing services, for our expenses associated with maintenance of our e-mail and Intranet sites, and for the website development, search engine optimization, and related online marketing services provided by our designated suppliers.",
+  "other_fees": [
+    {
+      "name": "Minimum Individual Marketing Expenditure",
+      "amount": "$30,000 (first year), $40,000 (second year), $50,000 (subsequent years) for a standard business. For a Mini AHS Business: $15,000 (first year), $20,000 (second year), $25,000 (subsequent years).",
+      "frequency": "Annual basis",
+      "refundable": null,
+      "calculation_method": "Minimum required spending on local marketing on an annual basis. An initial marketing expense of $8,000 to $12,000 is required in the period starting 30 days before and continuing through the end of the second full month after opening. A required Grand Opening event of $1,000 to $4,000 is also required."
+    },
+    {
+      "name": "Meeting and Convention Fees",
+      "amount": "$1,500 per meeting (if you do not attend), $750 per meeting (if you attend but do not stay at the designated hotel or do not stay for the entire meeting or convention).",
+      "frequency": "As incurred",
+      "refundable": null,
+      "calculation_method": "Fee imposed for non-attendance or partial attendance at meetings and conventions."
+    },
+    {
+      "name": "Transfer Fee",
+      "amount": "$10,000 (standard), $3,500 (for transfers to a family member).",
+      "frequency": "Before acceptance of transfer",
+      "refundable": null,
+      "calculation_method": "One-time fee payable before the transfer of the franchise. Additional fees may apply if the franchisor or its resources find the buyer."
+    },
+    {
+      "name": "Audit Fee",
+      "amount": "Cost of audit (estimated $2,500 to $5,000, but may be more).",
+      "frequency": "Upon completion of audit",
+      "refundable": null,
+      "calculation_method": "Fee charged for an audit. The franchisee also pays the cost of the audit if it shows an understatement of at least 2% of Gross Revenues during the audit period."
+    },
+    {
+      "name": "Returned Electronic Funds Transfer Fee",
+      "amount": "$100",
+      "frequency": "Upon notice",
+      "refundable": null,
+      "calculation_method": "Fee imposed when an Electronic Funds Transfer transaction is not honored."
+    },
+    {
+      "name": "Successor Franchise (Renewal) Fee",
+      "amount": "$5,500",
+      "frequency": "Upon execution of successor Franchise Agreement",
+      "refundable": null,
+      "calculation_method": "Fee to acquire a successor franchise after the initial term."
+    },
+    {
+      "name": "Supplier Approval Fee",
+      "amount": "Currently none.",
+      "frequency": "As incurred",
+      "refundable": null,
+      "calculation_method": "Fee may be charged in the future if the franchisee requests approval of a supplier for which the franchisor has previously designated an approved supplier."
+    },
+    {
+      "name": "Additional training",
+      "amount": "Our then current rate. The current rate as of the date of this Disclosure Document is $55 per hour per person plus out-of-pocket expenses.",
+      "frequency": "Payable within 30 days of date of invoice",
+      "refundable": null,
+      "calculation_method": "Hourly rate for additional training beyond the opening training, plus out-of-pocket expenses."
+    },
+    {
+      "name": "Interest and late fees on late payments and/or reports",
+      "amount": "Not to exceed 18% per annum on all amounts owed. $75 per occurrence per late report.",
+      "frequency": "Due upon payment of late fee or submittal of late report",
+      "refundable": null,
+      "calculation_method": "Interest at a rate not exceeding 18% per annum on overdue amounts, and a flat fee for late reports."
+    },
+    {
+      "name": "Costs and Attorneys\u2019 Fees",
+      "amount": "Will vary under circumstances",
+      "frequency": "As incurred",
+      "refundable": null,
+      "calculation_method": "May be payable if the franchisee does not prevail in an action based on the Franchise Agreement."
+    },
+    {
+      "name": "Indemnification",
+      "amount": "Will vary under circumstances",
+      "frequency": "As incurred",
+      "refundable": null,
+      "calculation_method": "Reimbursement to the franchisor if they are held liable for claims arising from the franchisee's business."
+    }
+  ],
+  "total_ongoing_fees_percentage": 8.0,
+  "fee_refund_policies": "All fees are non-refundable. The only exception for potential credit is for overpayments of Royalty Fees and National Brand Fees due to reconciliation, which will apply to future fees due."
+}

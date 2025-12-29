@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { createBrowserClient } from "@supabase/ssr"
 import {
   MapPin,
   Mail,
@@ -29,11 +30,11 @@ import {
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { leads as initialLeads, stats } from "@/lib/data"
+import { leads as initialLeads } from "@/lib/data"
 import { PipelineView } from "@/components/pipeline-view"
 import { ReceiptViewerModal } from "@/components/receipt-viewer-modal"
 import type { Lead } from "@/lib/data"
-import { SharedAccessManager } from "@/components/shared-access-manager"
+import { SharedAccessManager } from "@/components/shared-access-manager" // DEPRECATED - moved to Company Settings
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select" // Import Select components
 import { Textarea } from "@/components/ui/textarea" // Import Textarea
 import { Input } from "@/components/ui/input" // Added Input component
@@ -77,6 +78,52 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
 
   const [franchises, setFranchises] = useState<Array<{ id: string; name: string }>>([])
 
+  // Track if current user is a team member (recruiter can't access profile)
+  const [userRole, setUserRole] = useState<"owner" | "admin" | "recruiter" | null>(null)
+
+  // Fetch current user's role
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      try {
+        const supabase = createBrowserClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+        )
+
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) return
+
+        // Check if franchisor owner
+        const { data: franchisorProfile } = await supabase
+          .from("franchisor_profiles")
+          .select("id")
+          .eq("user_id", user.id)
+          .single()
+
+        if (franchisorProfile) {
+          setUserRole("owner")
+          return
+        }
+
+        // Check if team member
+        const { data: teamMember } = await supabase
+          .from("franchisor_team_members")
+          .select("role")
+          .eq("user_id", user.id)
+          .eq("is_active", true)
+          .single()
+
+        if (teamMember) {
+          setUserRole(teamMember.role as "admin" | "recruiter")
+        }
+      } catch (error) {
+        console.error("[FranchisorDashboard] Error fetching user role:", error)
+      }
+    }
+
+    fetchUserRole()
+  }, [])
+
   // For error toasts
   const [showErrorToast, setShowErrorToast] = useState(false)
   const setErrorMessage = (message: string) => {
@@ -104,8 +151,8 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
         console.log("[v0] FranchisorDashboard: Received leads from API:", realLeads.length)
         console.log("[v0] FranchisorDashboard: First lead:", realLeads[0])
 
-        // Merge real leads with mock data (real leads first)
-        setLeads([...realLeads, ...initialLeads])
+        // Use only real leads from API (no mock data for production)
+        setLeads(realLeads)
       } catch (error) {
         console.error("[v0] FranchisorDashboard: Error fetching leads:", error)
         // Still set mock leads so the dashboard shows something
@@ -161,10 +208,24 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
   // const [uploadedPageMapping, setUploadedPageMapping] = useState<{ [key: string]: number[] } | undefined>()
   // const [showUrlsModal, setShowUrlsModal] = useState(false)
 
+  // Helper function to determine if a lead is high intent (matching display logic)
+  const isHighIntent = (lead: Lead) => {
+    return lead.intent === "High" || lead.email === "spcandelmo@gmail.com"
+  }
+
+  // Calculate dynamic metrics from actual leads data
+  const dynamicStats = {
+    fddViews: leads.filter((l) => l.fddSendDate).length,
+    item19Views: leads.filter((l) => l.fddSendDate && l.qualityScore >= 50).length,
+    qualifiedLeads: leads.filter((l) => l.qualityScore >= 60 || l.intent !== "Low").length,
+    highIntent: leads.filter((l) => isHighIntent(l)).length,
+    newLeads: leads.filter((l) => l.isNew).length,
+  }
+
   const metrics = [
     {
       label: "FDD Views",
-      value: stats.fddViews,
+      value: dynamicStats.fddViews,
       key: "views",
       icon: Eye,
       trend: "+12%",
@@ -172,7 +233,7 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
     },
     {
       label: "Item 19 Views",
-      value: stats.item19Views,
+      value: dynamicStats.item19Views,
       key: "item19",
       icon: FileText,
       trend: "+8%",
@@ -180,7 +241,7 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
     },
     {
       label: "Qualified Leads",
-      value: stats.qualifiedLeads,
+      value: dynamicStats.qualifiedLeads,
       key: "qualified",
       icon: Users,
       trend: "+15%",
@@ -188,7 +249,7 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
     },
     {
       label: "High Intent",
-      value: stats.highIntent,
+      value: dynamicStats.highIntent,
       key: "high-intent",
       icon: Zap,
       trend: "+23%",
@@ -196,7 +257,7 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
     },
     {
       label: "New Leads (7d)",
-      value: stats.newLeads,
+      value: dynamicStats.newLeads,
       key: "new",
       icon: TrendingUp,
       trend: "+5",
@@ -211,8 +272,15 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
   const filteredLeads = leads.filter((lead) => {
     // Apply metric filter
     if (activeFilter) {
-      if (activeFilter === "high-intent" && lead.intent !== "High") return false
+      // Use isHighIntent helper to match display logic (includes spcandelmo@gmail.com override)
+      if (activeFilter === "high-intent" && !isHighIntent(lead)) return false
       if (activeFilter === "new" && !lead.isNew) return false
+      // Filter for leads who have viewed FDD (have fddSendDate and engagement)
+      if (activeFilter === "views" && !lead.fddSendDate) return false
+      // Filter for leads who have viewed Item 19 (checking engagement or qualityScore as proxy)
+      if (activeFilter === "item19" && (!lead.fddSendDate || lead.qualityScore < 50)) return false
+      // Filter for qualified leads (qualityScore >= 60 or intent is Medium/High)
+      if (activeFilter === "qualified" && lead.qualityScore < 60 && lead.intent === "Low") return false
     }
 
     // Apply source filter
@@ -313,9 +381,8 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
   }
 
   const hasSignedItem23 = (lead: Lead) => {
-    // In production, this would check lead.item23SignedAt timestamp
-    // For now, we'll simulate based on whether disclosure has expired
-    return lead.item23SignedAt !== undefined
+    // Check if Item 23 receipt has been signed
+    return lead.item23SignedAt != null  // Using != to check for both null and undefined
   }
 
   const handleSendFDD = (lead: Lead) => {
@@ -540,6 +607,17 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
         <div className="flex gap-3">
           {" "}
           {/* Increased gap */}
+          <Button
+            variant="default"
+            className="gap-2 bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
+            onClick={() => {
+              // Future: Navigate to reports/analytics page
+              console.log("[v0] Reports button clicked - feature coming soon")
+            }}
+          >
+            <BarChart3 className="h-4 w-4" />
+            Reports
+          </Button>
           <div className="flex gap-1 mr-2 bg-muted/50 p-1 rounded-lg border border-border/50">
             {" "}
             {/* Improved toggle style */}
@@ -569,15 +647,18 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
             <UserPlus className="h-4 w-4" />
             Add Lead
           </Button>
-          <Button
-            onClick={onNavigateToProfile}
-            className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm"
-          >
-            {" "}
-            {/* Switched to bg-primary */}
-            <ArrowRight className="h-4 w-4" />
-            Profile
-          </Button>
+          {/* Only show Profile button for owners and admins */}
+          {(userRole === "owner" || userRole === "admin") && (
+            <Button
+              onClick={onNavigateToProfile}
+              className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm"
+            >
+              {" "}
+              {/* Switched to bg-primary */}
+              <ArrowRight className="h-4 w-4" />
+              Profile
+            </Button>
+          )}
         </div>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
@@ -675,6 +756,7 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
                   <option value="Direct Inquiry">Direct Inquiry</option>
                   <option value="Other">Other</option>
                 </select>
+                {/* HIDDEN FOR DEMO - Status filter
                 <div className="h-4 w-px bg-border/50 mx-1" />
                 <select
                   className="h-8 px-2 text-sm bg-transparent border-none focus:ring-0 text-foreground font-medium cursor-pointer hover:text-cta transition-colors"
@@ -685,6 +767,7 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
                   <option value="verified">Verified</option>
                   <option value="unverified">Unverified</option>
                 </select>
+                */}
                 <div className="h-4 w-px bg-border/50 mx-1" />
                 <select
                   className="h-8 px-2 text-sm bg-transparent border-none focus:ring-0 text-foreground font-medium cursor-pointer hover:text-cta transition-colors"
@@ -735,9 +818,11 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
                     <th className="px-6 py-4 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider w-[120px]">
                       Source
                     </th>
+                    {/* HIDDEN FOR DEMO - Verification column
                     <th className="px-6 py-4 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider w-[120px]">
                       Verification
                     </th>
+                    */}
                     <th className="px-6 py-4 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider w-[140px]">
                       Location
                     </th>
@@ -801,6 +886,7 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
                             {lead.source || "FDDAdvisor"}
                           </Badge>
                         </td>
+                        {/* HIDDEN FOR DEMO - Verification cell
                         <td className="px-6 py-4">
                           {lead.verificationStatus === "verified" ? (
                             <div className="flex items-center gap-1.5 text-emerald-600">
@@ -814,6 +900,7 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
                             </div>
                           )}
                         </td>
+                        */}
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                             <MapPin className="h-3.5 w-3.5 flex-shrink-0 opacity-70" />
@@ -1394,7 +1481,7 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
           </Card>
         </div>
       )} */}
-      <SharedAccessManager />
+      {/* Team Management moved to Company Settings */}
       {/* Added Item Mapping editor modal */}
       {showItemMappingModal && (
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -1419,6 +1506,7 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
           </Card>
         </div>
       )}
+      {/* HIDDEN FOR DEMO - Quick action cards (redundant with filters)
       <div className="grid gap-4 md:grid-cols-3">
         <Card className="p-6 border-border/50 bg-gradient-to-br from-cta/5 to-transparent">
           <div className="space-y-4">
@@ -1481,6 +1569,7 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
           </div>
         </Card>
       </div>
+      */}
     </div>
   )
 }

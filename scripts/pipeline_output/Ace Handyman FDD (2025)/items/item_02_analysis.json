@@ -1,0 +1,73 @@
+{
+  "executives": [
+    {
+      "name": "William Guzik",
+      "title": "Director",
+      "franchise_experience_years": null,
+      "tenure_with_franchisor_years": 4.75,
+      "previous_franchise_brands": [],
+      "industry_expertise": "Finance, Risk Management",
+      "background_summary": "Director since September 2019. Executive Vice President, Chief Financial Officer and Chief Risk Officer for Ace Hardware since January 2014. Served as Vice President, Finance of APF between November 2021 and June 2023. Director of AHHS since June 2023."
+    },
+    {
+      "name": "Andy Bell",
+      "title": "Chief Executive Officer and Founder",
+      "franchise_experience_years": 23.75,
+      "tenure_with_franchisor_years": 23.75,
+      "previous_franchise_brands": [],
+      "industry_expertise": "Franchise Sales and Operations",
+      "background_summary": "Founder of Ace Handyman Services System. Served as Chief Executive Officer, President, or Director since inception in 2000 to September 2019. Vice President, Ace Hardware Home Services \u2013 Ace Handyman Services Division of AHHS since June 2023. Chief Executive Officer of APF since December 2021. Manager of Bell Franchising, LLC since July 2023. Served on the Board of Directors of Tetras Properties, LLC from March 2005 until September 2023. Retains management responsibility for franchise sales and operations."
+    },
+    {
+      "name": "Chris Bue",
+      "title": "President",
+      "franchise_experience_years": 9.75,
+      "tenure_with_franchisor_years": 9.75,
+      "previous_franchise_brands": [],
+      "industry_expertise": "Operations, Management",
+      "background_summary": "Employed since September 2014. Served as Chief Operating Officer, Chief Executive Officer (September 2018 to September 2019), and currently President. Served in similar positions for former operating entities merged into AHHS from September 2019 to June 2023."
+    },
+    {
+      "name": "Colette Bell",
+      "title": "Vice President of Franchise Development",
+      "franchise_experience_years": 5.75,
+      "tenure_with_franchisor_years": 5.75,
+      "previous_franchise_brands": [],
+      "industry_expertise": "Franchise Development",
+      "background_summary": "Employed as Vice President of Franchise Development since January 2019. Served in similar positions for former operating entities merged into AHHS from September 2019 to June 2023. Manager of Bell Franchising, LLC since July 2023. Vice President, Franchise Development for APF since December 2021."
+    },
+    {
+      "name": "LaShelle L. Taylor",
+      "title": "Vice President of Franchise Operations",
+      "franchise_experience_years": 2.41,
+      "tenure_with_franchisor_years": 2.75,
+      "previous_franchise_brands": [],
+      "industry_expertise": "Franchise Operations",
+      "background_summary": "Vice President of Franchise Operations since August 2021. Served as Franchise Consultant from March 2021 to August 2021."
+    },
+    {
+      "name": "Karen T. Bloomfield",
+      "title": "Vice President, Marketing",
+      "franchise_experience_years": 7.08,
+      "tenure_with_franchisor_years": 0.25,
+      "previous_franchise_brands": [],
+      "industry_expertise": "Marketing, Merchandising, E-commerce",
+      "background_summary": "Vice President, Marketing since September 2023. Served in the same position for AHHS and APF since September 2023. Previously engaged by Ace Hardware as Director of Merchandising Management - Ecommerce (January 2022 to August 2023) and Director of Merchandising Management - Plumbing Division (January 2021 to December 2021). Served as Vice President of Merchandising for Power Equipment Direct from August 2016 to January 2021."
+    },
+    {
+      "name": "Jeff A. Klos",
+      "title": "Vice President, Finance",
+      "franchise_experience_years": 3.25,
+      "tenure_with_franchisor_years": 0.5,
+      "previous_franchise_brands": [],
+      "industry_expertise": "Finance, Financial Planning and Analysis, Strategy",
+      "background_summary": "Vice President, Finance since June 2023. Served in the same position for APF since June 2023. Employed by Ace Hardware since April 2000. Serves as Vice President Finance, Ace Hardware Home Services (since June 2023). Previously held positions of Corporate Vice President, Financial Planning and Analysis and Strategy (July 2020 to May 2023) and Director, Financial Planning and Analysis (March 2017 to June 2020)."
+    }
+  ],
+  "overall_team_assessment": {
+    "highly_experienced_count": 1,
+    "experienced_count": 2,
+    "limited_experience_count": 4,
+    "has_multi_brand_experience": false
+  }
+}

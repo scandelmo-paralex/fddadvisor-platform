@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { createBrowserClient } from "@/lib/supabase/client"
 import { ProfileSettings } from "@/components/profile-settings-cleaned"
 import { Header } from "@/components/header"
@@ -12,6 +13,7 @@ interface ProfilePageClientProps {
 }
 
 export function ProfilePageClient({ userId, userEmail }: ProfilePageClientProps) {
+  const router = useRouter()
   const [profile, setProfile] = useState<BuyerProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -90,11 +92,13 @@ export function ProfilePageClient({ userId, userEmail }: ProfilePageClientProps)
           },
           businessExperience: {
             yearsOfExperience: buyerProfileData?.years_of_experience || 0,
+            yearsOfExperienceRange: buyerProfileData?.years_of_experience_range || "",
             industryExperience: buyerProfileData?.industry_experience || [],
             hasOwnedBusiness: buyerProfileData?.has_owned_business || false,
             managementExperience: buyerProfileData?.management_experience || false,
             currentEmploymentStatus: buyerProfileData?.current_employment_status || "Employed Full-Time",
             relevantSkills: buyerProfileData?.relevant_skills || [],
+            isVeteran: buyerProfileData?.is_veteran ?? null,
           },
           financialQualification: {
             ficoScoreRange: buyerProfileData?.fico_score_range || "",
@@ -129,7 +133,7 @@ export function ProfilePageClient({ userId, userEmail }: ProfilePageClientProps)
       const supabase = createBrowserClient()
 
       const updateData = {
-        user_id: userId,
+        // Don't include user_id - it's the filter column
         first_name: updatedProfile.personalInfo.firstName,
         last_name: updatedProfile.personalInfo.lastName,
         email: updatedProfile.personalInfo.email,
@@ -142,11 +146,13 @@ export function ProfilePageClient({ userId, userEmail }: ProfilePageClientProps)
         
         // Business Experience
         years_of_experience: updatedProfile.businessExperience?.yearsOfExperience,
+        years_of_experience_range: updatedProfile.businessExperience?.yearsOfExperienceRange,
         industry_experience: updatedProfile.businessExperience?.industryExperience,
         has_owned_business: updatedProfile.businessExperience?.hasOwnedBusiness,
         management_experience: updatedProfile.businessExperience?.managementExperience,
         current_employment_status: updatedProfile.businessExperience?.currentEmploymentStatus,
         relevant_skills: updatedProfile.businessExperience?.relevantSkills,
+        is_veteran: updatedProfile.businessExperience?.isVeteran,
         
         // Financial Qualification
         fico_score_range: updatedProfile.financialQualification?.ficoScoreRange,
@@ -158,13 +164,16 @@ export function ProfilePageClient({ userId, userEmail }: ProfilePageClientProps)
         no_bankruptcy_attestation: updatedProfile.backgroundAttestations?.noBankruptcyAttestation,
         no_felony_attestation: updatedProfile.backgroundAttestations?.noFelonyAttestation,
         background_attested_at: updatedProfile.backgroundAttestations?.attestedAt,
+        
+        // Mark profile as completed
+        profile_completed_at: new Date().toISOString(),
       }
 
       console.log("[Profile] Update data:", updateData)
 
       const { error } = await supabase
         .from("buyer_profiles")
-        .upsert(updateData)
+        .update(updateData)
         .eq("user_id", userId)
 
       if (error) {
@@ -181,17 +190,15 @@ export function ProfilePageClient({ userId, userEmail }: ProfilePageClientProps)
     }
   }
 
-  const user = { id: userId, email: userEmail }
-
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
         <Header
-          user={user}
-          currentView="profile-settings"
+          currentView="buyer-profile"
           onViewChange={() => {}}
-          onBack={() => {}}
+          onBack={() => router.push("/hub/my-fdds")}
           onNavigate={() => {}}
+          hideSearch={true}
         />
         <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           <div className="text-center">Loading profile...</div>
@@ -204,11 +211,11 @@ export function ProfilePageClient({ userId, userEmail }: ProfilePageClientProps)
     return (
       <div className="min-h-screen bg-background">
         <Header
-          user={user}
-          currentView="profile-settings"
+          currentView="buyer-profile"
           onViewChange={() => {}}
-          onBack={() => {}}
+          onBack={() => router.push("/hub/my-fdds")}
           onNavigate={() => {}}
+          hideSearch={true}
         />
         <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           <div className="rounded-lg border border-destructive bg-destructive/10 p-6">
@@ -225,15 +232,15 @@ export function ProfilePageClient({ userId, userEmail }: ProfilePageClientProps)
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background" suppressHydrationWarning>
       <Header
-        user={user}
-        currentView="profile-settings"
+        currentView="buyer-profile"
         onViewChange={() => {}}
-        onBack={() => {}}
+        onBack={() => router.push("/hub/my-fdds")}
         onNavigate={() => {}}
+        hideSearch={true}
       />
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8" suppressHydrationWarning>
         <ProfileSettings profile={profile} onUpdateProfile={handleUpdateProfile} />
       </main>
     </div>

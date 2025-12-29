@@ -1,0 +1,76 @@
+{
+  "renewal": {
+    "term_length": "10 years",
+    "conditions": [
+      "No less than 120 days\u2019 notice, nor more than one year notice",
+      "Sign the current form of the Franchise Agreement",
+      "Be in compliance with current Franchise Agreement",
+      "Be current in payments",
+      "Satisfy current standards for new franchisees",
+      "Modify your AHS Business and operations to conform with current Operations Manual",
+      "Pay successor franchise fee",
+      "Execute a Successor Franchise Rider"
+    ],
+    "fees": "successor franchise fee",
+    "franchisee_must_sign_current_agreement": true
+  },
+  "termination_by_franchisor": [
+    "Force majeure event that prevents franchisor from performing obligations and continues for longer than six months",
+    "Inability or unwillingness to operate your AHS Business",
+    "Certain violations of the Franchise Agreement",
+    "Engaging in illegal or unethical practices",
+    "Unauthorized disclosures",
+    "Repeated defaults even if cured",
+    "Abandonment",
+    "Unapproved transfers",
+    "Sales activity in the territory of another AHS Business",
+    "Sexual harassment or discrimination",
+    "Violation of non-compete or other in-term restrictive covenant",
+    "Breach of related agreement",
+    "A guaranty becomes unenforceable or inadequate",
+    "Bankruptcy"
+  ],
+  "termination_by_franchisee": [
+    "Franchisor materially breaches the Franchise Agreement",
+    "Franchisor provides written notice within 30 days of the breach and a reasonable opportunity to cure of not less than 90 days (subject to state law)"
+  ],
+  "transfer_rights": {
+    "allowed": true,
+    "conditions": [
+      "New franchisee qualified",
+      "Transfer fee paid, if applicable",
+      "Purchase agreement approved",
+      "Training completed by transferee",
+      "Current agreement signed by transferee",
+      "Escrow of an amount equal to 1% of the greater of the Gross Revenues or your Minimum Annual Gross Revenues for the prior 12 months to cover warranty and customer dispute issues",
+      "Release signed by you (except where prohibited by law)"
+    ],
+    "transfer_fee": "if applicable",
+    "franchisor_approval_required": true,
+    "training_required_for_transferee": true
+  },
+  "dispute_resolution": {
+    "mediation": "required",
+    "mediation_details": "Except for certain claims, all disputes must be arbitrated in Denver, Colorado (subject to state law). If a claim can be brought in court, both you and we agree to waive our rights to a jury trial.",
+    "arbitration": "required",
+    "arbitration_details": "Except for certain claims, all disputes must be arbitrated in Denver, Colorado (subject to state law). If a claim can be brought in court, both you and we agree to waive our rights to a jury trial.",
+    "litigation_allowed": null,
+    "governing_law": "Federal and Colorado law applies (subject to state law)",
+    "venue": "Denver, Colorado"
+  },
+  "non_compete": {
+    "applies": true,
+    "duration": "24 months",
+    "geographic_scope": "within 25 miles from the closest point to the former Territory or the Territory of any other AHS Business (including after assignment)",
+    "activities_restricted": "Owning, operating or performing service for a competing business"
+  },
+  "post_termination_obligations": [
+    "Escrow of an amount equal to 1% of the greater of the Gross Revenues or your Minimum Annual Gross Revenues for the prior 12 months to cover warranty and customer dispute issues",
+    "Complete de-identification",
+    "Return of proprietary materials",
+    "Payment of amounts due",
+    "Payment of an amount equal to the Royalty Fees based on the Minimum Annual Gross Revenues due over the remaining term under the Franchise Agreement, if terminated due to your default",
+    "Inspection of books",
+    "Assign all pending and contract business to us"
+  ]
+}

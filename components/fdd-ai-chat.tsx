@@ -57,7 +57,7 @@ export function FDDAIChat({
     if (isOpen && messages.length === 0) {
       setTimeout(() => {
         addBotMessage(
-          `Hi! I'm here to help you understand ${franchise.name}. I can answer questions about their FDD using semantic search. If I can't find an answer, toggle Vision Mode to analyze the current page directly!`,
+          `Hi! I'm here to help you understand the ${franchise.name} FDD. Ask me anything about their investment requirements, training, fees, territory rights, or financial performance disclosures.\n\n⚠️ This assistant is AI-powered and can make mistakes. Responses are based solely on FDD content and are not affiliated with ${franchise.name}. Always verify information and consult with professional advisors before making investment decisions.`,
         )
       }, 500)
     }
@@ -197,42 +197,57 @@ export function FDDAIChat({
 
   return (
     <>
+      {/* AI Chat Button - Repositioned for mobile */}
       {!isOpen && (
         <Button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 h-16 w-16 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 shadow-xl hover:shadow-2xl hover:scale-105 transition-all z-50 border-2 border-blue-400/20"
+          className="fixed z-50 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 shadow-xl hover:shadow-2xl hover:scale-105 transition-all border-2 border-blue-400/20
+            /* Mobile: bottom center, smaller */
+            bottom-4 left-1/2 -translate-x-1/2 h-14 w-14
+            /* Desktop: bottom right, larger */
+            md:bottom-20 md:right-24 md:left-auto md:translate-x-0 md:h-20 md:w-20"
           size="icon"
+          title="Ask AI Assistant"
         >
-          <MessageCircle className="h-7 w-7 text-white" />
+          {/* Paralex Logo Icon */}
+          <svg viewBox="200 250 500 500" className="h-10 w-10 md:h-16 md:w-16">
+            <circle cx="287.3" cy="500" r="25.58" fill="#fff" />
+            <circle cx="389.64" cy="500" r="38.38" fill="#fff" />
+            <circle cx="632.7" cy="699.41" r="25.58" fill="#fff" />
+            <circle cx="581.53" cy="610.78" r="38.38" fill="#fff" />
+            <circle cx="632.7" cy="300.58" r="25.58" fill="#fff" />
+            <circle cx="581.53" cy="389.21" r="38.38" fill="#fff" />
+            <circle cx="517.57" cy="500" r="51.17" fill="#fff" />
+          </svg>
         </Button>
       )}
 
+      {/* Chat Panel - Full screen on mobile, positioned on desktop */}
       {isOpen && (
-        <Card className="fixed bottom-6 right-6 w-[380px] h-[560px] flex flex-col shadow-2xl border-border/60 bg-white dark:bg-slate-900 z-50 rounded-2xl overflow-hidden">
+        <Card className="fixed z-50 flex flex-col shadow-2xl border-border/60 bg-white dark:bg-slate-900 overflow-hidden
+          /* Mobile: full screen with safe area padding */
+          inset-0 rounded-none
+          /* Desktop: positioned bottom right */
+          md:inset-auto md:bottom-20 md:right-24 md:w-[380px] md:h-[560px] md:rounded-2xl">
           <div className="flex items-center justify-between p-4 border-b border-border/60 bg-gradient-to-r from-blue-600 to-indigo-600">
             <div className="flex items-center gap-2.5">
-              <div className="h-9 w-9 rounded-full bg-white/20 backdrop-blur flex items-center justify-center border-2 border-white/30">
-                <span className="text-white font-bold text-sm">P</span>
+              <div className="h-9 w-9 rounded-full bg-white/20 backdrop-blur flex items-center justify-center border border-white/30 p-1.5">
+                <svg viewBox="0 0 1000 1000" className="h-full w-full">
+                  <circle cx="287.3" cy="500" r="25.58" fill="#fff" />
+                  <circle cx="389.64" cy="500" r="38.38" fill="#fff" />
+                  <circle cx="632.7" cy="699.41" r="25.58" fill="#fff" />
+                  <circle cx="581.53" cy="610.78" r="38.38" fill="#fff" />
+                  <circle cx="632.7" cy="300.58" r="25.58" fill="#fff" />
+                  <circle cx="581.53" cy="389.21" r="38.38" fill="#fff" />
+                  <circle cx="517.57" cy="500" r="51.17" fill="#fff" />
+                </svg>
               </div>
               <div>
-                <h3 className="font-bold text-sm text-white">FDD Assistant</h3>
-                <p className="text-xs text-blue-100">{franchise.name}</p>
+                <h3 className="font-bold text-sm text-white">FDDHub Assistant</h3>
+                <p className="text-xs text-blue-100">Powered by Paralex</p>
               </div>
             </div>
             <div className="flex items-center gap-1">
-              {/* <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setUseWebSearch(!useWebSearch)}
-                className={`h-9 w-9 ${useWebSearch ? "bg-white/30 text-white" : "text-white/70 hover:bg-white/20 hover:text-white"}`}
-                title={
-                  useWebSearch
-                    ? "Web Search ON - Will search the web for additional context"
-                    : "Web Search OFF - Using FDD content only"
-                }
-              >
-                <Globe className="h-5 w-5" />
-              </Button> */}
               <Button
                 variant="ghost"
                 size="icon"
@@ -345,6 +360,10 @@ export function FDDAIChat({
                                 } else if (onNavigateToPage && pageNum) {
                                   console.log("[v0] AI Chat: Navigate to page:", pageNum)
                                   onNavigateToPage(pageNum)
+                                  // Close chat on mobile after navigation
+                                  if (window.innerWidth < 768) {
+                                    setIsOpen(false)
+                                  }
                                 }
                               }}
                               disabled={!pageNum && !url}
@@ -405,7 +424,7 @@ export function FDDAIChat({
             <div ref={messagesEndRef} />
           </div>
 
-          <div className="p-4 border-t border-border/60 bg-muted/30">
+          <div className="p-4 border-t border-border/60 bg-muted/30 pb-safe">
             <div className="flex gap-2">
               <Input
                 value={inputValue}
@@ -430,9 +449,6 @@ export function FDDAIChat({
                 {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
               </Button>
             </div>
-            <p className="text-xs text-muted-foreground mt-2 text-center">
-              {questionsAsked.length}/3 questions asked {questionsAsked.length >= 3 && "✓"}
-            </p>
           </div>
         </Card>
       )}
@@ -444,7 +460,6 @@ const SUGGESTED_QUESTIONS = [
   "What are the initial investment requirements?",
   "What training and support does the franchisor provide?",
   "What are the ongoing fees and royalties?",
-  "What is the typical timeline to profitability?",
   "What are the territory rights and restrictions?",
   "How many franchisees have left the system recently?",
   "What financing options are available?",

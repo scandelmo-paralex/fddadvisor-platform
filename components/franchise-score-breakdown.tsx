@@ -61,6 +61,12 @@ export function FranchiseScoreBreakdown({ franchise }: FranchiseScoreBreakdownPr
 
   const getRatingColor = (rating: string) => {
     switch (rating) {
+      // New rating labels (Strong/Good/Fair/Limited)
+      case "Strong":
+        return "bg-emerald-100 text-emerald-700"
+      case "Limited":
+        return "bg-red-100 text-red-700"
+      // Legacy labels (kept for backward compatibility during transition)
       case "Excellent":
         return "bg-emerald-100 text-emerald-700"
       case "Good":
@@ -69,6 +75,7 @@ export function FranchiseScoreBreakdown({ franchise }: FranchiseScoreBreakdownPr
         return "bg-amber-100 text-amber-700"
       case "Poor":
         return "bg-red-100 text-red-700"
+      // Not Available / Unknown
       default:
         return "bg-gray-100 text-gray-700"
     }

@@ -6,8 +6,8 @@ import { X, Shield, Eye, Clock, FileText } from "lucide-react"
 interface TrackingConsentModalProps {
   isOpen: boolean
   franchiseName: string
-  franchiseId: string // Added franchiseId prop
-  buyerId: string // Added buyerId prop
+  franchiseId: string
+  buyerId: string
   onConsent: () => Promise<void>
   onDecline: () => void
 }
@@ -56,26 +56,31 @@ export function TrackingConsentModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="relative w-full max-w-2xl rounded-lg bg-white p-6 shadow-xl">
-        <button
-          onClick={onDecline}
-          className="absolute right-4 top-4 rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
-        >
-          <X className="h-5 w-5" />
-        </button>
+      {/* Modal container with max-height and overflow for mobile scrolling */}
+      <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-lg bg-white shadow-xl">
+        {/* Sticky header */}
+        <div className="sticky top-0 bg-white z-10 p-6 pb-4 border-b">
+          <button
+            onClick={onDecline}
+            className="absolute right-4 top-4 rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+          >
+            <X className="h-5 w-5" />
+          </button>
 
-        <div className="mb-6 flex items-center gap-3">
-          <div className="rounded-full bg-blue-100 p-3">
-            <Shield className="h-6 w-6 text-blue-600" />
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">Engagement Tracking Consent</h2>
-            <p className="text-sm text-gray-600">{franchiseName} Franchise Disclosure Document</p>
+          <div className="flex items-center gap-3">
+            <div className="rounded-full bg-blue-100 p-3">
+              <Shield className="h-6 w-6 text-blue-600" />
+            </div>
+            <div>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Engagement Tracking Consent</h2>
+              <p className="text-sm text-gray-600">{franchiseName} Franchise Disclosure Document</p>
+            </div>
           </div>
         </div>
 
-        <div className="mb-6 space-y-4 text-gray-700">
-          <p>
+        {/* Scrollable content */}
+        <div className="p-6 pt-4 space-y-4">
+          <p className="text-gray-700">
             Before viewing the Franchise Disclosure Document, please review and consent to our engagement tracking
             practices.
           </p>
@@ -109,43 +114,46 @@ export function TrackingConsentModal({
               used in accordance with applicable privacy laws.
             </p>
           </div>
+
+          <div className="rounded-lg border-2 border-gray-200 bg-gray-50 p-4">
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={agreed}
+                onChange={(e) => setAgreed(e.target.checked)}
+                className="mt-1 h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+              />
+              <span className="text-sm text-gray-700">
+                <strong>I agree</strong> to have my engagement with this Franchise Disclosure Document tracked and shared
+                with {franchiseName}. I understand this information will be used to assess my interest and provide better
+                support during my franchise evaluation.
+              </span>
+            </label>
+          </div>
         </div>
 
-        <div className="mb-6 rounded-lg border-2 border-gray-200 bg-gray-50 p-4">
-          <label className="flex items-start gap-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={agreed}
-              onChange={(e) => setAgreed(e.target.checked)}
-              className="mt-1 h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
-            />
-            <span className="text-sm text-gray-700">
-              <strong>I agree</strong> to have my engagement with this Franchise Disclosure Document tracked and shared
-              with {franchiseName}. I understand this information will be used to assess my interest and provide better
-              support during my franchise evaluation.
-            </span>
-          </label>
-        </div>
+        {/* Sticky footer with buttons */}
+        <div className="sticky bottom-0 bg-white border-t p-6 pt-4">
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button
+              onClick={handleConsent}
+              disabled={!agreed || isSubmitting}
+              className="flex-1 rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
+            >
+              {isSubmitting ? "Saving..." : "Continue to FDD"}
+            </button>
+            <button
+              onClick={onDecline}
+              className="rounded-lg border-2 border-gray-300 px-6 py-3 font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+            >
+              Decline
+            </button>
+          </div>
 
-        <div className="flex gap-3">
-          <button
-            onClick={handleConsent}
-            disabled={!agreed || isSubmitting}
-            className="flex-1 rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
-          >
-            {isSubmitting ? "Saving..." : "Continue to FDD"}
-          </button>
-          <button
-            onClick={onDecline}
-            className="rounded-lg border-2 border-gray-300 px-6 py-3 font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
-          >
-            Decline
-          </button>
+          <p className="mt-4 text-xs text-gray-500 text-center">
+            Your consent and viewing activity will be recorded with timestamp and IP address for compliance purposes.
+          </p>
         </div>
-
-        <p className="mt-4 text-xs text-gray-500 text-center">
-          Your consent and viewing activity will be recorded with timestamp and IP address for compliance purposes.
-        </p>
       </div>
     </div>
   )

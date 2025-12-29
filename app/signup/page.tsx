@@ -56,6 +56,10 @@ export default function SignupPage() {
   const [hasFranchiseExp, setHasFranchiseExp] = useState(false)
   const [preferredLocation, setPreferredLocation] = useState("")
 
+  // Legal consents
+  const [tosAccepted, setTosAccepted] = useState(false)
+  const [privacyAccepted, setPrivacyAccepted] = useState(false)
+
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
   const [step, setStep] = useState(1) // Multi-step form for buyers
@@ -63,6 +67,13 @@ export default function SignupPage() {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
+
+    // Validate legal consents
+    if (!tosAccepted || !privacyAccepted) {
+      setError("You must agree to the Terms of Service and Privacy Policy to create an account.")
+      return
+    }
+
     setLoading(true)
 
     try {
@@ -79,6 +90,8 @@ export default function SignupPage() {
         lastName,
         phone,
         company_name: companyName,
+        tosAccepted,
+        privacyAccepted,
       })
 
       if (!result.success) {
@@ -111,7 +124,7 @@ export default function SignupPage() {
   }
 
   const canProceedToStep2 = email && password && firstName && lastName && phone
-  const canSubmit = role !== "buyer" || (timeline && selectedIndustries.length > 0)
+  const canSubmit = (role !== "buyer" || (timeline && selectedIndustries.length > 0)) && tosAccepted && privacyAccepted
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-8">
@@ -322,6 +335,56 @@ export default function SignupPage() {
               </div>
             )}
 
+            {/* Legal Consents Section */}
+            <div className="space-y-4 border-t pt-4">
+              <div className="space-y-3">
+                <div className="flex items-start space-x-3">
+                  <Checkbox
+                    id="tosAccepted"
+                    checked={tosAccepted}
+                    onCheckedChange={(checked) => setTosAccepted(checked as boolean)}
+                    className="mt-1"
+                  />
+                  <Label htmlFor="tosAccepted" className="font-normal text-sm leading-relaxed">
+                    I have read and agree to the{" "}
+                    <Link 
+                      href="/legal/terms" 
+                      target="_blank" 
+                      className="text-primary hover:underline font-medium"
+                    >
+                      Terms of Service
+                    </Link>
+                    {" "}*
+                  </Label>
+                </div>
+
+                <div className="flex items-start space-x-3">
+                  <Checkbox
+                    id="privacyAccepted"
+                    checked={privacyAccepted}
+                    onCheckedChange={(checked) => setPrivacyAccepted(checked as boolean)}
+                    className="mt-1"
+                  />
+                  <Label htmlFor="privacyAccepted" className="font-normal text-sm leading-relaxed">
+                    I have read and agree to the{" "}
+                    <Link 
+                      href="/legal/privacy" 
+                      target="_blank" 
+                      className="text-primary hover:underline font-medium"
+                    >
+                      Privacy Policy
+                    </Link>
+                    {" "}*
+                  </Label>
+                </div>
+              </div>
+              
+              <p className="text-xs text-muted-foreground">
+                * Required. By creating an account, you acknowledge that you understand how we collect, 
+                use, and protect your information as described in our Privacy Policy.
+              </p>
+            </div>
+
             {error && <p className="text-sm text-destructive">{error}</p>}
 
             <Button type="submit" className="w-full" disabled={loading || !canSubmit}>
@@ -338,6 +401,15 @@ export default function SignupPage() {
           <div className="mt-4 text-center">
             <Link href="/" className="text-sm text-muted-foreground hover:text-foreground">
               View demo
+            </Link>
+          </div>
+          <div className="mt-6 pt-4 border-t text-center text-xs text-muted-foreground">
+            <Link href="/legal/terms" className="hover:text-foreground hover:underline">
+              Terms of Service
+            </Link>
+            <span className="mx-2">•</span>
+            <Link href="/legal/privacy" className="hover:text-foreground hover:underline">
+              Privacy Policy
             </Link>
           </div>
         </CardContent>

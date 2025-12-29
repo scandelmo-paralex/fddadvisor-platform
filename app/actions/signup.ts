@@ -7,9 +7,12 @@ export async function signupUser(formData: {
   email: string
   password: string
   role: "buyer" | "franchisor" | "lender"
-  name: string
+  firstName: string
+  lastName: string
   phone?: string
   company_name?: string
+  tosAccepted?: boolean
+  privacyAccepted?: boolean
 }) {
   try {
     const cookieStore = await cookies()
@@ -38,7 +41,7 @@ export async function signupUser(formData: {
       email_confirm: true, // Auto-confirm email
       user_metadata: {
         role: formData.role,
-        name: formData.name,
+        name: `${formData.firstName} ${formData.lastName}`,
         phone: formData.phone,
         company_name: formData.company_name,
       },
@@ -71,11 +74,37 @@ export async function signupUser(formData: {
 
     console.log("[v0] Server: Users table updated")
 
+    // Save consent record
+    if (formData.tosAccepted || formData.privacyAccepted) {
+      const now = new Date().toISOString()
+      const { error: consentError } = await supabase.from("user_consents").insert({
+        user_id: authData.user.id,
+        tos_accepted: formData.tosAccepted || false,
+        tos_accepted_at: formData.tosAccepted ? now : null,
+        tos_version: "1.0",
+        privacy_accepted: formData.privacyAccepted || false,
+        privacy_accepted_at: formData.privacyAccepted ? now : null,
+        privacy_version: "1.0",
+      })
+
+      if (consentError) {
+        console.error("[v0] Server: Consent save error:", consentError)
+        // Don't fail signup for consent error, but log it
+        console.error("[v0] Server: WARNING - Consent not saved, continuing with signup")
+      } else {
+        console.log("[v0] Server: User consents saved successfully")
+      }
+    }
+
     // Create profile based on role
+    const fullName = `${formData.firstName} ${formData.lastName}`
+
     if (formData.role === "buyer") {
       const { error: profileError } = await supabase.from("buyer_profiles").insert({
         user_id: authData.user.id,
-        full_name: formData.name,
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        email: formData.email,
         phone: formData.phone || "",
       })
 
@@ -87,7 +116,7 @@ export async function signupUser(formData: {
       const { error: profileError } = await supabase.from("franchisor_profiles").insert({
         user_id: authData.user.id,
         company_name: formData.company_name || "Company Name",
-        contact_name: formData.name,
+        contact_name: fullName,
         email: formData.email,
         phone: formData.phone || "",
       })
@@ -100,7 +129,7 @@ export async function signupUser(formData: {
       const { error: profileError } = await supabase.from("lender_profiles").insert({
         user_id: authData.user.id,
         institution_name: formData.company_name || "Institution Name",
-        contact_name: formData.name,
+        contact_name: fullName,
         email: formData.email,
         phone: formData.phone || "",
       })
