@@ -15,6 +15,7 @@ import { AIDiscoveryAssistant } from "@/components/ai-discovery-assistant"
 import { ComparisonBar } from "@/components/comparison-bar"
 import { FranchiseComparison } from "@/components/franchise-comparison"
 import { FranchisorProfile } from "@/components/franchisor-profile"
+import { PlaceholderPage } from "@/components/placeholder-page"
 import { defaultBuyerProfile, defaultFranchisorProfile } from "@/lib/data"
 import type { Note, BuyerProfile, FDDEngagement, FranchisorProfile as FranchisorProfileType } from "@/lib/data"
 import { Button } from "@/components/ui/button"
@@ -36,9 +37,21 @@ export default function Home() {
   const [buyerProfile, setBuyerProfile] = useState<BuyerProfile>(defaultBuyerProfile)
   const [fddEngagements, setFddEngagements] = useState<Record<string, FDDEngagement>>({})
   const [franchisorProfile, setFranchisorProfile] = useState<FranchisorProfileType>(defaultFranchisorProfile)
+  const [isPlaceholderDomain, setIsPlaceholderDomain] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
 
   useEffect(() => {
+    // Check if we're on the www.fddhub.com domain (placeholder/marketing site)
+    const hostname = window.location.hostname
+    if (hostname === "www.fddhub.com" || hostname === "fddhub.com") {
+      setIsPlaceholderDomain(true)
+      setIsLoading(false)
+      return
+    }
+    
+    setIsPlaceholderDomain(false)
+
     const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null
     const initialTheme = savedTheme || "dark"
     setTheme(initialTheme)
@@ -89,6 +102,20 @@ export default function Home() {
 
     handleRedirect()
   }, [router])
+
+  // Show placeholder page for www.fddhub.com
+  if (isPlaceholderDomain) {
+    return <PlaceholderPage />
+  }
+
+  // Show loading state while checking auth
+  if (isLoading && !isPlaceholderDomain) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
+      </div>
+    )
+  }
 
   const handleNavigate = (view: string, franchiseId?: string) => {
     setCurrentView(view)
