@@ -6,7 +6,7 @@ interface PasswordGateProps {
   children: React.ReactNode
 }
 
-const GATE_PASSWORD = "fddhub2025" // Change this to whatever you want
+const GATE_PASSWORD = "fddhubpilot2026" // Change this to whatever you want
 const COOKIE_NAME = "fddhub_access"
 const COOKIE_DAYS = 30
 
