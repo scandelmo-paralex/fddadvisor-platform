@@ -1155,7 +1155,7 @@ export function FDDViewer({
             </div>
           </div>
 
-          <div className="flex-1 overflow-auto p-4 flex justify-center min-h-0">
+          <div className="overflow-auto p-4 flex justify-center">
             {pdfLoadError ? (
               <Card className="flex h-full w-full items-center justify-center p-8">
                 <div className="text-center space-y-4">
@@ -1231,8 +1231,8 @@ export function FDDViewer({
             )}
           </div>
 
-          {/* Professional Advice Disclaimer - pinned to bottom */}
-          <div className="mt-auto border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 px-4 py-3">
+          {/* Professional Advice Disclaimer */}
+          <div className="border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 px-4 py-3">
             <div className="flex items-start gap-3">
               <div className="flex-shrink-0 mt-0.5">
                 <Info className="h-4 w-4 text-slate-500 dark:text-slate-400" />
