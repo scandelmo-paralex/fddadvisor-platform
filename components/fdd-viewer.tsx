@@ -1155,7 +1155,7 @@ export function FDDViewer({
             </div>
           </div>
 
-          <div className="flex-1 overflow-auto p-4 flex justify-center min-h-0">
+          <div className="flex-1 overflow-auto p-4 flex justify-center min-h-0 max-h-[calc(100vh-220px)]">
             {pdfLoadError ? (
               <Card className="flex h-full w-full items-center justify-center p-8">
                 <div className="text-center space-y-4">
