@@ -1155,9 +1155,8 @@ export function FDDViewer({
             </div>
           </div>
 
-          <div className="flex-1 overflow-auto p-4 min-h-0">
-            <div className="flex flex-col items-center">
-              {pdfLoadError ? (
+          <div className="flex-1 overflow-auto p-4 min-h-0 flex justify-center">
+            {pdfLoadError ? (
               <Card className="flex h-full w-full items-center justify-center p-8">
                 <div className="text-center space-y-4">
                   <p className="text-lg font-semibold text-muted-foreground">PDF Viewer Error</p>
@@ -1229,24 +1228,23 @@ export function FDDViewer({
                   <p className="text-muted-foreground">Loading PDF viewer...</p>
                 </div>
               </Card>
-              )}
+            )}
+          </div>
 
-              {/* Professional Advice Disclaimer - below PDF */}
-              <div className="w-full max-w-[750px] mt-4 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900/50 px-4 py-3">
-                <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 mt-0.5">
-                    <Info className="h-4 w-4 text-slate-500 dark:text-slate-400" />
-                  </div>
-                  <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                    <span className="font-semibold">Important:</span> This Franchise Disclosure Document contains information 
-                    that is critical to your investment decision. We strongly recommend that you review this document carefully 
-                    and consult with a qualified franchise attorney, certified public accountant, and financial advisor before 
-                    signing any agreements or making any payments. These professionals can help you understand the legal obligations, 
-                    financial requirements, and business risks associated with this franchise opportunity. The AI assistant provided 
-                    is for navigational purposes only and does not constitute legal, financial, or investment advice.
-                  </p>
-                </div>
+          {/* Professional Advice Disclaimer - fixed footer */}
+          <div className="flex-shrink-0 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 px-4 py-3">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 mt-0.5">
+                <Info className="h-4 w-4 text-slate-500 dark:text-slate-400" />
               </div>
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                <span className="font-semibold">Important:</span> This Franchise Disclosure Document contains information 
+                that is critical to your investment decision. We strongly recommend that you review this document carefully 
+                and consult with a qualified franchise attorney, certified public accountant, and financial advisor before 
+                signing any agreements or making any payments. These professionals can help you understand the legal obligations, 
+                financial requirements, and business risks associated with this franchise opportunity. The AI assistant provided 
+                is for navigational purposes only and does not constitute legal, financial, or investment advice.
+              </p>
             </div>
           </div>
         </div>
