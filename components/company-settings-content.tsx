@@ -6,9 +6,11 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { User, Building2, Mail, Phone, Globe, FileText, ArrowLeft, CheckCircle2, Calendar, Bell, Loader2, AlertCircle, MessageSquare, X } from 'lucide-react'
+import { User, Building2, Mail, Phone, Globe, FileText, ArrowLeft, CheckCircle2, Calendar, Bell, Loader2, AlertCircle, MessageSquare, X, Layers } from 'lucide-react'
 import { createBrowserClient } from "@supabase/ssr"
 import { TeamManagement } from "@/components/team-management"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { PipelineStageManager } from "@/components/pipeline-stage-manager"
 
 export function CompanySettingsContent({
   user,
@@ -110,6 +112,21 @@ export function CompanySettingsContent({
         </div>
       </div>
 
+      {/* Settings Tabs */}
+      <Tabs defaultValue="settings" className="w-full">
+        <TabsList className="grid w-full max-w-md grid-cols-2 mb-6">
+          <TabsTrigger value="settings" className="gap-2">
+            <Building2 className="h-4 w-4" />
+            Settings
+          </TabsTrigger>
+          <TabsTrigger value="pipeline" className="gap-2">
+            <Layers className="h-4 w-4" />
+            Pipeline Stages
+          </TabsTrigger>
+        </TabsList>
+
+        {/* Settings Tab */}
+        <TabsContent value="settings">
       <div className="grid gap-8 lg:grid-cols-2"> {/* Increased grid gap */}
         {/* Personal Information */}
         <Card className="p-6 space-y-6 border-border/60 shadow-sm"> {/* Enhanced card styling */}
@@ -376,6 +393,24 @@ export function CompanySettingsContent({
           />
         </div>
       </div>
+        </TabsContent>
+
+        {/* Pipeline Stages Tab */}
+        <TabsContent value="pipeline">
+          <Card className="p-6 border-border/60 shadow-sm">
+            <div className="flex items-center gap-3 pb-4 border-b border-border/40 mb-6">
+              <div className="rounded-xl bg-cta/10 p-2.5">
+                <Layers className="h-5 w-5 text-cta" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold">Pipeline Stages</h2>
+                <p className="text-xs text-muted-foreground">Customize your lead pipeline stages</p>
+              </div>
+            </div>
+            <PipelineStageManager />
+          </Card>
+        </TabsContent>
+      </Tabs>
 
       <div className="flex justify-end gap-4 pt-4 border-t border-border/40">
         <Button variant="outline" onClick={() => router.push("/dashboard")} className="h-11 px-6">
