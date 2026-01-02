@@ -704,7 +704,41 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
         })}
       </div>
       {view === "pipeline" ? (
-        <PipelineView leads={filteredLeads} onOpenModal={onOpenModal} onStageChange={handleStageChange} />
+        <PipelineView 
+          leads={filteredLeads} 
+          onOpenModal={onOpenModal} 
+          onStageChange={handleStageChange}
+          onLeadStageUpdate={async (leadId: string, stageId: string) => {
+            // Call API to update lead stage
+            const response = await fetch(`/api/leads/${leadId}/stage`, {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ stage_id: stageId }),
+            })
+            
+            if (!response.ok) {
+              const error = await response.json()
+              throw new Error(error.error || "Failed to update lead stage")
+            }
+            
+            const data = await response.json()
+            
+            // Update local state
+            setLeads((prevLeads) =>
+              prevLeads.map((lead) =>
+                lead.id === leadId
+                  ? {
+                      ...lead,
+                      stage: data.stage.name.toLowerCase(),
+                      stage_id: stageId,
+                      pipeline_stage: data.stage,
+                      daysInStage: 0,
+                    }
+                  : lead
+              )
+            )
+          }}
+        />
       ) : (
         <div className="space-y-6">
           {" "}

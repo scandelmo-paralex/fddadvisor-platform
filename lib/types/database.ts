@@ -410,3 +410,65 @@ export interface LeadInvitationWithAssignment extends LeadInvitation {
     email: string
   }
 }
+
+// ============================================================================
+// PIPELINE STAGE TYPES
+// ============================================================================
+
+export interface PipelineStage {
+  id: string
+  franchisor_id: string
+  name: string
+  description: string | null
+  color: string
+  position: number
+  is_default: boolean
+  is_closed_won: boolean
+  is_closed_lost: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface LeadStageHistory {
+  id: string
+  lead_invitation_id: string
+  from_stage_id: string | null
+  to_stage_id: string
+  changed_by: string | null
+  notes: string | null
+  time_in_previous_stage: number | null // seconds
+  created_at: string
+}
+
+// Extended LeadInvitation with stage information
+export interface LeadInvitationWithStage extends LeadInvitation {
+  stage_id?: string
+  stage_changed_at?: string
+  stage_changed_by?: string
+  pipeline_stage?: PipelineStage
+}
+
+// For the pipeline view
+export interface LeadWithStage {
+  id: string
+  name: string
+  email: string
+  phone?: string
+  brand: string
+  franchiseSlug: string
+  source: string
+  timeline: string
+  intent: "High" | "Medium" | "Low"
+  qualityScore: number
+  stage_id?: string
+  stage?: PipelineStage
+  location?: string
+  lastActivity?: string
+  totalViews?: number
+  questionsAsked?: number
+  invitationStatus?: string
+  item23SignedAt?: string
+  consentGivenAt?: string
+  buyerId?: string
+  franchiseId?: string
+}

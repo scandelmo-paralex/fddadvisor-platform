@@ -133,10 +133,21 @@ export async function GET() {
       }
     })
 
-    // Get invitation data
+    // Get invitation data with stage information
     // - Admin/Owner: sees all invitations for the franchisor
     // - Recruiter: sees only invitations they created
-    let invitationsQuery = supabase.from("lead_invitations").select("*").order("sent_at", { ascending: false })
+    let invitationsQuery = supabase.from("lead_invitations").select(`
+      *,
+      pipeline_stage:stage_id(
+        id,
+        name,
+        color,
+        position,
+        is_default,
+        is_closed_won,
+        is_closed_lost
+      )
+    `).order("sent_at", { ascending: false })
     
     if (isRecruiter && teamMemberId) {
       // Recruiters only see leads they created
@@ -204,8 +215,12 @@ export async function GET() {
             : engagement ? (engagement.questions_asked > 3 ? "High" : "Medium") : "Low",
           isNew: false,
           qualityScore: calculateQualityScore(access, engagement),
-          stage: invitation?.status === "signed_up" ? "engaged" : "inquiry",
-          daysInStage: 0,
+          stage: invitation?.pipeline_stage?.name?.toLowerCase() || (invitation?.status === "signed_up" ? "engaged" : "inquiry"),
+          stage_id: invitation?.stage_id || null,
+          pipeline_stage: invitation?.pipeline_stage || null,
+          daysInStage: invitation?.stage_changed_at 
+            ? Math.floor((Date.now() - new Date(invitation.stage_changed_at).getTime()) / (1000 * 60 * 60 * 24))
+            : 0,
           verificationStatus: "unverified" as const,
           location: buyerCity && buyerState ? `${buyerCity}, ${buyerState}` : "",
           city: buyerCity,
@@ -271,8 +286,12 @@ export async function GET() {
           intent: "Medium",
           isNew: true,
           qualityScore: 50,
-          stage: "inquiry",
-          daysInStage: 0,
+          stage: inv.pipeline_stage?.name?.toLowerCase() || "inquiry",
+          stage_id: inv.stage_id || null,
+          pipeline_stage: inv.pipeline_stage || null,
+          daysInStage: inv.stage_changed_at 
+            ? Math.floor((Date.now() - new Date(inv.stage_changed_at).getTime()) / (1000 * 60 * 60 * 24))
+            : 0,
           verificationStatus: "unverified" as "unverified" | "verified" | "rejected",
           location: invLocation,
           city: invCity,
