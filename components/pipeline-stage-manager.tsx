@@ -90,6 +90,18 @@ function SortableStageItem({ stage, onEdit, onDelete }: SortableStageItemProps) 
     opacity: isDragging ? 0.5 : 1,
   }
 
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    e.preventDefault()
+    onEdit(stage)
+  }
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    e.preventDefault()
+    onDelete(stage)
+  }
+
   return (
     <div
       ref={setNodeRef}
@@ -101,7 +113,8 @@ function SortableStageItem({ stage, onEdit, onDelete }: SortableStageItemProps) 
       <button
         {...attributes}
         {...listeners}
-        className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600"
+        className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 touch-none"
+        type="button"
       >
         <GripVertical className="h-5 w-5" />
       </button>
@@ -138,22 +151,26 @@ function SortableStageItem({ stage, onEdit, onDelete }: SortableStageItemProps) 
         )}
       </div>
 
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => onEdit(stage)}
+          onClick={handleEdit}
           className="h-8 w-8 p-0"
+          type="button"
         >
           <Pencil className="h-4 w-4" />
+          <span className="sr-only">Edit {stage.name}</span>
         </Button>
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => onDelete(stage)}
+          onClick={handleDelete}
           className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+          type="button"
         >
           <Trash2 className="h-4 w-4" />
+          <span className="sr-only">Delete {stage.name}</span>
         </Button>
       </div>
     </div>

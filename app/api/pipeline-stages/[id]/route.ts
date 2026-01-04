@@ -4,12 +4,16 @@ import { NextResponse } from "next/server"
 // PATCH /api/pipeline-stages/[id] - Update a stage
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id: stageId } = await params
+    console.log("[PATCH /api/pipeline-stages/[id]] Starting update for stage:", stageId)
+    
     const supabase = await getSupabaseRouteClient()
 
     if (!supabase) {
+      console.log("[PATCH] Database not available")
       return NextResponse.json({ error: "Database not available" }, { status: 500 })
     }
 
@@ -19,22 +23,26 @@ export async function PATCH(
     } = await supabase.auth.getUser()
 
     if (authError || !user) {
+      console.log("[PATCH] Auth error:", authError)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
+    console.log("[PATCH] Authenticated user:", user.id)
 
     // Only franchisor owners can update stages
-    const { data: profile } = await supabase
+    const { data: profile, error: profileError } = await supabase
       .from("franchisor_profiles")
       .select("id")
       .eq("user_id", user.id)
       .single()
 
     if (!profile) {
+      console.log("[PATCH] Profile not found, error:", profileError)
       return NextResponse.json({ error: "Only franchisor owners can update stages" }, { status: 403 })
     }
+    console.log("[PATCH] Franchisor profile ID:", profile.id)
 
-    const stageId = params.id
     const body = await request.json()
+    console.log("[PATCH] Request body:", JSON.stringify(body))
     const { name, description, color, is_default, is_closed_won, is_closed_lost } = body
 
     // Verify the stage belongs to this franchisor
@@ -46,34 +54,45 @@ export async function PATCH(
       .single()
 
     if (fetchError || !existingStage) {
+      console.log("[PATCH] Stage not found, error:", fetchError)
       return NextResponse.json({ error: "Stage not found" }, { status: 404 })
     }
+    console.log("[PATCH] Found existing stage:", existingStage.name)
 
     // If setting as default, unset other defaults first
     if (is_default && !existingStage.is_default) {
-      await supabase
+      console.log("[PATCH] Unsetting other default stages...")
+      const { error: unsetError } = await supabase
         .from("pipeline_stages")
         .update({ is_default: false })
         .eq("franchisor_id", profile.id)
         .eq("is_default", true)
+        .neq("id", stageId)
+      if (unsetError) console.log("[PATCH] Error unsetting defaults:", unsetError)
     }
 
     // If setting as closed_won, unset other closed_won first
     if (is_closed_won && !existingStage.is_closed_won) {
-      await supabase
+      console.log("[PATCH] Unsetting other closed_won stages...")
+      const { error: unsetError } = await supabase
         .from("pipeline_stages")
         .update({ is_closed_won: false })
         .eq("franchisor_id", profile.id)
         .eq("is_closed_won", true)
+        .neq("id", stageId)
+      if (unsetError) console.log("[PATCH] Error unsetting closed_won:", unsetError)
     }
 
     // If setting as closed_lost, unset other closed_lost first
     if (is_closed_lost && !existingStage.is_closed_lost) {
-      await supabase
+      console.log("[PATCH] Unsetting other closed_lost stages...")
+      const { error: unsetError } = await supabase
         .from("pipeline_stages")
         .update({ is_closed_lost: false })
         .eq("franchisor_id", profile.id)
         .eq("is_closed_lost", true)
+        .neq("id", stageId)
+      if (unsetError) console.log("[PATCH] Error unsetting closed_lost:", unsetError)
     }
 
     // Build update object
@@ -85,6 +104,8 @@ export async function PATCH(
     if (is_closed_won !== undefined) updateData.is_closed_won = is_closed_won
     if (is_closed_lost !== undefined) updateData.is_closed_lost = is_closed_lost
 
+    console.log("[PATCH] Update data:", JSON.stringify(updateData))
+
     const { data: updatedStage, error: updateError } = await supabase
       .from("pipeline_stages")
       .update(updateData)
@@ -93,16 +114,17 @@ export async function PATCH(
       .single()
 
     if (updateError) {
-      console.error("Error updating pipeline stage:", updateError)
+      console.error("[PATCH] Error updating pipeline stage:", updateError)
       if (updateError.code === "23505") {
         return NextResponse.json({ error: "A stage with this name already exists" }, { status: 409 })
       }
-      return NextResponse.json({ error: "Failed to update stage" }, { status: 500 })
+      return NextResponse.json({ error: "Failed to update stage: " + updateError.message }, { status: 500 })
     }
 
+    console.log("[PATCH] Successfully updated stage:", updatedStage?.name)
     return NextResponse.json(updatedStage)
   } catch (error: any) {
-    console.error("Error in pipeline stages PATCH:", error)
+    console.error("[PATCH] Error in pipeline stages PATCH:", error)
     return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 })
   }
 }
@@ -110,9 +132,12 @@ export async function PATCH(
 // DELETE /api/pipeline-stages/[id] - Delete a stage
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id: stageId } = await params
+    console.log("[DELETE /api/pipeline-stages/[id]] Starting delete for stage:", stageId)
+    
     const supabase = await getSupabaseRouteClient()
 
     if (!supabase) {
@@ -138,8 +163,6 @@ export async function DELETE(
     if (!profile) {
       return NextResponse.json({ error: "Only franchisor owners can delete stages" }, { status: 403 })
     }
-
-    const stageId = params.id
 
     // Verify the stage belongs to this franchisor
     const { data: existingStage, error: fetchError } = await supabase
@@ -173,8 +196,8 @@ export async function DELETE(
       .eq("id", stageId)
 
     if (deleteError) {
-      console.error("Error deleting pipeline stage:", deleteError)
-      return NextResponse.json({ error: "Failed to delete stage" }, { status: 500 })
+      console.error("[DELETE] Error deleting pipeline stage:", deleteError)
+      return NextResponse.json({ error: "Failed to delete stage: " + deleteError.message }, { status: 500 })
     }
 
     // Reorder remaining stages to close the gap
@@ -195,9 +218,10 @@ export async function DELETE(
       }
     }
 
+    console.log("[DELETE] Successfully deleted stage")
     return NextResponse.json({ success: true })
   } catch (error: any) {
-    console.error("Error in pipeline stages DELETE:", error)
+    console.error("[DELETE] Error in pipeline stages DELETE:", error)
     return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 })
   }
 }

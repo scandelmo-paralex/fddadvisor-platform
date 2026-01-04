@@ -4,9 +4,11 @@ import { NextResponse } from "next/server"
 // PATCH /api/leads/[id]/stage - Update a lead's stage
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id: leadId } = await params
+    
     const supabase = await getSupabaseRouteClient()
 
     if (!supabase) {
@@ -47,7 +49,6 @@ export async function PATCH(
       return NextResponse.json({ error: "Not associated with any franchisor" }, { status: 403 })
     }
 
-    const leadId = params.id
     const body = await request.json()
     const { stage_id, notes } = body
 
