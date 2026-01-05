@@ -708,9 +708,12 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
           leads={filteredLeads} 
           onOpenModal={onOpenModal} 
           onStageChange={handleStageChange}
-          onLeadStageUpdate={async (leadId: string, stageId: string) => {
+          onLeadStageUpdate={async (leadId: string, stageId: string, invitationId?: string) => {
+            // Use invitation_id if available (for accessLeads), otherwise use leadId (for pendingLeads)
+            const idForUpdate = invitationId || leadId
+            
             // Call API to update lead stage
-            const response = await fetch(`/api/leads/${leadId}/stage`, {
+            const response = await fetch(`/api/leads/${idForUpdate}/stage`, {
               method: "PATCH",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ stage_id: stageId }),

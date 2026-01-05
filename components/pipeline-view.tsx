@@ -15,7 +15,7 @@ interface PipelineViewProps {
   leads: Lead[]
   onOpenModal: (type: string, leadId?: string) => void
   onStageChange: (leadId: string, newStage: Lead["stage"]) => void
-  onLeadStageUpdate?: (leadId: string, stageId: string) => Promise<void>
+  onLeadStageUpdate?: (leadId: string, stageId: string, invitationId?: string) => Promise<void>
 }
 
 // Fallback stages if API fails or hasn't loaded yet
@@ -138,8 +138,10 @@ export function PipelineView({ leads, onOpenModal, onStageChange, onLeadStageUpd
       
       // If we have the new API endpoint, use it
       if (onLeadStageUpdate) {
-        console.log("[PipelineView] Calling onLeadStageUpdate...")
-        await onLeadStageUpdate(draggedLead.id, stage.id)
+        // Get invitation_id - for accessLeads it's separate, for pendingLeads it equals id
+        const invitationId = (draggedLead as any).invitation_id
+        console.log("[PipelineView] Calling onLeadStageUpdate with invitation_id:", invitationId)
+        await onLeadStageUpdate(draggedLead.id, stage.id, invitationId)
         console.log("[PipelineView] onLeadStageUpdate completed successfully")
         toast({
           title: "Lead moved",

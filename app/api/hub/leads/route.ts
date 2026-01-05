@@ -192,6 +192,7 @@ export async function GET() {
 
         return {
           id: access.id,
+          invitation_id: invitation?.id || null, // ID in lead_invitations table for stage updates
           name: buyerName,
           email: buyerEmail,
           phone: buyerPhone,
@@ -268,6 +269,7 @@ export async function GET() {
 
         return {
           id: inv.id,
+          invitation_id: inv.id, // For pending leads, id IS the invitation_id
           name: inv.lead_name || "Unknown",
           email: inv.lead_email || "",
           phone: inv.lead_phone || "",
