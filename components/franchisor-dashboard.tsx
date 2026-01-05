@@ -83,6 +83,9 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
 
   // Pipeline lead value from franchisor settings
   const [pipelineLeadValue, setPipelineLeadValue] = useState(50000)
+  
+  // Company name from franchisor settings
+  const [companyName, setCompanyName] = useState<string | null>(null)
 
   // Fetch current user's role
   useEffect(() => {
@@ -127,7 +130,7 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
     fetchUserRole()
   }, [])
 
-  // Fetch franchisor settings (including pipeline lead value)
+  // Fetch franchisor settings (including pipeline lead value and company name)
   useEffect(() => {
     const fetchSettings = async () => {
       try {
@@ -137,6 +140,10 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
           if (data.pipeline_lead_value) {
             setPipelineLeadValue(data.pipeline_lead_value)
             console.log("[FranchisorDashboard] Pipeline lead value:", data.pipeline_lead_value)
+          }
+          if (data.company_name) {
+            setCompanyName(data.company_name)
+            console.log("[FranchisorDashboard] Company name:", data.company_name)
           }
         }
       } catch (error) {
@@ -619,8 +626,9 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
         <div className="space-y-1">
           {" "}
           {/* Adjusted spacing */}
-          <h2 className="text-lg font-semibold text-blue-600">Wellbiz Brands</h2>{" "}
-          {/* Added subtle blue accent to company name */}
+          {companyName && (
+            <h2 className="text-lg font-semibold text-blue-600">{companyName}</h2>
+          )}
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-foreground">Lead Dashboard</h1>{" "}
             {/* Increased font size */}
