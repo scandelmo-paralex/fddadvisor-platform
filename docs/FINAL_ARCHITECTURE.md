@@ -1,53 +1,94 @@
-# FDDAdvisor + FDDHub: Final Architecture
+# FDDAdvisor + FDDHub: Platform Architecture
+
+> **Last Updated:** January 5, 2026  
+> **Status:** Production  
+> **Version:** 2.1
+
+---
 
 ## Overview
 
 Two products, one account system, context-based separation.
 
-## Products
+| Product | Domain | Purpose |
+|---------|--------|---------|
+| **FDDAdvisor** | fddadvisor.com | Free public research platform for franchise buyers |
+| **FDDHub** | app.fddhub.com | B2B SaaS for franchisors - lead management & FDD distribution |
+
+---
+
+## Product Architecture
 
 ### 1. FDDAdvisor (fddadvisor.com)
-**Purpose:** Free public discovery platform for franchise research
+
+**Purpose:** Free, independent research platform - "The Carfax for Franchises"
+
+**Key Principles:**
+- 100% free for buyers
+- No lead capture or franchisor payments
+- Complete editorial independence
+- FranchiseScore credibility must be protected
 
 **Features:**
 - Browse all 400+ franchises
 - AI Discovery Assistant recommendations
+- FranchiseScore™ ratings (0-600 points)
 - Compare franchises side-by-side
-- View FDD analyses and data
+- AI-powered FDD analysis and chat
 - **Requires account** to view FDD Viewer (collects demographics)
 
 **User Flow:**
 1. Visit fddadvisor.com
 2. Browse/search franchises or use AI Discovery
 3. Click to view FDD → prompted to create account (if not logged in)
-4. Create account with demographics (investment range, industries, timeline, etc.)
-5. View FDD Viewer with full analysis
+4. Create account with demographics (investment range, industries, timeline)
+5. View FDD Viewer with full analysis and AI chat
 
-### 2. FDDHub (fddhub.com)
-**Purpose:** Franchisor SaaS + Lead Management Platform
+**Revenue Model:** None directly - supports FDDHub competitive intelligence
 
-**Two User Types:**
+### 2. FDDHub (app.fddhub.com)
 
-#### A. Franchisors
+**Purpose:** Franchisor SaaS platform for compliant FDD delivery and lead management
+
+**Pricing Tiers:**
+- Starter: $299/month
+- Professional: $699/month  
+- Enterprise: $1,497/month
+- Commission: 5-10% vs industry standard 35-50%
+
+**Features:**
+- FDD invitation system with magic links
+- 14-day compliance tracking
+- Lead engagement analytics
+- Custom pipeline stages (8 defaults, fully customizable)
+- Team member management (admin/recruiter/viewer roles)
+- White-label branded FDD viewer
+- DocuSeal integration for Item 23 receipt signing
+- Lead Intelligence reports
+- **Insights Module (Premium):** Competitive intelligence from FDDAdvisor data
+
+---
+
+## Two User Types in FDDHub
+
+### A. Franchisors
 - Send FDD invitations to leads
 - Track lead engagement and disclosure compliance
 - View lead intelligence reports
-- Manage white-label branding
-- **Insights Module (Premium):** Competitive intelligence on what leads research
+- Manage custom pipeline stages
+- Add team members with role-based access
+- Configure white-label branding
+- **Insights Module (Premium):** See what else leads are researching
 
-#### B. Leads (Invited Buyers)
+### B. Leads (Invited Buyers)
 - Receive email invitation from franchisor
 - Create account via magic link
 - View ONLY FDDs they were invited to see
 - Personal dashboard shows all invited FDDs (from multiple franchisors)
 - Each FDD Viewer is white-labeled per franchise
+- Can give consent and sign Item 23 receipt electronically
 
-**Lead Flow:**
-1. Franchisor sends invitation to john@example.com
-2. John receives email with magic link
-3. Clicks link → creates account (or logs in if exists)
-4. Sees dashboard with invited FDD(s)
-5. Views white-labeled FDD Viewer
+---
 
 ## Shared Account System
 
@@ -57,7 +98,7 @@ Two products, one account system, context-based separation.
 
 **Scenario:** John receives FDD invitation from Franchise A (FDDHub), but also wants to research competitors.
 
-1. **FDDHub Context** (`fddhub.com/hub/my-fdds`)
+1. **FDDHub Context** (`app.fddhub.com/hub/my-fdds`)
    - Shows ONLY Franchise A (what he was invited to)
    - White-labeled with Franchise A branding
    - No browse/search functionality
@@ -72,121 +113,385 @@ Two products, one account system, context-based separation.
    - Gets alerts when John views competitors
    - Can proactively address objections
 
-### Database Structure:
+---
 
-\`\`\`
+## Database Architecture
+
+### Core Tables
+
+```
 buyer_profiles
 ├── id (UUID)
 ├── user_id (auth.users)
 ├── email
 ├── demographics (investment_range, industries, timeline, etc.)
+├── qualifications (fico, assets, net_worth, etc.)
+├── skills & expertise
 └── signup_source ('fddadvisor' or 'fddhub')
 
-lead_fdd_access (tracks invited FDDs)
-├── buyer_id
-├── franchise_id
-├── franchisor_id
-├── granted_via ('invitation' or 'fddadvisor_signup')
-├── viewing_stats (first_viewed, last_viewed, total_views, time_spent)
+franchises
+├── id, name, slug
+├── franchise_score (0-600)
+├── franchise_score_breakdown (JSONB)
+├── opportunities & concerns (JSONB)
+├── analytical_summary
+├── Item 7/19/20 data
+└── docuseal_item23_template_url
 
 lead_invitations
-├── franchisor_id
-├── franchise_id
-├── lead_email
-├── invitation_token
+├── franchisor_id, franchise_id
+├── lead_email, invitation_token
 ├── status (sent, viewed, signed_up, expired)
+├── stage_id (links to pipeline_stages)
+├── assigned_to (links to team_members)
 └── buyer_id (linked after signup)
-\`\`\`
 
-## Competitive Intelligence Tracking
+lead_fdd_access
+├── buyer_id, franchise_id
+├── granted_via ('invitation' or 'fddadvisor_signup')
+├── consent_given_at, receipt_signed_at
+├── docuseal_submission_id
+└── viewing_stats (views, time_spent)
 
-### What Gets Tracked:
+pipeline_stages
+├── franchisor_id
+├── name, color, position
+├── is_default, is_closed_won, is_closed_lost
+└── 8 default stages per franchisor
 
-When a lead (invited to Franchise A) views other franchises in FDDAdvisor:
-- Which franchises they viewed
-- Time spent on each
-- Which Items they focused on
-- Comparison activity
+franchisor_team_members
+├── franchisor_id, user_id, email
+├── role ('admin', 'recruiter', 'viewer')
+├── status ('invited', 'active', 'deactivated')
+└── invitation_token, accepted_at
+```
 
-### Where It Shows Up:
+### Vector Search (Semantic)
 
-**Base FDDHub:** Lead intelligence on YOUR FDD only
-- Time spent viewing your FDD
-- Which sections they read
-- Disclosure status
+```
+fdd_chunks
+├── fdd_id
+├── chunk_text (600 tokens avg)
+├── item_number (1-23)
+├── page_number, start_page, end_page
+├── embedding (vector 768)
+└── metadata (JSONB)
+```
 
-**Insights Module (Premium):** Competitive intelligence
+---
+
+## Route Structure
+
+### FDDAdvisor Routes
+```
+/                           → Public homepage
+/discover                   → AI Discovery Assistant
+/fdd/[slug]                 → FDD Viewer (requires auth)
+/signup                     → Signup with demographics
+/login                      → Login
+/legal/terms                → Terms of Service
+/legal/privacy              → Privacy Policy
+```
+
+### FDDHub Routes
+```
+/hub/dashboard              → Franchisor dashboard (redirects to leads)
+/hub/leads                  → Lead management with pipeline
+/hub/company-settings       → Company settings + Pipeline stages + Team
+/hub/my-fdds                → Lead's personal dashboard
+/hub/fdd/[franchiseId]      → White-labeled FDD viewer
+/hub/invite/[token]         → Magic link landing page
+/hub/settings               → User settings
+```
+
+### Admin Routes
+```
+/admin/fdd-processing       → FDD upload and processing
+/admin/fdd/[id]/item-mapping → Manual item page mapping
+/admin/cover-images         → Manage cover images
+/admin/reset-password       → Admin password reset
+```
+
+---
+
+## Authentication Flows
+
+### FDDAdvisor Signup
+1. User clicks "View FDD" without account
+2. Redirect to `/signup?redirect=/fdd/[slug]`
+3. Signup form collects demographics
+4. After signup → redirect to FDD
+5. Create `lead_fdd_access` record with `granted_via: 'fddadvisor_signup'`
+
+### FDDHub Invitation
+1. Franchisor sends invitation via leads page
+2. System creates `lead_invitations` record with unique token
+3. Email sent via Resend with magic link
+4. Lead clicks link:
+   - If new: Creates account, prompted for password + demographics
+   - If existing: Auto-login
+5. Update invitation status to 'signed_up'
+6. Auto-create `lead_fdd_access` record
+7. Redirect to `/hub/my-fdds`
+
+### Team Member Invitation
+1. Franchisor owner invites team member
+2. System creates `franchisor_team_members` record
+3. Email sent with invitation link
+4. Team member clicks link → `/team-signup`
+5. Creates auth account, links user_id
+6. Redirected to dashboard with role-based access
+
+---
+
+## Pipeline Stages System
+
+### Default Stages (auto-created for new franchisors)
+
+| Position | Name | Color | Type |
+|----------|------|-------|------|
+| 0 | New Lead | Blue | Default |
+| 1 | Contacted | Purple | - |
+| 2 | Qualified | Cyan | - |
+| 3 | Discovery Call | Amber | - |
+| 4 | FDD Review | Pink | - |
+| 5 | Negotiation | Green | - |
+| 6 | Closed Won | Green | Closed Won |
+| 7 | Closed Lost | Red | Closed Lost |
+
+### Customization
+- Franchisors can add/edit/delete stages
+- Drag-and-drop reordering
+- 10 preset colors available
+- Only one default, one closed won, one closed lost per franchisor
+- Cannot delete stage with assigned leads
+
+---
+
+## Team Member Roles
+
+| Role | Leads Access | Stage Management | Team Management | Settings |
+|------|-------------|------------------|-----------------|----------|
+| Owner | All | Full | Full | Full |
+| Admin | All | Full | Full | Full |
+| Recruiter | Assigned only | Move leads | None | None |
+| Viewer | Read-only | None | None | None |
+
+---
+
+## White-Label Implementation
+
+### Customization Options
+- Logo URL
+- Primary brand color
+- Accent color
+- Custom header text
+- Contact email override
+- Contact phone override
+
+### FDD Viewer Modes
+
+**Public Mode** (FDDAdvisor):
+- Standard FDDAdvisor branding
+- No "Connect" buttons
+- Standard color scheme
+
+**White-Label Mode** (FDDHub):
+- Custom logo in header
+- Custom colors applied
+- Custom header text
+- Franchisor contact info
+- "Contact Us" button
+
+---
+
+## Compliance Features
+
+### FTC Franchise Rule Compliance
+- 14-day waiting period enforced via `consent_given_at` timestamp
+- FDD delivered as unmodified PDF
+- Electronic receipt signing via DocuSeal
+- Timestamped audit trail for all consents
+
+### DocuSeal Integration
+- Item 23 receipt templates per franchise
+- `docuseal_item23_template_url` in franchises table
+- Webhook captures signed PDF and submission ID
+- Stored in `lead_fdd_access.receipt_pdf_url`
+
+### AI Guardrails
+- Item 19 questions filtered for FPR compliance
+- Standardized disclaimers on financial information
+- Professional referral language required
+- Monthly compliance review of chatbot responses
+
+---
+
+## Lead Intelligence
+
+### Engagement Tracking
+```
+fdd_engagements
+├── Event types: view, question, download, scroll
+├── Page/section tracking
+├── Duration in seconds
+├── Questions asked (count and list)
+├── Items viewed (array)
+```
+
+### Lead Score Calculation
+```
+Base: 50 points (verified lead)
++ Time: 2 pts/minute (max 20)
++ Questions: 4 pts each (max 15)
++ Coverage: 1 pt/section (max 5)
++ Frequency: 2 pts/visit (max 10)
+= Total Score (50-100)
+```
+
+### Intent Classification
+- 🔥 Hot (90-100): Active, deep engagement
+- 🟢 High (75-89): Strong interest signals
+- 🟡 Medium (50-74): Casual browsing
+- ⚪ Low (<50): Just opened
+
+---
+
+## Insights Module (Premium Add-On)
+
+### Included in Base FDDHub:
+- Lead Intelligence Reports
+- Basic engagement metrics
+- Lead qualification tracking
+
+### Insights Module Features:
+- Competitive benchmarking from FDDAdvisor data
 - "Your lead also viewed: Franchise B, C, D"
-- Comparison metrics
-- Competitive positioning data
-- Market trends and benchmarking
+- Market trends and analytics
+- Sales pipeline insights
+- Industry comparisons
+- Buyer behavior patterns
+- Conversion funnel analysis
 
-## Franchisor Messaging
+---
 
-### Sales Pitch:
-"Your prospects are already researching competitors on Google, Franchise.com, and Reddit. With FDDHub + Insights, you get visibility into their entire research journey and can address objections before your competitors do."
+## API Endpoints Summary
 
-### Value Props:
-1. **Lead Intelligence** - Know exactly how engaged your leads are
-2. **Competitive Visibility** - See what else they're researching
-3. **Proactive Positioning** - Address objections before competitors
-4. **Better Qualification** - Understand if they're serious buyers
-5. **Higher Close Rates** - Data-driven follow-up strategies
+### FDDAdvisor
+```
+GET  /api/franchises/public    → List all franchises
+GET  /api/fdd/[id]             → Get FDD details
+POST /api/fdd-chat             → AI chat endpoint
+GET  /api/fdd/[id]/search      → Semantic search
+```
 
-## Privacy & Transparency
+### FDDHub
+```
+POST /api/hub/invitations      → Send FDD invitation
+GET  /api/hub/leads            → List leads with pipeline
+PATCH /api/leads/[id]/stage    → Update lead stage
+GET  /api/hub/fdd-access       → Get buyer's FDD access
+POST /api/hub/fdd-access/consent → Record consent
+```
 
-### User Disclosure:
-During signup: "Your research activity may be shared with franchisors who have invited you to view their FDDs. This helps them provide better support during your franchise selection process."
+### Pipeline Stages
+```
+GET  /api/pipeline-stages      → List stages
+POST /api/pipeline-stages      → Create stage
+PATCH /api/pipeline-stages/[id] → Update stage
+DELETE /api/pipeline-stages/[id] → Delete stage
+POST /api/pipeline-stages/reorder → Reorder stages
+```
 
-### Franchisor Terms:
-- Can see competitive research for THEIR leads only
-- Cannot see other franchisors' leads
-- Data used for lead intelligence only, not sold to third parties
+### Team Management
+```
+GET  /api/team                 → List team members
+POST /api/team                 → Invite team member
+PUT  /api/team/[id]            → Update member
+DELETE /api/team/[id]          → Deactivate member
+POST /api/team/accept          → Accept invitation
+```
+
+---
 
 ## Implementation Status
 
-### ✅ Completed:
-- Database schema with all tables
-- Enhanced signup with demographics
-- Lead invitation system
-- Lead dashboard (shows only invited FDDs)
-- White-label FDD viewer
-- White-label settings management UI
-- API endpoints for invitations and access control
+### ✅ Completed
+- [x] Database schema with all tables
+- [x] Enhanced signup with demographics
+- [x] Lead invitation system with magic links
+- [x] Lead dashboard (shows only invited FDDs)
+- [x] White-label FDD viewer
+- [x] White-label settings management UI
+- [x] Custom pipeline stages (8 defaults)
+- [x] Team member management
+- [x] DocuSeal integration for Item 23
+- [x] Consent tracking and timestamping
+- [x] Engagement tracking (fdd_engagements)
+- [x] AI chat with semantic search
+- [x] FranchiseScore™ 2.1 methodology
+- [x] 5 WellBiz brands processed
+- [x] Sentry error monitoring
+- [x] Vercel Analytics
+- [x] Terms of Service & Privacy Policy pages
 
-### 🚧 Still Needed:
-1. **FDDAdvisor Public Discovery**
-   - Homepage with AI Discovery
-   - Browse/search all franchises
-   - Franchise listing pages
-   - Auth gate for FDD Viewer access
+### 🚧 In Progress
+- [ ] Connect real engagement data to Lead Intelligence
+- [ ] Item 19 AI guardrails
+- [ ] Page mappings for WellBiz brands
+- [ ] Mobile optimization
 
-2. **Competitive Intelligence Tracking**
-   - Track when leads view franchises in FDDAdvisor
-   - Link viewing activity to lead_fdd_access
-   - Create insights dashboard for franchisors
+### 📋 Planned
+- [ ] Cloud FDD processing (400 FDDs)
+- [ ] FDDAdvisor public launch
+- [ ] Insights module
+- [ ] CRM integrations
 
-3. **Email Templates**
-   - Lead invitation emails
-   - Welcome emails
-   - Disclosure reminder emails
+---
 
-4. **Domain Separation**
-   - Configure for fddadvisor.com and fddhub.com
-   - Update navigation based on domain
-   - Separate branding/messaging
+## Monitoring & Operations
 
-5. **Insights Module UI**
-   - Competitive intelligence dashboard
-   - Lead research timeline
-   - Comparison alerts
-   - Benchmarking data
+### Sentry Configuration
+- Error tracking with full context
+- Performance monitoring
+- Alert rules for critical issues
+- Team access (3 alert rules active)
 
-## Next Steps
+### Vercel
+- Auto-deploy on push to main
+- Preview environments for branches
+- Speed Insights enabled
+- Analytics enabled
 
-1. Build FDDAdvisor public discovery experience
-2. Add competitive intelligence tracking
-3. Create Insights module dashboard
-4. Set up email templates
-5. Configure domain separation
-6. Test end-to-end user flows
+### Supabase
+- Daily backups at 4 AM
+- Row Level Security on all tables
+- Connection pooling enabled
+
+---
+
+## Next Steps (Priority Order)
+
+1. **WellBiz Demo Completion**
+   - Fix consent saving
+   - Connect real engagement data
+   - Complete page mappings
+
+2. **Scale to 400 Franchises**
+   - Cloud processing pipeline
+   - Batch FDD upload
+
+3. **Public Launch**
+   - FDDAdvisor with 400 franchises
+   - Marketing site updates
+   - SEO optimization
+
+4. **Premium Features**
+   - Insights module
+   - Advanced analytics
+   - CRM integrations
+
+---
+
+*Architecture documentation maintained by development team*  
+*Last Review: January 5, 2026*
