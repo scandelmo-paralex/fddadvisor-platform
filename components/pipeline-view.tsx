@@ -34,6 +34,7 @@ export function PipelineView({ leads, onOpenModal, onStageChange, onLeadStageUpd
   const [draggedLead, setDraggedLead] = useState<Lead | null>(null)
   const [updatingLeadId, setUpdatingLeadId] = useState<string | null>(null)
   const [debugInfo, setDebugInfo] = useState<string | null>(null)
+  const [pipelineLeadValue, setPipelineLeadValue] = useState(50000) // Default $50K
   const { toast } = useToast()
 
   // Fetch stages on mount
@@ -58,6 +59,26 @@ export function PipelineView({ leads, onOpenModal, onStageChange, onLeadStageUpd
     fetchStages()
   }, [])
 
+  // Fetch franchisor settings (including pipeline lead value)
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch("/api/franchisor-settings")
+        if (response.ok) {
+          const data = await response.json()
+          if (data.pipeline_lead_value) {
+            setPipelineLeadValue(data.pipeline_lead_value)
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching franchisor settings:", error)
+        // Keep using default value
+      }
+    }
+
+    fetchSettings()
+  }, [])
+
   // Map leads to stages - handles both old string stage and new stage_id
   const getLeadsByStage = (stageId: string) => {
     return leads.filter((lead) => {
@@ -76,8 +97,8 @@ export function PipelineView({ leads, onOpenModal, onStageChange, onLeadStageUpd
   }
 
   const getTotalValue = (stageLeads: Lead[]) => {
-    // Estimate $50K average franchise fee per lead
-    return stageLeads.length * 50000
+    // Use the franchisor's configured pipeline lead value
+    return stageLeads.length * pipelineLeadValue
   }
 
   const getConversionRate = (stageIndex: number) => {

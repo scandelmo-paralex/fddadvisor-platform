@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { User, Building2, Mail, Phone, Globe, FileText, ArrowLeft, CheckCircle2, Calendar, Bell, Loader2, AlertCircle, MessageSquare, X, Layers } from 'lucide-react'
+import { User, Building2, Mail, Phone, Globe, FileText, ArrowLeft, CheckCircle2, Calendar, Bell, Loader2, AlertCircle, MessageSquare, X, Layers, DollarSign } from 'lucide-react'
 import { createBrowserClient } from "@supabase/ssr"
 import { TeamManagement } from "@/components/team-management"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -30,6 +30,7 @@ export function CompanySettingsContent({
     phone: franchisorProfile?.phone || "",
     companyName: franchisorProfile?.company_name || "",
     website: franchisorProfile?.website || "",
+    pipelineLeadValue: franchisorProfile?.pipeline_lead_value || 50000,
   })
 
   const [notifications, setNotifications] = useState({
@@ -64,6 +65,7 @@ export function CompanySettingsContent({
           phone: editedProfile.phone,
           company_name: editedProfile.companyName,
           website: editedProfile.website,
+          pipeline_lead_value: editedProfile.pipelineLeadValue,
           updated_at: new Date().toISOString(),
         })
         .eq("user_id", user.id)
@@ -396,7 +398,51 @@ export function CompanySettingsContent({
         </TabsContent>
 
         {/* Pipeline Stages Tab */}
-        <TabsContent value="pipeline">
+        <TabsContent value="pipeline" className="space-y-6">
+          {/* Pipeline Lead Value Setting */}
+          <Card className="p-6 border-border/60 shadow-sm">
+            <div className="flex items-center gap-3 pb-4 border-b border-border/40 mb-6">
+              <div className="rounded-xl bg-emerald-500/10 p-2.5">
+                <DollarSign className="h-5 w-5 text-emerald-600" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold">Pipeline Value Settings</h2>
+                <p className="text-xs text-muted-foreground">Configure how pipeline value is calculated</p>
+              </div>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Estimated Value Per Lead</label>
+                <p className="text-xs text-muted-foreground mb-2">
+                  This value is used to calculate the total pipeline value shown on your dashboard. 
+                  Set this to your average franchise fee or expected revenue per closed deal.
+                </p>
+                <div className="relative max-w-xs">
+                  <DollarSign className="absolute left-3 top-3.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="number"
+                    className="h-11 pl-10"
+                    placeholder="50000"
+                    value={editedProfile.pipelineLeadValue}
+                    onChange={(e) => setEditedProfile({ ...editedProfile, pipelineLeadValue: parseInt(e.target.value) || 0 })}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Current setting: <span className="font-medium text-foreground">${editedProfile.pipelineLeadValue.toLocaleString()}</span> per lead
+                </p>
+              </div>
+              
+              <div className="p-4 bg-muted/30 rounded-lg border border-border/40">
+                <p className="text-sm text-muted-foreground">
+                  <strong className="text-foreground">Example:</strong> If you have 10 leads in your pipeline and your value per lead is ${editedProfile.pipelineLeadValue.toLocaleString()}, 
+                  your total pipeline value will show as <strong className="text-foreground">${(editedProfile.pipelineLeadValue * 10).toLocaleString()}</strong>
+                </p>
+              </div>
+            </div>
+          </Card>
+
+          {/* Pipeline Stages */}
           <Card className="p-6 border-border/60 shadow-sm">
             <div className="flex items-center gap-3 pb-4 border-b border-border/40 mb-6">
               <div className="rounded-xl bg-cta/10 p-2.5">
