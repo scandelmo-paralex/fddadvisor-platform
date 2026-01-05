@@ -81,6 +81,9 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
   // Track if current user is a team member (recruiter can't access profile)
   const [userRole, setUserRole] = useState<"owner" | "admin" | "recruiter" | null>(null)
 
+  // Pipeline lead value from franchisor settings
+  const [pipelineLeadValue, setPipelineLeadValue] = useState(50000)
+
   // Fetch current user's role
   useEffect(() => {
     const fetchUserRole = async () => {
@@ -122,6 +125,26 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
     }
 
     fetchUserRole()
+  }, [])
+
+  // Fetch franchisor settings (including pipeline lead value)
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch("/api/franchisor-settings")
+        if (response.ok) {
+          const data = await response.json()
+          if (data.pipeline_lead_value) {
+            setPipelineLeadValue(data.pipeline_lead_value)
+            console.log("[FranchisorDashboard] Pipeline lead value:", data.pipeline_lead_value)
+          }
+        }
+      } catch (error) {
+        console.error("[FranchisorDashboard] Error fetching settings:", error)
+      }
+    }
+
+    fetchSettings()
   }, [])
 
   // For error toasts
@@ -708,6 +731,7 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
           leads={filteredLeads} 
           onOpenModal={onOpenModal} 
           onStageChange={handleStageChange}
+          pipelineLeadValue={pipelineLeadValue}
           onLeadStageUpdate={async (leadId: string, stageId: string, invitationId?: string) => {
             // Use invitation_id if available (for accessLeads), otherwise use leadId (for pendingLeads)
             const idForUpdate = invitationId || leadId

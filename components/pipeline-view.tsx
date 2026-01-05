@@ -16,6 +16,7 @@ interface PipelineViewProps {
   onOpenModal: (type: string, leadId?: string) => void
   onStageChange: (leadId: string, newStage: Lead["stage"]) => void
   onLeadStageUpdate?: (leadId: string, stageId: string, invitationId?: string) => Promise<void>
+  pipelineLeadValue?: number // Configurable value per lead
 }
 
 // Fallback stages if API fails or hasn't loaded yet
@@ -28,14 +29,21 @@ const fallbackStages: PipelineStage[] = [
   { id: "closed", franchisor_id: "", name: "Closed", description: null, color: "#22C55E", position: 5, is_default: false, is_closed_won: true, is_closed_lost: false, created_at: "", updated_at: "" },
 ]
 
-export function PipelineView({ leads, onOpenModal, onStageChange, onLeadStageUpdate }: PipelineViewProps) {
+export function PipelineView({ leads, onOpenModal, onStageChange, onLeadStageUpdate, pipelineLeadValue: propLeadValue }: PipelineViewProps) {
   const [stages, setStages] = useState<PipelineStage[]>(fallbackStages)
   const [stagesLoading, setStagesLoading] = useState(true)
   const [draggedLead, setDraggedLead] = useState<Lead | null>(null)
   const [updatingLeadId, setUpdatingLeadId] = useState<string | null>(null)
   const [debugInfo, setDebugInfo] = useState<string | null>(null)
-  const [pipelineLeadValue, setPipelineLeadValue] = useState(50000) // Default $50K
+  const [pipelineLeadValue, setPipelineLeadValue] = useState(propLeadValue || 50000) // Use prop or default $50K
   const { toast } = useToast()
+
+  // Update local state when prop changes
+  useEffect(() => {
+    if (propLeadValue) {
+      setPipelineLeadValue(propLeadValue)
+    }
+  }, [propLeadValue])
 
   // Fetch stages on mount
   useEffect(() => {
@@ -57,26 +65,6 @@ export function PipelineView({ leads, onOpenModal, onStageChange, onLeadStageUpd
     }
 
     fetchStages()
-  }, [])
-
-  // Fetch franchisor settings (including pipeline lead value)
-  useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        const response = await fetch("/api/franchisor-settings")
-        if (response.ok) {
-          const data = await response.json()
-          if (data.pipeline_lead_value) {
-            setPipelineLeadValue(data.pipeline_lead_value)
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching franchisor settings:", error)
-        // Keep using default value
-      }
-    }
-
-    fetchSettings()
   }, [])
 
   // Map leads to stages - handles both old string stage and new stage_id
