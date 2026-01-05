@@ -33,6 +33,7 @@ export function PipelineView({ leads, onOpenModal, onStageChange, onLeadStageUpd
   const [stagesLoading, setStagesLoading] = useState(true)
   const [draggedLead, setDraggedLead] = useState<Lead | null>(null)
   const [updatingLeadId, setUpdatingLeadId] = useState<string | null>(null)
+  const [debugInfo, setDebugInfo] = useState<string | null>(null)
   const { toast } = useToast()
 
   // Fetch stages on mount
@@ -92,39 +93,71 @@ export function PipelineView({ leads, onOpenModal, onStageChange, onLeadStageUpd
     return Math.round((currentCount / previousCount) * 100)
   }
 
-  const handleDragStart = (lead: Lead) => {
+  const handleDragStart = (e: React.DragEvent, lead: Lead) => {
+    console.log("[PipelineView] Drag started for lead:", lead.name, lead.id)
     setDraggedLead(lead)
+    // Set drag data for debugging
+    e.dataTransfer.setData("text/plain", lead.id)
+    e.dataTransfer.effectAllowed = "move"
   }
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault()
+    e.dataTransfer.dropEffect = "move"
   }
 
-  const handleDrop = async (stage: PipelineStage) => {
-    if (!draggedLead) return
+  const handleDrop = async (e: React.DragEvent, stage: PipelineStage) => {
+    e.preventDefault()
+    console.log("[PipelineView] Drop on stage:", stage.name, stage.id)
+    console.log("[PipelineView] Dragged lead:", draggedLead?.name, draggedLead?.id)
+    
+    if (!draggedLead) {
+      console.log("[PipelineView] No dragged lead found!")
+      toast({
+        title: "Debug",
+        description: "No dragged lead found",
+        variant: "destructive",
+      })
+      return
+    }
     
     const currentStageId = (draggedLead as any).stage_id || draggedLead.stage
+    console.log("[PipelineView] Current stage:", currentStageId, "Target stage:", stage.id)
+    
     if (currentStageId === stage.id) {
+      console.log("[PipelineView] Same stage, skipping")
       setDraggedLead(null)
       return
     }
 
     setUpdatingLeadId(draggedLead.id)
+    setDebugInfo(`Moving ${draggedLead.name} to ${stage.name}...`)
 
     try {
+      console.log("[PipelineView] onLeadStageUpdate available:", !!onLeadStageUpdate)
+      
       // If we have the new API endpoint, use it
       if (onLeadStageUpdate) {
+        console.log("[PipelineView] Calling onLeadStageUpdate...")
         await onLeadStageUpdate(draggedLead.id, stage.id)
+        console.log("[PipelineView] onLeadStageUpdate completed successfully")
         toast({
           title: "Lead moved",
           description: `${draggedLead.name} moved to ${stage.name}`,
         })
+        setDebugInfo(null)
       } else {
+        console.log("[PipelineView] Using fallback onStageChange")
         // Fall back to old stage change handler
         onStageChange(draggedLead.id, stage.name.toLowerCase() as Lead["stage"])
+        toast({
+          title: "Lead moved (local only)",
+          description: `${draggedLead.name} moved to ${stage.name}`,
+        })
       }
     } catch (error: any) {
-      console.error("Error updating lead stage:", error)
+      console.error("[PipelineView] Error updating lead stage:", error)
+      setDebugInfo(`Error: ${error.message}`)
       toast({
         title: "Error",
         description: error.message || "Failed to move lead",
@@ -151,7 +184,7 @@ export function PipelineView({ leads, onOpenModal, onStageChange, onLeadStageUpd
         key={stage.id} 
         className="space-y-2.5" 
         onDragOver={handleDragOver} 
-        onDrop={() => handleDrop(stage)}
+        onDrop={(e) => handleDrop(e, stage)}
       >
         <Card className="p-3 border-border/50 bg-muted/30">
           <div className="space-y-2.5">
@@ -195,10 +228,10 @@ export function PipelineView({ leads, onOpenModal, onStageChange, onLeadStageUpd
             <Card
               key={lead.id}
               draggable={updatingLeadId !== lead.id}
-              onDragStart={() => handleDragStart(lead)}
-              className={`p-3 border-border/50 cursor-move hover:shadow-lg transition-all hover:border-cta/50 hover:scale-[1.02] bg-card ${
+              onDragStart={(e) => handleDragStart(e, lead)}
+              className={`p-3 border-border/50 cursor-grab active:cursor-grabbing hover:shadow-lg transition-all hover:border-cta/50 hover:scale-[1.02] bg-card ${
                 updatingLeadId === lead.id ? "opacity-50" : ""
-              }`}
+              } ${draggedLead?.id === lead.id ? "opacity-50 ring-2 ring-blue-500" : ""}`}
             >
               <div className="space-y-2.5">
                 <div className="flex items-start justify-between gap-2">
@@ -269,7 +302,10 @@ export function PipelineView({ leads, onOpenModal, onStageChange, onLeadStageUpd
                     size="sm"
                     variant="outline"
                     className="flex-1 h-8 text-xs gap-1.5 bg-transparent"
-                    onClick={() => onOpenModal("lead-intelligence", lead.id)}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onOpenModal("lead-intelligence", lead.id)
+                    }}
                   >
                     <BarChart3 className="h-3.5 w-3.5" />
                     Intel
@@ -278,7 +314,8 @@ export function PipelineView({ leads, onOpenModal, onStageChange, onLeadStageUpd
                     size="sm"
                     variant="outline"
                     className="flex-1 h-8 text-xs gap-1.5 bg-transparent"
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation()
                       /* Handle contact */
                     }}
                   >
@@ -336,6 +373,13 @@ export function PipelineView({ leads, onOpenModal, onStageChange, onLeadStageUpd
           <span className="font-bold text-2xl">${(getTotalValue(leads) / 1000).toFixed(0)}K</span>
         </div>
       </div>
+
+      {/* Debug info display */}
+      {debugInfo && (
+        <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-700">
+          {debugInfo}
+        </div>
+      )}
 
       <div className="space-y-6">
         {rows.map((row, rowIndex) => (
