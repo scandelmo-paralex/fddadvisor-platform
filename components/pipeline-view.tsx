@@ -267,18 +267,6 @@ export function PipelineView({ leads, onOpenModal, onStageChange, onLeadStageUpd
                       <span className="truncate">{lead.location || "Unknown"}</span>
                     </div>
                   </div>
-                  <Badge
-                    variant="secondary"
-                    className={`text-xs font-semibold px-2 py-0.5 flex-shrink-0 ${
-                      lead.qualityScore >= 85
-                        ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-                        : lead.qualityScore >= 70
-                          ? "bg-amber-500/10 text-amber-600 border-amber-500/20"
-                          : "bg-slate-500/10 text-slate-600 border-slate-500/20"
-                    }`}
-                  >
-                    {lead.qualityScore}
-                  </Badge>
                 </div>
 
                 <div className="flex items-center justify-between text-xs">
