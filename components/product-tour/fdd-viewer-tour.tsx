@@ -336,9 +336,11 @@ export function FDDViewerTour({
         transition: all 0.15s ease !important;
         border: none !important;
         line-height: 1 !important;
+        text-shadow: none !important;
         -webkit-font-smoothing: antialiased !important;
         -moz-osx-font-smoothing: grayscale !important;
         text-rendering: optimizeLegibility !important;
+        letter-spacing: normal !important;
       }
 
       .fddhub-tour-popover .driver-popover-prev-btn {
@@ -355,8 +357,10 @@ export function FDDViewerTour({
         background-color: #2563eb !important;
         color: white !important;
         font-weight: 500 !important;
+        text-shadow: none !important;
         -webkit-font-smoothing: antialiased !important;
         -moz-osx-font-smoothing: grayscale !important;
+        letter-spacing: normal !important;
       }
 
       .fddhub-tour-popover .driver-popover-next-btn:hover {
