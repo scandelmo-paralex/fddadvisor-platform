@@ -503,6 +503,48 @@ export function CompanySettingsContent({
           </Card>
         </div>
       )}
+
+      {/* White-Label Settings Modal */}
+      {selectedFranchiseForSettings && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm" 
+            onClick={() => setSelectedFranchiseForSettings(null)}
+          />
+          {/* Modal */}
+          <div className="relative z-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto m-4 bg-background rounded-lg shadow-xl">
+            <div className="sticky top-0 bg-background z-10 flex items-center justify-between p-4 border-b">
+              <div className="flex items-center gap-3">
+                {selectedFranchiseForSettings.logo_url && (
+                  <img
+                    src={selectedFranchiseForSettings.logo_url}
+                    alt={selectedFranchiseForSettings.name}
+                    className="h-10 w-10 object-contain rounded-lg"
+                  />
+                )}
+                <div>
+                  <h2 className="font-semibold">{selectedFranchiseForSettings.name}</h2>
+                  <p className="text-sm text-muted-foreground">White-Label Customization</p>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setSelectedFranchiseForSettings(null)}
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+            <div className="p-4">
+              <WhiteLabelSettings 
+                franchiseId={selectedFranchiseForSettings.id} 
+                franchiseName={selectedFranchiseForSettings.name}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
