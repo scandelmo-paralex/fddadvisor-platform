@@ -5,14 +5,14 @@
 import { useEffect, useState, useCallback } from "react"
 import { useRouter, useParams } from 'next/navigation'
 import { createBrowserClient } from "@/lib/supabase/client"
-import { Loader2 } from 'lucide-react'
+import { Loader2, HelpCircle } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import type { WhiteLabelSettings } from "@/lib/types/database"
 import { InvestmentModal } from "@/components/investment-modal"
 import { RevenueModal } from "@/components/revenue-modal"
 import { FDDViewer } from "@/components/fdd-viewer"
-import { FDDViewerTour } from "@/components/product-tour"
+import { FDDViewerTour, useFDDViewerTour } from "@/components/product-tour"
 import type { Franchise } from "@/lib/data"
 import { toast } from "sonner"
 
@@ -43,6 +43,9 @@ export default function WhiteLabelFDDPage() {
   const [activeModal, setActiveModal] = useState<string | null>(null)
   const [notes, setNotes] = useState<Note[]>([])
   const [fddId, setFddId] = useState<string | null>(null)
+
+  // Product tour controls
+  const { startTour, forceShow, onTourComplete } = useFDDViewerTour()
 
   // Fetch notes for this FDD
   const fetchNotes = useCallback(async (fddIdToFetch: string) => {
@@ -597,7 +600,24 @@ export default function WhiteLabelFDDPage() {
       />
 
       {/* Product tour - auto-starts for first-time users */}
-      <FDDViewerTour franchiseName={franchise.name} />
+      <FDDViewerTour 
+        franchiseName={franchise.name} 
+        forceShow={forceShow}
+        onComplete={onTourComplete}
+        onSkip={onTourComplete}
+      />
+
+      {/* Replay tour button - fixed position */}
+      <Button
+        onClick={startTour}
+        variant="outline"
+        size="sm"
+        className="fixed bottom-4 left-4 z-40 gap-2 bg-white/90 dark:bg-slate-900/90 backdrop-blur shadow-lg"
+        title="Take a guided tour"
+      >
+        <HelpCircle className="h-4 w-4" />
+        <span className="hidden sm:inline">Tour</span>
+      </Button>
 
       {activeModal === "investment" && franchise && (
         <InvestmentModal franchise={franchise} onClose={handleCloseModal} />
