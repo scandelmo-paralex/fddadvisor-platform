@@ -1,0 +1,200 @@
+/* FDDHub Product Tour Styles */
+/* Custom styling for Driver.js to match shadcn/ui design system */
+
+.fddhub-tour-popover {
+  /* Base styling matching shadcn Card */
+  --tour-bg: hsl(var(--background));
+  --tour-text: hsl(var(--foreground));
+  --tour-muted: hsl(var(--muted-foreground));
+  --tour-border: hsl(var(--border));
+  --tour-primary: hsl(var(--primary));
+  --tour-primary-fg: hsl(var(--primary-foreground));
+  
+  background-color: var(--tour-bg) !important;
+  color: var(--tour-text) !important;
+  border: 1px solid var(--tour-border) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 
+              0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+  padding: 0 !important;
+  max-width: 360px !important;
+}
+
+/* Popover arrow */
+.fddhub-tour-popover .driver-popover-arrow {
+  border-color: var(--tour-bg) !important;
+}
+
+.fddhub-tour-popover .driver-popover-arrow-side-left,
+.fddhub-tour-popover .driver-popover-arrow-side-right,
+.fddhub-tour-popover .driver-popover-arrow-side-top,
+.fddhub-tour-popover .driver-popover-arrow-side-bottom {
+  border-color: transparent !important;
+}
+
+.fddhub-tour-popover .driver-popover-arrow-side-left {
+  border-right-color: var(--tour-bg) !important;
+}
+
+.fddhub-tour-popover .driver-popover-arrow-side-right {
+  border-left-color: var(--tour-bg) !important;
+}
+
+.fddhub-tour-popover .driver-popover-arrow-side-top {
+  border-bottom-color: var(--tour-bg) !important;
+}
+
+.fddhub-tour-popover .driver-popover-arrow-side-bottom {
+  border-top-color: var(--tour-bg) !important;
+}
+
+/* Title styling */
+.fddhub-tour-popover .driver-popover-title {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  color: var(--tour-text) !important;
+  padding: 16px 16px 8px 16px !important;
+  margin: 0 !important;
+  line-height: 1.4 !important;
+}
+
+/* Description styling */
+.fddhub-tour-popover .driver-popover-description {
+  font-size: 0.875rem !important;
+  color: var(--tour-muted) !important;
+  padding: 0 16px 16px 16px !important;
+  margin: 0 !important;
+  line-height: 1.6 !important;
+}
+
+/* Progress indicator */
+.fddhub-tour-popover .driver-popover-progress-text {
+  font-size: 0.75rem !important;
+  color: var(--tour-muted) !important;
+  padding: 0 16px !important;
+}
+
+/* Footer with buttons */
+.fddhub-tour-popover .driver-popover-footer {
+  padding: 12px 16px 16px 16px !important;
+  display: flex !important;
+  gap: 8px !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  border-top: 1px solid var(--tour-border) !important;
+  margin-top: 8px !important;
+}
+
+/* Button base styles */
+.fddhub-tour-popover .driver-popover-footer button {
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  padding: 8px 16px !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  border: none !important;
+  line-height: 1 !important;
+}
+
+/* Previous button - ghost style */
+.fddhub-tour-popover .driver-popover-prev-btn {
+  background-color: transparent !important;
+  color: var(--tour-muted) !important;
+}
+
+.fddhub-tour-popover .driver-popover-prev-btn:hover {
+  background-color: hsl(var(--accent)) !important;
+  color: var(--tour-text) !important;
+}
+
+/* Next/Done button - primary style */
+.fddhub-tour-popover .driver-popover-next-btn {
+  background-color: var(--tour-primary) !important;
+  color: var(--tour-primary-fg) !important;
+}
+
+.fddhub-tour-popover .driver-popover-next-btn:hover {
+  opacity: 0.9 !important;
+}
+
+/* Close button */
+.fddhub-tour-popover .driver-popover-close-btn {
+  position: absolute !important;
+  top: 12px !important;
+  right: 12px !important;
+  width: 24px !important;
+  height: 24px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  color: var(--tour-muted) !important;
+  cursor: pointer !important;
+  border-radius: 4px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 18px !important;
+  line-height: 1 !important;
+}
+
+.fddhub-tour-popover .driver-popover-close-btn:hover {
+  background-color: hsl(var(--accent)) !important;
+  color: var(--tour-text) !important;
+}
+
+/* Highlighted element styling */
+.driver-active-element {
+  z-index: 10001 !important;
+}
+
+/* Overlay styling - already handled by Driver.js config */
+
+/* Animation for popover */
+.fddhub-tour-popover {
+  animation: tourFadeIn 0.2s ease-out;
+}
+
+@keyframes tourFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Dark mode support - Driver.js will inherit CSS variables from :root */
+.dark .fddhub-tour-popover {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 
+              0 8px 10px -6px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 640px) {
+  .fddhub-tour-popover {
+    max-width: calc(100vw - 32px) !important;
+    margin: 0 16px !important;
+  }
+  
+  .fddhub-tour-popover .driver-popover-title {
+    font-size: 0.9375rem !important;
+    padding: 14px 14px 6px 14px !important;
+  }
+  
+  .fddhub-tour-popover .driver-popover-description {
+    font-size: 0.8125rem !important;
+    padding: 0 14px 14px 14px !important;
+  }
+  
+  .fddhub-tour-popover .driver-popover-footer {
+    padding: 10px 14px 14px 14px !important;
+  }
+  
+  .fddhub-tour-popover .driver-popover-footer button {
+    padding: 6px 12px !important;
+    font-size: 0.8125rem !important;
+  }
+}

@@ -12,6 +12,7 @@ import type { WhiteLabelSettings } from "@/lib/types/database"
 import { InvestmentModal } from "@/components/investment-modal"
 import { RevenueModal } from "@/components/revenue-modal"
 import { FDDViewer } from "@/components/fdd-viewer"
+import { FDDViewerTour } from "@/components/product-tour"
 import type { Franchise } from "@/lib/data"
 import { toast } from "sonner"
 
@@ -594,6 +595,9 @@ export default function WhiteLabelFDDPage() {
         onUpdateEngagement={() => {}}
         showCoverOverlay={true}
       />
+
+      {/* Product tour - auto-starts for first-time users */}
+      <FDDViewerTour franchiseName={franchise.name} />
 
       {activeModal === "investment" && franchise && (
         <InvestmentModal franchise={franchise} onClose={handleCloseModal} />
