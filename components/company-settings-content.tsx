@@ -6,9 +6,10 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { User, Building2, Mail, Phone, Globe, FileText, ArrowLeft, CheckCircle2, Calendar, Bell, Loader2, AlertCircle, MessageSquare, X } from 'lucide-react'
+import { User, Building2, Mail, Phone, Globe, FileText, ArrowLeft, CheckCircle2, Calendar, Bell, Loader2, AlertCircle, MessageSquare, X, Settings } from 'lucide-react'
 import { createBrowserClient } from "@supabase/ssr"
 import { TeamManagement } from "@/components/team-management"
+import { WhiteLabelSettings } from "@/components/white-label-settings"
 
 export function CompanySettingsContent({
   user,
@@ -42,6 +43,7 @@ export function CompanySettingsContent({
   const [isSaving, setIsSaving] = useState(false)
   const [showUpdateRequestModal, setShowUpdateRequestModal] = useState(false)
   const [selectedFranchiseForUpdate, setSelectedFranchiseForUpdate] = useState<any>(null)
+  const [selectedFranchiseForSettings, setSelectedFranchiseForSettings] = useState<any>(null)
 
   const handleSave = async () => {
     setIsSaving(true)
@@ -286,6 +288,19 @@ export function CompanySettingsContent({
                     >
                       <MessageSquare className="mr-2 h-3.5 w-3.5" />
                       Request Update
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full bg-background hover:bg-muted border-border/60"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setSelectedFranchiseForSettings(franchise)
+                      }}
+                    >
+                      <Settings className="mr-2 h-3.5 w-3.5" />
+                      Customize
                     </Button>
                   </div>
 
