@@ -243,6 +243,10 @@ export interface WhiteLabelSettings {
   contact_name?: string
   contact_email?: string
   contact_phone?: string
+  // Resources tab video customization
+  resources_video_url?: string
+  resources_video_title?: string
+  resources_video_description?: string
   created_at: string
   updated_at: string
 }

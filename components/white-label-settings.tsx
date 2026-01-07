@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Palette, Upload, Save, Loader2 } from "lucide-react"
+import { Palette, Upload, Save, Loader2, Video } from "lucide-react"
 import { Textarea } from "@/components/ui/textarea"
 
 interface WhiteLabelSettingsProps {
@@ -24,6 +24,9 @@ export function WhiteLabelSettings({ franchiseId, franchiseName }: WhiteLabelSet
     contact_name: "",
     contact_email: "",
     contact_phone: "",
+    resources_video_url: "",
+    resources_video_title: "",
+    resources_video_description: "",
   })
 
   useEffect(() => {
@@ -187,6 +190,50 @@ export function WhiteLabelSettings({ franchiseId, franchiseName }: WhiteLabelSet
                 onChange={(e) => setSettings({ ...settings, contact_phone: e.target.value })}
               />
             </div>
+          </div>
+        </div>
+
+        {/* Resources Video Section */}
+        <div className="space-y-4 pt-4 border-t">
+          <div className="flex items-center gap-3">
+            <div className="rounded-lg bg-blue-500/10 p-2">
+              <Video className="h-4 w-4 text-blue-500" />
+            </div>
+            <div>
+              <h4 className="font-medium text-sm">Resources Tab Video</h4>
+              <p className="text-xs text-muted-foreground">Customize the featured video shown to leads in the Resources tab</p>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>YouTube Video URL</Label>
+            <Input
+              placeholder="https://www.youtube.com/watch?v=YOUR_VIDEO_ID"
+              value={settings.resources_video_url}
+              onChange={(e) => setSettings({ ...settings, resources_video_url: e.target.value })}
+            />
+            <p className="text-xs text-muted-foreground">
+              Paste a YouTube URL (e.g., https://www.youtube.com/watch?v=abc123). Leave blank to use the default FDD guide video.
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Video Title</Label>
+            <Input
+              placeholder="Welcome to Our Franchise"
+              value={settings.resources_video_title}
+              onChange={(e) => setSettings({ ...settings, resources_video_title: e.target.value })}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Video Description</Label>
+            <Textarea
+              placeholder="Learn about our franchise opportunity and what makes us different..."
+              value={settings.resources_video_description}
+              onChange={(e) => setSettings({ ...settings, resources_video_description: e.target.value })}
+              rows={2}
+            />
           </div>
         </div>
 

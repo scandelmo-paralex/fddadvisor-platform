@@ -83,6 +83,9 @@ export async function PUT(request: Request, { params }: { params: { franchiseId:
           contact_name: body.contact_name,
           contact_email: body.contact_email,
           contact_phone: body.contact_phone,
+          resources_video_url: body.resources_video_url || null,
+          resources_video_title: body.resources_video_title || null,
+          resources_video_description: body.resources_video_description || null,
         },
         {
           onConflict: "franchise_id",
