@@ -1591,14 +1591,14 @@ export function FDDViewer({
           <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border-b border-slate-200 dark:border-slate-700">
             <div className="flex items-center gap-2">
               <PlayCircle className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-              <h2 className="font-semibold text-lg">FTC Consumer Guide to Buying a Franchise</h2>
+              <h2 className="font-semibold text-lg">FDD Review | Detailed Guide to Review FDD</h2>
             </div>
-            <p className="text-sm text-muted-foreground mt-1">Official guidance from the Federal Trade Commission</p>
+            <p className="text-sm text-muted-foreground mt-1">Franchise Disclosure Document Explained</p>
           </div>
           <div className="aspect-video w-full bg-black">
             <iframe
               src="https://www.youtube.com/embed/LQpXxpnwEOA"
-              title="FTC Consumer Guide: Buying a Franchise"
+              title="FDD Review | Detailed Guide to Review FDD (Franchise Disclosure Document Explained)"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
               className="w-full h-full"
@@ -1606,7 +1606,7 @@ export function FDDViewer({
           </div>
           <div className="p-4 bg-slate-50 dark:bg-slate-900/50">
             <p className="text-sm text-muted-foreground">
-              This video from the Federal Trade Commission explains what you need to know before investing in a franchise, including how to read and understand the Franchise Disclosure Document (FDD).
+              A detailed walkthrough of how to review and understand a Franchise Disclosure Document (FDD), covering key items and what to look for when evaluating a franchise opportunity.
             </p>
             <a
               href="https://www.youtube.com/watch?v=LQpXxpnwEOA"
