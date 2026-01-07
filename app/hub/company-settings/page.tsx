@@ -3,9 +3,10 @@
 import { useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Building2, ArrowLeft, ExternalLink, Eye } from "lucide-react"
+import { Building2, ArrowLeft, ExternalLink, Eye, Settings, X } from "lucide-react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
+import { WhiteLabelSettings } from "@/components/white-label-settings"
 
 interface Franchise {
   id: string
@@ -22,6 +23,7 @@ export default function CompanySettingsPage() {
   const [franchises, setFranchises] = useState<Franchise[]>([])
   const [loading, setLoading] = useState(true)
   const [companyName, setCompanyName] = useState("")
+  const [selectedFranchiseForSettings, setSelectedFranchiseForSettings] = useState<Franchise | null>(null)
 
   useEffect(() => {
     const fetchFranchises = async () => {
@@ -132,11 +134,19 @@ export default function CompanySettingsPage() {
                         <Eye className="h-4 w-4" />
                         View FDD
                       </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => setSelectedFranchiseForSettings(franchise)}
+                        className="w-full gap-2"
+                      >
+                        <Settings className="h-4 w-4" />
+                        Customize
+                      </Button>
                       {franchise.fdd_pdf_url && (
                         <Button
-                          variant="outline"
+                          variant="ghost"
                           onClick={() => window.open(franchise.fdd_pdf_url!, "_blank")}
-                          className="w-full gap-2"
+                          className="w-full gap-2 text-muted-foreground"
                         >
                           <ExternalLink className="h-4 w-4" />
                           Open PDF
@@ -167,6 +177,50 @@ export default function CompanySettingsPage() {
           </div>
         </Card>
       </div>
+
+      {/* White-Label Settings Modal */}
+      {selectedFranchiseForSettings && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/50" 
+            onClick={() => setSelectedFranchiseForSettings(null)}
+          />
+          {/* Modal */}
+          <div className="relative z-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto m-4 bg-background rounded-lg shadow-xl">
+            <div className="sticky top-0 bg-background z-10 flex items-center justify-between p-4 border-b">
+              <div className="flex items-center gap-3">
+                {selectedFranchiseForSettings.logo_url && (
+                  <Image
+                    src={selectedFranchiseForSettings.logo_url}
+                    alt={selectedFranchiseForSettings.name}
+                    width={40}
+                    height={40}
+                    className="object-contain"
+                  />
+                )}
+                <div>
+                  <h2 className="font-semibold">{selectedFranchiseForSettings.name}</h2>
+                  <p className="text-sm text-muted-foreground">White-Label Customization</p>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setSelectedFranchiseForSettings(null)}
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+            <div className="p-4">
+              <WhiteLabelSettings 
+                franchiseId={selectedFranchiseForSettings.id} 
+                franchiseName={selectedFranchiseForSettings.name}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
