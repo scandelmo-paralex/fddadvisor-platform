@@ -165,7 +165,7 @@ export function FDDViewerTour({
       {
         popover: {
           title: "🎉 You're All Set!",
-          description: "That's the tour! Remember: take your time, ask questions using the AI assistant, and consult with professional advisors before making any investment decisions. Good luck with your research!",
+          description: "That's the tour! Remember: take your time, ask questions using the AI assistant, and consult with professional advisors before making any investment decisions.",
           side: "over",
           align: "center",
         },
@@ -249,6 +249,7 @@ export function FDDViewerTour({
         disableActiveInteraction: false,
         onCloseClick: () => {
           markTourSeen()
+          driverObj.destroy()
           onSkip?.()
         },
         onDestroyStarted: () => {
@@ -282,9 +283,9 @@ export function FDDViewerTour({
     style.id = styleId
     style.textContent = `
       .fddhub-tour-popover {
-        background-color: hsl(var(--background)) !important;
-        color: hsl(var(--foreground)) !important;
-        border: 1px solid hsl(var(--border)) !important;
+        background-color: white !important;
+        color: #1e293b !important;
+        border: 1px solid #e2e8f0 !important;
         border-radius: 12px !important;
         box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 
                     0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
@@ -295,7 +296,7 @@ export function FDDViewerTour({
       .fddhub-tour-popover .driver-popover-title {
         font-size: 1rem !important;
         font-weight: 600 !important;
-        color: hsl(var(--foreground)) !important;
+        color: #1e293b !important;
         padding: 16px 16px 8px 16px !important;
         margin: 0 !important;
         line-height: 1.4 !important;
@@ -303,7 +304,7 @@ export function FDDViewerTour({
 
       .fddhub-tour-popover .driver-popover-description {
         font-size: 0.875rem !important;
-        color: hsl(var(--muted-foreground)) !important;
+        color: #475569 !important;
         padding: 0 16px 16px 16px !important;
         margin: 0 !important;
         line-height: 1.6 !important;
@@ -311,7 +312,7 @@ export function FDDViewerTour({
 
       .fddhub-tour-popover .driver-popover-progress-text {
         font-size: 0.75rem !important;
-        color: hsl(var(--muted-foreground)) !important;
+        color: #64748b !important;
         padding: 0 16px !important;
       }
 
@@ -321,8 +322,9 @@ export function FDDViewerTour({
         gap: 8px !important;
         justify-content: flex-end !important;
         align-items: center !important;
-        border-top: 1px solid hsl(var(--border)) !important;
+        border-top: 1px solid #e2e8f0 !important;
         margin-top: 8px !important;
+        background-color: white !important;
       }
 
       .fddhub-tour-popover .driver-popover-footer button {
@@ -338,21 +340,21 @@ export function FDDViewerTour({
 
       .fddhub-tour-popover .driver-popover-prev-btn {
         background-color: transparent !important;
-        color: hsl(var(--muted-foreground)) !important;
+        color: #64748b !important;
       }
 
       .fddhub-tour-popover .driver-popover-prev-btn:hover {
-        background-color: hsl(var(--accent)) !important;
-        color: hsl(var(--foreground)) !important;
+        background-color: #f1f5f9 !important;
+        color: #1e293b !important;
       }
 
       .fddhub-tour-popover .driver-popover-next-btn {
-        background-color: hsl(var(--primary)) !important;
-        color: hsl(var(--primary-foreground)) !important;
+        background-color: #2563eb !important;
+        color: white !important;
       }
 
       .fddhub-tour-popover .driver-popover-next-btn:hover {
-        opacity: 0.9 !important;
+        background-color: #1d4ed8 !important;
       }
 
       .fddhub-tour-popover .driver-popover-close-btn {
@@ -364,7 +366,7 @@ export function FDDViewerTour({
         padding: 0 !important;
         background: transparent !important;
         border: none !important;
-        color: hsl(var(--muted-foreground)) !important;
+        color: #64748b !important;
         cursor: pointer !important;
         border-radius: 4px !important;
         display: flex !important;
@@ -375,8 +377,8 @@ export function FDDViewerTour({
       }
 
       .fddhub-tour-popover .driver-popover-close-btn:hover {
-        background-color: hsl(var(--accent)) !important;
-        color: hsl(var(--foreground)) !important;
+        background-color: #f1f5f9 !important;
+        color: #1e293b !important;
       }
 
       .driver-active-element {
