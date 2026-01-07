@@ -51,21 +51,39 @@ export async function PUT(request: Request, { params }: { params: { franchiseId:
     }
 
     // Get franchisor profile
-    const { data: profile } = await supabase.from("franchisor_profiles").select("id").eq("user_id", user.id).single()
+    const { data: profile } = await supabase
+      .from("franchisor_profiles")
+      .select("id, is_admin")
+      .eq("user_id", user.id)
+      .single()
 
     if (!profile) {
       return NextResponse.json({ error: "Profile not found" }, { status: 404 })
     }
 
-    // Verify franchise ownership
-    const { data: franchise } = await supabase
-      .from("franchises")
-      .select("id")
-      .eq("id", franchiseId)
-      .eq("franchisor_id", profile.id)
-      .single()
+    // Verify franchise ownership OR admin access
+    let hasAccess = false
+    
+    if (profile.is_admin) {
+      // Admins can access any franchise
+      const { data: franchise } = await supabase
+        .from("franchises")
+        .select("id")
+        .eq("id", franchiseId)
+        .single()
+      hasAccess = !!franchise
+    } else {
+      // Regular franchisors can only access their own franchises
+      const { data: franchise } = await supabase
+        .from("franchises")
+        .select("id")
+        .eq("id", franchiseId)
+        .eq("franchisor_id", profile.id)
+        .single()
+      hasAccess = !!franchise
+    }
 
-    if (!franchise) {
+    if (!hasAccess) {
       return NextResponse.json({ error: "Franchise not found or unauthorized" }, { status: 403 })
     }
 
