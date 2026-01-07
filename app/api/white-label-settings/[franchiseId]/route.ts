@@ -40,6 +40,8 @@ export async function PUT(request: Request, { params }: { params: { franchiseId:
     const { franchiseId } = params
     const body = await request.json()
 
+    console.log("[v0] PUT white-label-settings - franchiseId:", franchiseId)
+
     // Get authenticated user
     const {
       data: { user },
@@ -47,15 +49,20 @@ export async function PUT(request: Request, { params }: { params: { franchiseId:
     } = await supabase.auth.getUser()
 
     if (authError || !user) {
+      console.log("[v0] Auth error:", authError)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    console.log("[v0] User ID:", user.id)
+
     // Get franchisor profile
-    const { data: profile } = await supabase
+    const { data: profile, error: profileError } = await supabase
       .from("franchisor_profiles")
       .select("id, is_admin")
       .eq("user_id", user.id)
       .single()
+
+    console.log("[v0] Profile:", profile, "Error:", profileError)
 
     if (!profile) {
       return NextResponse.json({ error: "Profile not found" }, { status: 404 })
@@ -64,24 +71,23 @@ export async function PUT(request: Request, { params }: { params: { franchiseId:
     // Verify franchise ownership OR admin access
     let hasAccess = false
     
-    if (profile.is_admin) {
-      // Admins can access any franchise
-      const { data: franchise } = await supabase
-        .from("franchises")
-        .select("id")
-        .eq("id", franchiseId)
-        .single()
-      hasAccess = !!franchise
-    } else {
-      // Regular franchisors can only access their own franchises
-      const { data: franchise } = await supabase
-        .from("franchises")
-        .select("id")
-        .eq("id", franchiseId)
-        .eq("franchisor_id", profile.id)
-        .single()
-      hasAccess = !!franchise
+    // Check franchise ownership
+    const { data: franchise, error: franchiseError } = await supabase
+      .from("franchises")
+      .select("id, franchisor_id")
+      .eq("id", franchiseId)
+      .single()
+
+    console.log("[v0] Franchise lookup:", franchise, "Error:", franchiseError)
+    console.log("[v0] Comparing franchisor_id:", franchise?.franchisor_id, "with profile.id:", profile.id)
+    console.log("[v0] is_admin:", profile.is_admin)
+
+    if (franchise) {
+      // Allow if admin OR if franchisor_id matches profile.id
+      hasAccess = profile.is_admin || franchise.franchisor_id === profile.id
     }
+
+    console.log("[v0] hasAccess:", hasAccess)
 
     if (!hasAccess) {
       return NextResponse.json({ error: "Franchise not found or unauthorized" }, { status: 403 })
