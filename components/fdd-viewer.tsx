@@ -34,6 +34,7 @@ import {
   Users,
   AlertTriangle,
   CheckCircle2,
+  HelpCircle,
 } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -95,6 +96,7 @@ interface FDDViewerProps {
   onUpdateEngagement?: (engagement: FDDEngagement) => void
   isUploadedLead?: boolean
   showCoverOverlay?: boolean // Changed default from true to false to prevent dark overlay
+  onStartTour?: () => void // Callback to start the product tour
 }
 
 const getStateUnitCounts = (franchiseId: string, totalUnits: number): Record<string, number> => {
@@ -156,6 +158,7 @@ export function FDDViewer({
   onUpdateEngagement,
   isUploadedLead = false,
   showCoverOverlay: initialShowCoverOverlay = true, // Renamed prop to initial value
+  onStartTour, // Product tour callback
 }: FDDViewerProps) {
   const searchParams = useSearchParams()
 
@@ -2083,41 +2086,56 @@ export function FDDViewer({
     <div className="flex flex-col h-full relative bg-background">
       {/* Tab Navigation */}
       <div className="border-b bg-white dark:bg-slate-900 px-6">
-        <div className="flex items-center gap-1">
-          <button
-            onClick={() => handleTabClick("document")}
-            data-tour="pdf-viewer"
-            className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-              activeTab === "document"
-                ? "border-primary text-primary"
-                : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
-            }`}
-          >
-            FDD Document
-          </button>
-          <button
-            onClick={() => handleTabClick("franchisescore")}
-            data-tour="franchisescore-tab"
-            className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-              activeTab === "franchisescore"
-                ? "border-primary text-primary"
-                : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
-            }`}
-          >
-            FranchiseScore™
-          </button>
-          <button
-            onClick={() => handleTabClick("resources")}
-            data-tour="resources-tab"
-            className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors flex items-center gap-1.5 ${
-              activeTab === "resources"
-                ? "border-primary text-primary"
-                : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
-            }`}
-          >
-            <GraduationCap className="h-4 w-4" />
-            Resources
-          </button>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => handleTabClick("document")}
+              data-tour="pdf-viewer"
+              className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === "document"
+                  ? "border-primary text-primary"
+                  : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
+              }`}
+            >
+              FDD Document
+            </button>
+            <button
+              onClick={() => handleTabClick("franchisescore")}
+              data-tour="franchisescore-tab"
+              className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === "franchisescore"
+                  ? "border-primary text-primary"
+                  : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
+              }`}
+            >
+              FranchiseScore™
+            </button>
+            <button
+              onClick={() => handleTabClick("resources")}
+              data-tour="resources-tab"
+              className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors flex items-center gap-1.5 ${
+                activeTab === "resources"
+                  ? "border-primary text-primary"
+                  : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
+              }`}
+            >
+              <GraduationCap className="h-4 w-4" />
+              Resources
+            </button>
+          </div>
+          {/* Tour button on right side */}
+          {onStartTour && (
+            <Button
+              onClick={onStartTour}
+              variant="ghost"
+              size="sm"
+              className="gap-1.5 text-muted-foreground hover:text-foreground"
+              title="Take a guided tour"
+            >
+              <HelpCircle className="h-4 w-4" />
+              <span className="hidden sm:inline">Tour</span>
+            </Button>
+          )}
         </div>
       </div>
 

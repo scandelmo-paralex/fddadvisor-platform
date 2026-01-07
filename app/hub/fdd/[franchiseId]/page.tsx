@@ -5,7 +5,7 @@
 import { useEffect, useState, useCallback } from "react"
 import { useRouter, useParams } from 'next/navigation'
 import { createBrowserClient } from "@/lib/supabase/client"
-import { Loader2, HelpCircle } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import type { WhiteLabelSettings } from "@/lib/types/database"
@@ -597,6 +597,7 @@ export default function WhiteLabelFDDPage() {
         onDeleteNote={handleDeleteNote}
         onUpdateEngagement={() => {}}
         showCoverOverlay={true}
+        onStartTour={startTour}
       />
 
       {/* Product tour - auto-starts for first-time users */}
@@ -607,17 +608,7 @@ export default function WhiteLabelFDDPage() {
         onSkip={onTourComplete}
       />
 
-      {/* Replay tour button - fixed position */}
-      <Button
-        onClick={startTour}
-        variant="outline"
-        size="sm"
-        className="fixed bottom-4 left-4 z-40 gap-2 bg-white/90 dark:bg-slate-900/90 backdrop-blur shadow-lg"
-        title="Take a guided tour"
-      >
-        <HelpCircle className="h-4 w-4" />
-        <span className="hidden sm:inline">Tour</span>
-      </Button>
+
 
       {activeModal === "investment" && franchise && (
         <InvestmentModal franchise={franchise} onClose={handleCloseModal} />
