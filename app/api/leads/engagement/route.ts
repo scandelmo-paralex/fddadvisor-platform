@@ -2,17 +2,16 @@ import { createServerClient } from "@/lib/supabase/server"
 import { createServiceRoleClient } from "@/lib/supabase/service-role"
 import { type NextRequest, NextResponse } from "next/server"
 import { GoogleGenerativeAI } from "@google/generative-ai"
-
-type EngagementTier = "none" | "minimal" | "partial" | "meaningful" | "high"
-
-function getEngagementTier(totalTimeSeconds: number, sessionCount: number): EngagementTier {
-  if (sessionCount === 0 || totalTimeSeconds === 0) return "none"
-  const totalMinutes = totalTimeSeconds / 60
-  if (totalMinutes < 5) return "minimal"
-  if (totalMinutes < 15) return "partial"
-  if (totalMinutes < 45) return "meaningful"
-  return "high"
-}
+import {
+  calculateQualityScore,
+  getEngagementTier,
+  getLeadTemperature,
+  assessFinancialFit as sharedAssessFinancialFit,
+  parseFinancialRange as sharedParseFinancialRange,
+  type EngagementTier,
+  type BuyerProfile as SharedBuyerProfile,
+  type FinancialRequirements as SharedFinancialRequirements,
+} from "@/lib/lead-scoring"
 
 // Topic categories for question/engagement analysis
 interface TopicCategory {
@@ -232,72 +231,11 @@ function generateTopicNarrative(
   return narrative
 }
 
-// Helper to parse financial ranges into numeric values for comparison
-function parseFinancialRange(range: string | null): { min: number; max: number } | null {
-  if (!range) return null
-  
-  // Handle common patterns like "$100K - $250K", "$2M+", "$500,000+", "Under $100K"
-  const cleanRange = range.replace(/,/g, '').toLowerCase()
-  
-  // Helper to get multiplier based on suffix (k = thousands, m = millions)
-  const getMultiplier = (str: string, numberStr: string): number => {
-    // Check what comes right after the number
-    const afterNumber = str.substring(str.indexOf(numberStr) + numberStr.length)
-    if (afterNumber.startsWith('m') || str.includes('million')) return 1000000
-    if (afterNumber.startsWith('k') || str.includes('thousand')) return 1000
-    // If it's a small number without suffix, assume thousands
-    const num = parseInt(numberStr)
-    if (num < 1000) return 1000
-    return 1
-  }
-  
-  if (cleanRange.includes('under') || cleanRange.includes('less than')) {
-    const match = cleanRange.match(/(\d+)/)
-    if (match) {
-      const value = parseInt(match[1]) * getMultiplier(cleanRange, match[1])
-      return { min: 0, max: value }
-    }
-  }
-  
-  if (cleanRange.includes('+') || cleanRange.includes('over') || cleanRange.includes('more than')) {
-    const match = cleanRange.match(/(\d+)/)
-    if (match) {
-      const value = parseInt(match[1]) * getMultiplier(cleanRange, match[1])
-      return { min: value, max: value * 10 } // Assume upper bound is 10x
-    }
-  }
-  
-  // Range pattern: "$100K - $250K" or "$1M - $2M" or "100000 - 250000"
-  const rangeMatch = cleanRange.match(/\$?(\d+)([km])?\s*[-–]\s*\$?(\d+)([km])?/i)
-  if (rangeMatch) {
-    let min = parseInt(rangeMatch[1])
-    let max = parseInt(rangeMatch[3])
-    // Apply multipliers
-    if (rangeMatch[2] === 'm') min *= 1000000
-    else if (rangeMatch[2] === 'k') min *= 1000
-    else if (min < 1000) min *= 1000
-    
-    if (rangeMatch[4] === 'm') max *= 1000000
-    else if (rangeMatch[4] === 'k') max *= 1000
-    else if (max < 1000) max *= 1000
-    
-    return { min, max }
-  }
-  
-  // Single value with suffix: "$2M", "$500K", "500000"
-  const singleMatch = cleanRange.match(/\$?(\d+)([km])?/)
-  if (singleMatch) {
-    let value = parseInt(singleMatch[1])
-    if (singleMatch[2] === 'm') value *= 1000000
-    else if (singleMatch[2] === 'k') value *= 1000
-    else if (value < 1000) value *= 1000
-    return { min: value, max: value }
-  }
-  
-  return null
-}
+// NOTE: parseFinancialRange has been removed - use sharedParseFinancialRange from @/lib/lead-scoring instead
 
-// Check if buyer meets financial requirements
+// NOTE: assessFinancialFit has been removed - use sharedAssessFinancialFit from @/lib/lead-scoring instead
+// The wrapper function below adapts the shared function's interface to the expected local interface
+
 function assessFinancialFit(
   buyerProfile: any,
   financialRequirements: { liquid_capital_min: number; net_worth_min: number }
@@ -309,90 +247,38 @@ function assessFinancialFit(
   overallFit: 'qualified' | 'borderline' | 'not_qualified' | 'unknown'
   score: number
 } {
-  const liquidRange = parseFinancialRange(buyerProfile?.liquid_assets_range)
-  const netWorthRange = parseFinancialRange(buyerProfile?.net_worth_range)
+  // Use the shared utility function
+  const result = sharedAssessFinancialFit(
+    buyerProfile as SharedBuyerProfile | null,
+    financialRequirements as SharedFinancialRequirements | null
+  )
+  
+  // Parse ranges to determine meetsLiquidCapital and meetsNetWorth booleans
+  const liquidRange = sharedParseFinancialRange(buyerProfile?.liquid_assets_range)
+  const netWorthRange = sharedParseFinancialRange(buyerProfile?.net_worth_range)
   
   let meetsLiquidCapital: boolean | null = null
   let meetsNetWorth: boolean | null = null
-  let liquidCapitalAssessment = "Not provided"
-  let netWorthAssessment = "Not provided"
-  let score = 0
   
-  // Assess liquid capital
-  if (liquidRange) {
+  if (liquidRange && financialRequirements?.liquid_capital_min) {
     const midpoint = (liquidRange.min + liquidRange.max) / 2
-    const required = financialRequirements.liquid_capital_min
-    
-    if (liquidRange.min >= required) {
-      meetsLiquidCapital = true
-      liquidCapitalAssessment = `✅ MEETS: ${buyerProfile.liquid_assets_range} exceeds $${(required/1000).toFixed(0)}K requirement`
-      score += 40
-    } else if (midpoint >= required * 0.9) {
-      meetsLiquidCapital = true
-      liquidCapitalAssessment = `⚠️ BORDERLINE: ${buyerProfile.liquid_assets_range} is close to $${(required/1000).toFixed(0)}K requirement - verify assets`
-      score += 25
-    } else {
-      meetsLiquidCapital = false
-      liquidCapitalAssessment = `❌ SHORTFALL: ${buyerProfile.liquid_assets_range} below $${(required/1000).toFixed(0)}K requirement`
-      score += 5
-    }
+    meetsLiquidCapital = liquidRange.min >= financialRequirements.liquid_capital_min ||
+                         midpoint >= financialRequirements.liquid_capital_min * 0.9
   }
   
-  // Assess net worth
-  if (netWorthRange) {
+  if (netWorthRange && financialRequirements?.net_worth_min) {
     const midpoint = (netWorthRange.min + netWorthRange.max) / 2
-    const required = financialRequirements.net_worth_min
-    
-    if (netWorthRange.min >= required) {
-      meetsNetWorth = true
-      netWorthAssessment = `✅ MEETS: ${buyerProfile.net_worth_range} exceeds $${(required/1000).toFixed(0)}K requirement`
-      score += 40
-    } else if (midpoint >= required * 0.9) {
-      meetsNetWorth = true
-      netWorthAssessment = `⚠️ BORDERLINE: ${buyerProfile.net_worth_range} is close to $${(required/1000).toFixed(0)}K requirement - verify assets`
-      score += 25
-    } else {
-      meetsNetWorth = false
-      netWorthAssessment = `❌ SHORTFALL: ${buyerProfile.net_worth_range} below $${(required/1000).toFixed(0)}K requirement`
-      score += 5
-    }
-  }
-  
-  // Add points for funding plan
-  if (buyerProfile?.funding_plans) {
-    const fundingPlansStr = Array.isArray(buyerProfile.funding_plans) 
-      ? buyerProfile.funding_plans.join(' ').toLowerCase() 
-      : (buyerProfile.funding_plans || '').toLowerCase()
-    if (fundingPlansStr.includes('cash')) {
-      score += 20
-    } else if (fundingPlansStr.includes('sba') || 
-               fundingPlansStr.includes('401')) {
-      score += 15
-    } else {
-      score += 10
-    }
-  }
-  
-  // Determine overall fit
-  let overallFit: 'qualified' | 'borderline' | 'not_qualified' | 'unknown' = 'unknown'
-  
-  if (meetsLiquidCapital === null && meetsNetWorth === null) {
-    overallFit = 'unknown'
-  } else if (meetsLiquidCapital === false || meetsNetWorth === false) {
-    overallFit = 'not_qualified'
-  } else if (meetsLiquidCapital === true && meetsNetWorth === true) {
-    overallFit = 'qualified'
-  } else {
-    overallFit = 'borderline'
+    meetsNetWorth = netWorthRange.min >= financialRequirements.net_worth_min ||
+                    midpoint >= financialRequirements.net_worth_min * 0.9
   }
   
   return {
     meetsLiquidCapital,
     meetsNetWorth,
-    liquidCapitalAssessment,
-    netWorthAssessment,
-    overallFit,
-    score: Math.min(score, 100)
+    liquidCapitalAssessment: result.details.liquidCapital,
+    netWorthAssessment: result.details.netWorth,
+    overallFit: result.status,
+    score: result.score
   }
 }
 
@@ -762,51 +648,30 @@ export async function GET(request: NextRequest) {
         }
       : null
 
-    // Calculate overall quality score based on financial fit + engagement + experience
-    let qualityScore = 30 // Base score
+    // Calculate overall quality score using SHARED UTILITY for consistency
+    // This ensures the same score calculation as the dashboard API (/api/hub/leads)
+    const financialRequirements = franchise?.ideal_candidate_profile?.financial_requirements as SharedFinancialRequirements | null
     
-    // Financial component (30 points max)
-    const financialStatus = aiInsights?.candidateFit?.financialFit?.status || 
-                           aiInsights?.candidateFit?.financialFit?.preCalculated?.overallFit
-    if (financialStatus === 'qualified') {
-      qualityScore += 30
-    } else if (financialStatus === 'borderline') {
-      qualityScore += 20
-    } else if (financialStatus === 'not_qualified') {
-      qualityScore += 5
-    } else {
-      // Unknown financial status - give benefit of doubt
-      qualityScore += 15
-    }
+    const scoreResult = calculateQualityScore(
+      {
+        totalTimeSeconds: totalTimeSpent,
+        sessionCount: sessionCount,
+        questionsAsked: totalQuestionsAsked,
+        sectionsViewed: sectionsViewed,
+      },
+      buyerProfile as SharedBuyerProfile | null,
+      financialRequirements
+    )
     
-    // Engagement component (25 points max)
-    if (tier === 'high') {
-      qualityScore += 25  // 45+ minutes
-    } else if (tier === 'meaningful') {
-      qualityScore += 18  // 15-45 minutes
-    } else if (tier === 'partial') {
-      qualityScore += 12  // 5-15 minutes
-    } else if (tier === 'minimal') {
-      qualityScore += 5   // < 5 minutes
-    }
-    // 'none' tier adds 0
-    
-    // Experience component (15 points max)
-    if (buyerProfile?.management_experience) qualityScore += 5
-    if (buyerProfile?.has_owned_business) qualityScore += 5
-    if (buyerProfile?.years_of_experience) {
-      const years = parseInt(buyerProfile.years_of_experience) || 0
-      if (years >= 10) qualityScore += 5
-      else if (years >= 5) qualityScore += 3
-    }
-    
-    // Cap at 100
-    qualityScore = Math.min(qualityScore, 100)
+    const qualityScore = scoreResult.score
+    const temperature = scoreResult.temperature // Also include temperature for consistency
 
     return NextResponse.json({
       accessRecord,
       engagements,
-      qualityScore, // Add calculated quality score
+      qualityScore, // Calculated using shared utility for consistency with dashboard
+      temperature, // Lead temperature (Hot/Warm/Cold) from shared utility
+      scoreBreakdown: scoreResult.breakdown, // Detailed breakdown for debugging
       totalTimeSpent: formattedTimeSpent,
       totalTimeSpentSeconds: totalTimeSpent,
       averageSessionDuration: sessionCount > 0 ? Math.round(totalTimeSpent / sessionCount) : 0,
