@@ -331,10 +331,10 @@ export async function GET() {
           intent: "Cold",
           temperature: "Cold",
           isNew: true,
-          qualityScore: 30, // Base score only for pending leads
+          qualityScore: 20, // Base score only for pending leads (updated from 30)
           engagementTier: "none" as const,
           financialStatus: "unknown" as const,
-          scoreBreakdown: { base: 30, engagement: 0, financial: 0, experience: 0 },
+          scoreBreakdown: { base: 20, engagement: 0, financial: 0, experience: 0 },
           stage: inv.pipeline_stage?.name?.toLowerCase() || "inquiry",
           stage_id: inv.stage_id || null,
           pipeline_stage: inv.pipeline_stage || null,

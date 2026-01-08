@@ -72,12 +72,22 @@ export function getEngagementTier(totalTimeSeconds: number, sessionCount: number
 
 /**
  * Get engagement points based on tier
+ * 
+ * UPDATED: Engagement is now weighted more heavily (35 points max instead of 25)
+ * because active engagement is the strongest signal of buyer intent.
+ * 
+ * Tier thresholds:
+ * - high: 45+ minutes = serious due diligence
+ * - meaningful: 15-45 minutes = active evaluation  
+ * - partial: 5-15 minutes = initial exploration
+ * - minimal: <5 minutes = just opened
+ * - none: hasn't accessed yet
  */
 export function getEngagementPoints(tier: EngagementTier): number {
   switch (tier) {
-    case 'high': return 25       // 45+ minutes
-    case 'meaningful': return 18 // 15-45 minutes
-    case 'partial': return 12    // 5-15 minutes
+    case 'high': return 35       // 45+ minutes - max engagement points
+    case 'meaningful': return 25 // 15-45 minutes
+    case 'partial': return 15    // 5-15 minutes
     case 'minimal': return 5     // < 5 minutes
     case 'none': return 0
   }
@@ -155,6 +165,16 @@ export function parseFinancialRange(range: string | null | undefined): { min: nu
 
 /**
  * Assess financial fit against franchise requirements
+ * 
+ * UPDATED: Financial scoring reduced to 25 points max (was 30)
+ * because engagement is a stronger signal of active buyer intent.
+ * 
+ * Scoring:
+ * - Both meet requirements: 25 points (qualified)
+ * - One meets, one borderline: 20 points (borderline)
+ * - Both borderline: 15 points (borderline)
+ * - One doesn't meet: 5 points (not qualified)
+ * - Unknown/no data: 10-15 points (benefit of doubt)
  */
 export function assessFinancialFit(
   buyerProfile: BuyerProfile | null | undefined,
@@ -164,7 +184,7 @@ export function assessFinancialFit(
   if (!buyerProfile) {
     return {
       status: 'unknown',
-      score: 15, // Benefit of doubt
+      score: 10, // Reduced benefit of doubt
       details: {
         liquidCapital: 'No profile data',
         netWorth: 'No profile data'
@@ -176,6 +196,7 @@ export function assessFinancialFit(
   const netWorthRange = parseFinancialRange(buyerProfile.net_worth_range)
   
   // If no financial requirements to compare against, score based on data presence
+  // But cap the score lower since we can't verify qualification
   if (!requirements || (!requirements.liquid_capital_min && !requirements.net_worth_min)) {
     const hasLiquid = liquidRange !== null
     const hasNetWorth = netWorthRange !== null
@@ -183,7 +204,7 @@ export function assessFinancialFit(
     if (hasLiquid && hasNetWorth) {
       return {
         status: 'unknown', // Can't assess without requirements
-        score: 30,
+        score: 20, // Has financial data but can't verify - reduced from 30
         details: {
           liquidCapital: buyerProfile.liquid_assets_range || 'Not provided',
           netWorth: buyerProfile.net_worth_range || 'Not provided'
@@ -192,7 +213,7 @@ export function assessFinancialFit(
     } else if (hasLiquid || hasNetWorth) {
       return {
         status: 'unknown',
-        score: 15,
+        score: 12, // Partial data - reduced from 15
         details: {
           liquidCapital: buyerProfile.liquid_assets_range || 'Not provided',
           netWorth: buyerProfile.net_worth_range || 'Not provided'
@@ -201,7 +222,7 @@ export function assessFinancialFit(
     } else if (buyerProfile.profile_completed_at) {
       return {
         status: 'unknown',
-        score: 10,
+        score: 8, // Profile complete but no financial data - reduced from 10
         details: {
           liquidCapital: 'Not provided',
           netWorth: 'Not provided'
@@ -211,7 +232,7 @@ export function assessFinancialFit(
     
     return {
       status: 'unknown',
-      score: 15, // Benefit of doubt for no data
+      score: 10, // Benefit of doubt for no data - reduced from 15
       details: {
         liquidCapital: 'Not provided',
         netWorth: 'Not provided'
@@ -226,50 +247,50 @@ export function assessFinancialFit(
   let netWorthAssessment = 'Not provided'
   let score = 0
   
-  // Check liquid capital
+  // Check liquid capital (up to 12.5 points)
   if (liquidRange && requirements.liquid_capital_min) {
     const midpoint = (liquidRange.min + liquidRange.max) / 2
     const required = requirements.liquid_capital_min
     
     if (liquidRange.min >= required) {
       meetsLiquid = true
-      liquidAssessment = `✅ MEETS: ${buyerProfile.liquid_assets_range} exceeds $${(required/1000).toFixed(0)}K requirement`
-      score += 15
+      liquidAssessment = `✅ MEETS: ${buyerProfile.liquid_assets_range} exceeds ${(required/1000).toFixed(0)}K requirement`
+      score += 12 // Reduced from 15
     } else if (midpoint >= required * 0.9) {
       meetsLiquid = true
-      liquidAssessment = `⚠️ BORDERLINE: ${buyerProfile.liquid_assets_range} is close to $${(required/1000).toFixed(0)}K requirement`
-      score += 10
+      liquidAssessment = `⚠️ BORDERLINE: ${buyerProfile.liquid_assets_range} is close to ${(required/1000).toFixed(0)}K requirement`
+      score += 8 // Reduced from 10
     } else {
       meetsLiquid = false
-      liquidAssessment = `❌ SHORTFALL: ${buyerProfile.liquid_assets_range} below $${(required/1000).toFixed(0)}K requirement`
+      liquidAssessment = `❌ SHORTFALL: ${buyerProfile.liquid_assets_range} below ${(required/1000).toFixed(0)}K requirement`
       score += 2
     }
   } else if (liquidRange) {
     liquidAssessment = buyerProfile.liquid_assets_range || 'Not provided'
-    score += 10 // Has data but no requirement to compare
+    score += 8 // Has data but no requirement to compare - reduced from 10
   }
   
-  // Check net worth
+  // Check net worth (up to 12.5 points)
   if (netWorthRange && requirements.net_worth_min) {
     const midpoint = (netWorthRange.min + netWorthRange.max) / 2
     const required = requirements.net_worth_min
     
     if (netWorthRange.min >= required) {
       meetsNetWorth = true
-      netWorthAssessment = `✅ MEETS: ${buyerProfile.net_worth_range} exceeds $${(required/1000).toFixed(0)}K requirement`
-      score += 15
+      netWorthAssessment = `✅ MEETS: ${buyerProfile.net_worth_range} exceeds ${(required/1000).toFixed(0)}K requirement`
+      score += 13 // 12 + 13 = 25 max for fully qualified
     } else if (midpoint >= required * 0.9) {
       meetsNetWorth = true
-      netWorthAssessment = `⚠️ BORDERLINE: ${buyerProfile.net_worth_range} is close to $${(required/1000).toFixed(0)}K requirement`
-      score += 10
+      netWorthAssessment = `⚠️ BORDERLINE: ${buyerProfile.net_worth_range} is close to ${(required/1000).toFixed(0)}K requirement`
+      score += 8 // Reduced from 10
     } else {
       meetsNetWorth = false
-      netWorthAssessment = `❌ SHORTFALL: ${buyerProfile.net_worth_range} below $${(required/1000).toFixed(0)}K requirement`
+      netWorthAssessment = `❌ SHORTFALL: ${buyerProfile.net_worth_range} below ${(required/1000).toFixed(0)}K requirement`
       score += 2
     }
   } else if (netWorthRange) {
     netWorthAssessment = buyerProfile.net_worth_range || 'Not provided'
-    score += 10 // Has data but no requirement to compare
+    score += 8 // Has data but no requirement to compare - reduced from 10
   }
   
   // Determine overall status
@@ -287,7 +308,7 @@ export function assessFinancialFit(
   
   return {
     status,
-    score: Math.min(score, 30),
+    score: Math.min(score, 25), // Cap at 25 (reduced from 30)
     details: {
       liquidCapital: liquidAssessment,
       netWorth: netWorthAssessment
@@ -301,25 +322,34 @@ export function assessFinancialFit(
 
 /**
  * Calculate experience points from buyer profile
+ * 
+ * UPDATED: Experience scoring increased to 20 points max (was 15)
+ * to better reflect the importance of background/skills in franchise success.
+ * 
+ * Scoring:
+ * - Management experience: 7 points
+ * - Prior business ownership: 7 points  
+ * - Years of experience: up to 6 points (10+ yrs = 6, 5-9 yrs = 4, <5 yrs = 2)
  */
 export function getExperiencePoints(buyerProfile: BuyerProfile | null | undefined): number {
   if (!buyerProfile) return 0
   
   let points = 0
   
-  if (buyerProfile.management_experience) points += 5
-  if (buyerProfile.has_owned_business) points += 5
+  if (buyerProfile.management_experience) points += 7  // Increased from 5
+  if (buyerProfile.has_owned_business) points += 7     // Increased from 5
   
   if (buyerProfile.years_of_experience) {
     const years = typeof buyerProfile.years_of_experience === 'string' 
       ? parseInt(buyerProfile.years_of_experience) 
       : buyerProfile.years_of_experience
     
-    if (years >= 10) points += 5
-    else if (years >= 5) points += 3
+    if (years >= 10) points += 6    // Increased from 5
+    else if (years >= 5) points += 4 // Increased from 3
+    else if (years >= 1) points += 2 // Added tier for 1-4 years
   }
   
-  return Math.min(points, 15)
+  return Math.min(points, 20) // Increased cap from 15 to 20
 }
 
 // =============================================================================
@@ -329,13 +359,24 @@ export function getExperiencePoints(buyerProfile: BuyerProfile | null | undefine
 /**
  * Calculate comprehensive quality score for a lead
  * 
- * Components:
- * - Base: 30 points
- * - Engagement: up to 25 points (based on time spent tier)
- * - Financial: up to 30 points (based on qualification status)
- * - Experience: up to 15 points (based on background)
+ * UPDATED WEIGHTS (v2 - January 2026):
+ * - Base: 20 points (was 30) - just for being a verified lead
+ * - Engagement: up to 35 points (was 25) - PRIMARY signal of buyer intent
+ * - Financial: up to 25 points (was 30) - important but binary qualifier
+ * - Experience: up to 20 points (was 15) - skills/background matter
  * 
  * Total: 100 points max
+ * 
+ * Temperature Thresholds:
+ * - Hot: 80+ (🔥 prioritize immediate follow-up)
+ * - Warm: 60-79 (ready for engagement)  
+ * - Cold: <60 (needs nurturing)
+ * 
+ * Example Scenarios:
+ * - Glenn (8 min, great financials, mgmt exp): 20 + 15 + 20 + 7 = 62 (WARM) 
+ * - Houston (87 min, great financials, all exp): 20 + 35 + 25 + 20 = 100 (HOT)
+ * - DeDe (6 min, good financials, some exp): 20 + 15 + 20 + 7 = 62 (WARM)
+ * - New lead (0 min, no data): 20 + 0 + 10 + 0 = 30 (COLD)
  * 
  * @param engagement - Engagement data (time, sessions, etc.)
  * @param buyerProfile - Buyer's profile data
@@ -346,17 +387,17 @@ export function calculateQualityScore(
   buyerProfile: BuyerProfile | null | undefined,
   financialRequirements?: FinancialRequirements | null
 ): QualityScoreResult {
-  const BASE_SCORE = 30
+  const BASE_SCORE = 20  // Reduced from 30
   
-  // Engagement component (25 points max)
+  // Engagement component (35 points max) - PRIMARY SIGNAL
   const engagementTier = getEngagementTier(engagement.totalTimeSeconds, engagement.sessionCount)
   const engagementPoints = getEngagementPoints(engagementTier)
   
-  // Financial component (30 points max)
+  // Financial component (25 points max)
   const financialAssessment = assessFinancialFit(buyerProfile, financialRequirements)
   const financialPoints = financialAssessment.score
   
-  // Experience component (15 points max)
+  // Experience component (20 points max)
   const experiencePoints = getExperiencePoints(buyerProfile)
   
   // Total score
@@ -386,14 +427,26 @@ export function calculateQualityScore(
 /**
  * Convert quality score to temperature label
  * 
- * Thresholds:
- * - Hot: 85+ (🔥 prioritize immediate follow-up)
- * - Warm: 70-84 (ready for engagement)
- * - Cold: <70 (needs nurturing)
+ * UPDATED Thresholds (v2 - January 2026):
+ * - Hot: 80+ (🔥 prioritize immediate follow-up)
+ *   Requires significant engagement (meaningful/high tier) + good qualifications
+ * - Warm: 60-79 (ready for engagement)
+ *   Good engagement OR strong qualifications
+ * - Cold: <60 (needs nurturing)
+ *   Early stage or minimal engagement
+ * 
+ * Threshold reasoning:
+ * - To be "Hot", a lead should have at least meaningful engagement (25 pts)
+ *   OR high engagement (35 pts). With base 20, that's 45-55 minimum.
+ *   Add financial qualification (20-25) and you get 65-80.
+ *   Need both engagement AND qualification to hit 80+.
+ * 
+ * - To be "Warm", a lead should show some activity (partial+ engagement)
+ *   With base 20 + partial 15 + some financial 15+ = 50-60+
  */
 export function getLeadTemperature(qualityScore: number): LeadTemperature {
-  if (qualityScore >= 85) return 'Hot'
-  if (qualityScore >= 70) return 'Warm'
+  if (qualityScore >= 80) return 'Hot'    // Lowered from 85 to 80
+  if (qualityScore >= 60) return 'Warm'   // Lowered from 70 to 60
   return 'Cold'
 }
 
