@@ -106,11 +106,14 @@ export async function GET() {
     }
 
     // Get engagement data for all buyers
-    const buyerIds = fddAccessRecords?.map((r: any) => r.buyer_id).filter(Boolean) || []
+    // IMPORTANT: fdd_engagements.buyer_id stores auth.users.id (user_id), NOT buyer_profiles.id
+    // So we need to use buyer.user_id from the joined buyer_profiles data
+    const buyerUserIds = fddAccessRecords?.map((r: any) => r.buyer?.user_id).filter(Boolean) || []
 
-    const { data: engagements } = await supabase.from("fdd_engagements").select("*").in("buyer_id", buyerIds)
+    const { data: engagements } = await supabase.from("fdd_engagements").select("*").in("buyer_id", buyerUserIds)
 
-    // Create engagement map: buyer_id + franchise_id -> engagement data
+    // Create engagement map: user_id + franchise_id -> engagement data
+    // Note: Using user_id (auth.users.id) as the key since that's what fdd_engagements stores
     const engagementMap = new Map()
     engagements?.forEach((eng: any) => {
       const key = `${eng.buyer_id}_${eng.franchise_id}`
@@ -176,7 +179,9 @@ export async function GET() {
         const buyer = access.buyer
         const franchise = franchiseMap.get(access.franchise_id)
         const invitation = invitationByEmailMap.get(buyer?.email)
-        const engagementKey = `${access.buyer_id}_${access.franchise_id}`
+        // IMPORTANT: Use buyer.user_id (auth.users.id) as the key, not access.buyer_id (buyer_profiles.id)
+        // This matches how fdd_engagements.buyer_id is stored
+        const engagementKey = `${buyer?.user_id}_${access.franchise_id}`
         const engagement = engagementMap.get(engagementKey)
 
         const buyerName =
@@ -322,15 +327,19 @@ function calculateQualityScore(access: any, engagement: any): number {
   let score = 50 // Base score
 
   // Engagement scoring (40 points)
-  if (engagement) {
-    const timeSpentMinutes = engagement.time_spent / 60
-    score += Math.min(timeSpentMinutes * 2, 20) // Up to 20 points for time spent
-    score += Math.min(engagement.questions_asked * 4, 15) // Up to 15 points for questions
-    score += Math.min((engagement.sections_viewed?.length || 0) * 1, 5) // Up to 5 points for sections viewed
-  }
+  // Use engagement data if available, otherwise fall back to access record totals
+  const timeSpentSeconds = engagement?.time_spent || access?.total_time_spent_seconds || 0
+  const timeSpentMinutes = timeSpentSeconds / 60
+  score += Math.min(timeSpentMinutes * 2, 20) // Up to 20 points for time spent
+  
+  const questionsAsked = engagement?.questions_asked || 0
+  score += Math.min(questionsAsked * 4, 15) // Up to 15 points for questions
+  
+  const sectionsViewed = engagement?.sections_viewed?.length || 0
+  score += Math.min(sectionsViewed * 1, 5) // Up to 5 points for sections viewed
 
   // Access frequency scoring (10 points)
-  score += Math.min((access.total_views || 0) * 2, 10)
+  score += Math.min((access?.total_views || 0) * 2, 10)
 
   return Math.min(Math.round(score), 100)
 }
