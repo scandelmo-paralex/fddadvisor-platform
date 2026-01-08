@@ -81,6 +81,12 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
   // Track if current user is a team member (recruiter can't access profile)
   const [userRole, setUserRole] = useState<"owner" | "admin" | "recruiter" | null>(null)
 
+  // Pipeline lead value from franchisor settings
+  const [pipelineLeadValue, setPipelineLeadValue] = useState(50000)
+  
+  // Company name from franchisor settings
+  const [companyName, setCompanyName] = useState<string | null>(null)
+
   // Fetch current user's role
   useEffect(() => {
     const fetchUserRole = async () => {
@@ -122,6 +128,30 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
     }
 
     fetchUserRole()
+  }, [])
+
+  // Fetch franchisor settings (including pipeline lead value and company name)
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch("/api/franchisor-settings")
+        if (response.ok) {
+          const data = await response.json()
+          if (data.pipeline_lead_value) {
+            setPipelineLeadValue(data.pipeline_lead_value)
+            console.log("[FranchisorDashboard] Pipeline lead value:", data.pipeline_lead_value)
+          }
+          if (data.company_name) {
+            setCompanyName(data.company_name)
+            console.log("[FranchisorDashboard] Company name:", data.company_name)
+          }
+        }
+      } catch (error) {
+        console.error("[FranchisorDashboard] Error fetching settings:", error)
+      }
+    }
+
+    fetchSettings()
   }, [])
 
   // For error toasts
@@ -596,8 +626,9 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
         <div className="space-y-1">
           {" "}
           {/* Adjusted spacing */}
-          <h2 className="text-lg font-semibold text-blue-600">Wellbiz Brands</h2>{" "}
-          {/* Added subtle blue accent to company name */}
+          {companyName && (
+            <h2 className="text-lg font-semibold text-blue-600">{companyName}</h2>
+          )}
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-foreground">Lead Dashboard</h1>{" "}
             {/* Increased font size */}
@@ -704,7 +735,45 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
         })}
       </div>
       {view === "pipeline" ? (
-        <PipelineView leads={filteredLeads} onOpenModal={onOpenModal} onStageChange={handleStageChange} />
+        <PipelineView 
+          leads={filteredLeads} 
+          onOpenModal={onOpenModal} 
+          onStageChange={handleStageChange}
+          pipelineLeadValue={pipelineLeadValue}
+          onLeadStageUpdate={async (leadId: string, stageId: string, invitationId?: string) => {
+            // Use invitation_id if available (for accessLeads), otherwise use leadId (for pendingLeads)
+            const idForUpdate = invitationId || leadId
+            
+            // Call API to update lead stage
+            const response = await fetch(`/api/leads/${idForUpdate}/stage`, {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ stage_id: stageId }),
+            })
+            
+            if (!response.ok) {
+              const error = await response.json()
+              throw new Error(error.error || "Failed to update lead stage")
+            }
+            
+            const data = await response.json()
+            
+            // Update local state
+            setLeads((prevLeads) =>
+              prevLeads.map((lead) =>
+                lead.id === leadId
+                  ? {
+                      ...lead,
+                      stage: data.stage.name.toLowerCase(),
+                      stage_id: stageId,
+                      pipeline_stage: data.stage,
+                      daysInStage: 0,
+                    }
+                  : lead
+              )
+            )
+          }}
+        />
       ) : (
         <div className="space-y-6">
           {" "}
