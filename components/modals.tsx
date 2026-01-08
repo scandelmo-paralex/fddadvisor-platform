@@ -242,12 +242,23 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
   const [engagementData, setEngagementData] = useState<any>(null)
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [isAssistantOpen, setIsAssistantOpen] = useState(false)
+  const [isInitialLoading, setIsInitialLoading] = useState(false)
+  const [currentLeadId, setCurrentLeadId] = useState<string | null>(null)
 
   useEffect(() => {
     if (!isOpen || type !== "lead-intelligence" || !leadId) return
 
     const supabase = createClient()
     console.log("[v0] Setting up real-time subscription for lead:", leadId)
+
+    // Clear stale data if switching to a different lead
+    if (currentLeadId !== leadId) {
+      console.log("[v0] Lead changed from", currentLeadId, "to", leadId, "- clearing stale data")
+      setLiveLeadData(null)
+      setEngagementData(null)
+      setLastUpdate(null)
+      setCurrentLeadId(leadId)
+    }
 
     const fetchLeadData = async () => {
       try {
@@ -273,7 +284,9 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
         const response = await fetch(`/api/leads/engagement?lead_id=${leadId}`)
         if (response.ok) {
           const data = await response.json()
-          setEngagementData(data)
+          // Store the leadId with the engagement data so we can detect stale data
+          setEngagementData({ ...data, _leadId: leadId })
+          setLastUpdate(new Date())
           console.log("[v0] Fetched engagement data:", data)
         }
       } catch (error) {
@@ -281,8 +294,12 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
       }
     }
 
-    fetchLeadData()
-    fetchEngagementData()
+    // Always fetch fresh data when modal opens
+    setIsInitialLoading(true)
+    
+    Promise.all([fetchLeadData(), fetchEngagementData()]).finally(() => {
+      setIsInitialLoading(false)
+    })
 
     const leadsChannel = supabase
       .channel(`lead-${leadId}`)
@@ -348,9 +365,8 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
       supabase.removeChannel(leadsChannel)
       supabase.removeChannel(engagementChannel)
       setIsLive(false)
-      setLiveLeadData(null)
-      setEngagementData(null)
-      setLastUpdate(null)
+      // Don't clear data on close - preserve it for when modal reopens
+      // Data will be refreshed when modal opens again
       setUpdatedFields(new Set())
     }
   }, [isOpen, type, leadId])
@@ -371,7 +387,7 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
       const engagementResponse = await fetch(`/api/leads/engagement?lead_id=${leadId}`)
       if (engagementResponse.ok) {
         const data = await engagementResponse.json()
-        setEngagementData(data)
+        setEngagementData({ ...data, _leadId: leadId })
       }
       setLastUpdate(new Date())
     } catch (error) {
@@ -654,7 +670,14 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
             </div>
           )}
 
-          {type === "lead-intelligence" && displayLead && (
+          {type === "lead-intelligence" && isInitialLoading && (
+            <div className="flex flex-col items-center justify-center py-12">
+              <RefreshCw className="h-8 w-8 animate-spin text-primary mb-4" />
+              <p className="text-muted-foreground">Loading lead intelligence...</p>
+            </div>
+          )}
+
+          {type === "lead-intelligence" && !isInitialLoading && displayLead && (
             <div className="space-y-6">
               <div
                 className={`flex items-start justify-between gap-4 pb-4 border-b ${updatedFields.has("name") || updatedFields.has("qualityScore") ? "animate-pulse bg-emerald-50 dark:bg-emerald-950/20 rounded-lg p-4 -m-4 mb-0" : ""}`}
