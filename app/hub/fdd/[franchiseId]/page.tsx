@@ -489,6 +489,13 @@ export default function WhiteLabelFDDPage() {
         .single()
 
       if (whiteLabelData) {
+        console.log("[v0] White-label settings loaded:", {
+          franchise_id: whiteLabelData.franchise_id,
+          resources_video_url: whiteLabelData.resources_video_url,
+          resources_video_title: whiteLabelData.resources_video_title,
+          resources_video_description: whiteLabelData.resources_video_description,
+          all_keys: Object.keys(whiteLabelData)
+        })
         setWhiteLabelSettings(whiteLabelData)
       }
 

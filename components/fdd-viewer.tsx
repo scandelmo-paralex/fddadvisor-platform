@@ -1594,6 +1594,16 @@ export function FDDViewer({
   const customVideoUrl = whiteLabelSettings?.resources_video_url
   const customVideoId = customVideoUrl ? getYouTubeVideoId(customVideoUrl) : null
   const videoId = customVideoId || "LQpXxpnwEOA" // Default video ID
+  
+  // Debug logging for video customization
+  console.log("[v0] Resources Tab Video Settings:", {
+    whiteLabelSettings_exists: !!whiteLabelSettings,
+    customVideoUrl,
+    customVideoId,
+    videoId,
+    videoTitle: whiteLabelSettings?.resources_video_title,
+    videoDescription: whiteLabelSettings?.resources_video_description
+  })
   const videoEmbedUrl = `https://www.youtube.com/embed/${videoId}`
   const videoWatchUrl = `https://www.youtube.com/watch?v=${videoId}`
   
