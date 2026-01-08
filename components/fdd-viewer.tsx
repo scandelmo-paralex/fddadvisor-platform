@@ -29,11 +29,9 @@ import {
   GraduationCap,
   ExternalLink,
   PlayCircle,
-  BookOpen,
   Scale,
   Users,
   AlertTriangle,
-  CheckCircle2,
 } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -1648,44 +1646,6 @@ export function FDDViewer({
               <ExternalLink className="h-3.5 w-3.5" />
               Watch on YouTube
             </a>
-          </div>
-        </Card>
-
-        {/* Key Topics Covered */}
-        <Card className="p-4 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50">
-          <div className="flex items-center gap-2 mb-4">
-            <BookOpen className="h-5 w-5 text-slate-600 dark:text-slate-400" />
-            <h2 className="font-semibold">Key Topics Covered</h2>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="flex items-start gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50">
-              <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="font-medium text-sm">Understanding the FDD</p>
-                <p className="text-xs text-muted-foreground">Learn what each of the 23 Items contains</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50">
-              <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="font-medium text-sm">Financial Disclosures</p>
-                <p className="text-xs text-muted-foreground">How to analyze Item 19 and Item 7</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50">
-              <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="font-medium text-sm">Franchisee Rights</p>
-                <p className="text-xs text-muted-foreground">Your legal protections as a buyer</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50">
-              <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="font-medium text-sm">Red Flags to Watch</p>
-                <p className="text-xs text-muted-foreground">Warning signs in franchise opportunities</p>
-              </div>
-            </div>
           </div>
         </Card>
 
