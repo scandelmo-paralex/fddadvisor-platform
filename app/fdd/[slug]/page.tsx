@@ -10,6 +10,7 @@ import { RevenueModal } from "@/components/revenue-modal"
 import { LocationModal } from "@/components/location-modal"
 import { createBrowserClient } from "@/lib/supabase/client"
 import type { Note, FDDEngagement, Franchise } from "@/lib/data"
+import type { WhiteLabelSettings } from "@/lib/types/database"
 
 export default function FDDPage() {
   const params = useParams()
@@ -21,6 +22,7 @@ export default function FDDPage() {
   const [franchiseLoading, setFranchiseLoading] = useState(true)
   const [activeModal, setActiveModal] = useState<string | null>(null)
   const [isFranchisorViewing, setIsFranchisorViewing] = useState(false)
+  const [whiteLabelSettings, setWhiteLabelSettings] = useState<WhiteLabelSettings | null>(null)
 
   const isAuthDisabled = true
 
@@ -221,6 +223,25 @@ export default function FDDPage() {
           }
 
           setFranchise(mappedFranchise)
+          
+          // Fetch white-label settings for this franchise
+          const supabase = createBrowserClient()
+          const { data: whiteLabelData } = await supabase
+            .from("white_label_settings")
+            .select("*")
+            .eq("franchise_id", foundFranchise.id)
+            .single()
+          
+          if (whiteLabelData) {
+            console.log("[v0] White-label settings loaded for FDDAdvisor:", {
+              franchise_id: whiteLabelData.franchise_id,
+              resources_video_url: whiteLabelData.resources_video_url,
+              resources_video_title: whiteLabelData.resources_video_title,
+            })
+            setWhiteLabelSettings(whiteLabelData)
+          } else {
+            console.log("[v0] No white-label settings found for franchise:", foundFranchise.id)
+          }
         } else {
           setFranchise(null)
         }
@@ -399,6 +420,7 @@ export default function FDDPage() {
           franchiseId={franchise.id}
           franchise={franchise}
           mode={isFranchisorViewing ? "hub-franchisor" : "advisor"}
+          whiteLabelSettings={whiteLabelSettings || undefined}
           onOpenModal={handleOpenModal}
           notes={notes}
           onAddNote={handleAddNote}
