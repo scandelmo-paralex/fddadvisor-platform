@@ -39,8 +39,20 @@ export function WhiteLabelSettings({ franchiseId, franchiseName }: WhiteLabelSet
       const response = await fetch(`/api/white-label-settings/${franchiseId}`)
       if (response.ok) {
         const data = await response.json()
-        if (data.settings) {
-          setSettings(data.settings)
+        // API returns settings directly, not wrapped in a 'settings' key
+        if (data && data.franchise_id) {
+          setSettings({
+            logo_url: data.logo_url || "",
+            primary_color: data.primary_color || "#2563eb",
+            accent_color: data.accent_color || "#10b981",
+            header_text: data.header_text || "",
+            contact_name: data.contact_name || "",
+            contact_email: data.contact_email || "",
+            contact_phone: data.contact_phone || "",
+            resources_video_url: data.resources_video_url || "",
+            resources_video_title: data.resources_video_title || "",
+            resources_video_description: data.resources_video_description || "",
+          })
         }
       }
     } catch (error) {
