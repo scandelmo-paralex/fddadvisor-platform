@@ -1,10 +1,10 @@
 import { createServerClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
 
-export async function GET(request: Request, { params }: { params: { franchiseId: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ franchiseId: string }> }) {
   try {
     const supabase = await createServerClient()
-    const { franchiseId } = params
+    const { franchiseId } = await params
 
     // Get white-label settings for franchise
     const { data: settings, error } = await supabase
@@ -34,10 +34,10 @@ export async function GET(request: Request, { params }: { params: { franchiseId:
   }
 }
 
-export async function PUT(request: Request, { params }: { params: { franchiseId: string } }) {
+export async function PUT(request: Request, { params }: { params: Promise<{ franchiseId: string }> }) {
   try {
     const supabase = await createServerClient()
-    const { franchiseId } = params
+    const { franchiseId } = await params
     const body = await request.json()
 
     console.log("[v0] PUT white-label-settings - franchiseId:", franchiseId)
