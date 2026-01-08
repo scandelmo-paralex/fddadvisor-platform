@@ -210,10 +210,10 @@ export async function GET() {
           expiresAt: invitation?.expires_at || null,
           source: invitation?.source || buyer?.signup_source || "FDDHub",
           timeline: buyerTimeline,
-          // Hardcode Willie Nelson to Medium for demo
-          intent: buyerEmail === "willie@test.com" || buyerName.toLowerCase().includes("willie") 
-            ? "Medium" 
-            : engagement ? (engagement.questions_asked > 3 ? "High" : "Medium") : "Low",
+          // Calculate lead temperature based on quality score - syncs with Lead Intelligence modal
+          // Using "temperature" (Hot/Warm/Cold) instead of confusing "intent" (High/Medium/Low)
+          intent: calculateLeadTemperature(calculateQualityScore(access, engagement)),
+          temperature: calculateLeadTemperature(calculateQualityScore(access, engagement)),
           isNew: false,
           qualityScore: calculateQualityScore(access, engagement),
           stage: invitation?.pipeline_stage?.name?.toLowerCase() || (invitation?.status === "signed_up" ? "engaged" : "inquiry"),
@@ -333,4 +333,12 @@ function calculateQualityScore(access: any, engagement: any): number {
   score += Math.min((access.total_views || 0) * 2, 10)
 
   return Math.min(Math.round(score), 100)
+}
+
+// Calculate lead temperature based on quality score - syncs with Lead Intelligence modal's getLeadTemperature()
+// Replaces confusing "intent" terminology with clearer "temperature" (Hot/Warm/Cold)
+function calculateLeadTemperature(qualityScore: number): "Hot" | "Warm" | "Cold" {
+  if (qualityScore >= 85) return "Hot"   // 🔥 HOT LEAD threshold (matches modals.tsx)
+  if (qualityScore >= 70) return "Warm"  // WARM LEAD threshold (matches modals.tsx)
+  return "Cold"                           // COLD LEAD threshold
 }
