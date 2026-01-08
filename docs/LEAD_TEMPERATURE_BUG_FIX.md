@@ -1,100 +1,120 @@
 # Lead Temperature Data Sync Bug Fix
 
 ## Problem Summary
-- **Symptom**: Lead Intelligence Report (LIR) shows stale data (Quality Score 50, 0m time) until manually refreshed
-- **Impact**: Dashboard temperature badges don't match actual engagement
-- **Example**: Houston Cantwell shows ❄️ Cold in table but 🔥 Hot in modal after refresh
+- **Symptom**: Lead Intelligence Report (LIR) shows different temperature than Dashboard
+- **Root Cause 1**: ID type mismatch in database trigger (fixed)
+- **Root Cause 2**: Two different quality score algorithms (fixed with shared utility)
+- **Example**: Houston Cantwell shows ❄️ Cold in table but 🔥 Hot in modal
 
-## Root Cause
-**ID Type Mismatch in Database Trigger**
+## Solution: Shared Scoring Utility
 
-The `fdd_engagements` and `lead_fdd_access` tables use different ID types for `buyer_id`:
+Created `/lib/lead-scoring.ts` as the **single source of truth** for lead quality score calculation.
 
-| Table | `buyer_id` Contains | UUID Source |
-|-------|---------------------|-------------|
-| `fdd_engagements` | `auth.users.id` | User's authentication ID |
-| `lead_fdd_access` | `buyer_profiles.id` | Profile record ID |
+### Files Changed
 
-The database trigger `sync_engagement_to_fdd_access` was doing:
-```sql
-WHERE buyer_id = NEW.buyer_id  -- Compares auth.users.id to buyer_profiles.id
-```
+1. **`/lib/lead-scoring.ts`** - NEW - Shared scoring utility with:
+   - `getEngagementTier()` - Determines engagement level (none/minimal/partial/meaningful/high)
+   - `getEngagementPoints()` - Points for each tier (0/5/12/18/25)
+   - `parseFinancialRange()` - Parses "$100K - $250K" strings
+   - `assessFinancialFit()` - Compares buyer vs franchise requirements
+   - `getExperiencePoints()` - Points for management/ownership/years
+   - `calculateQualityScore()` - Main scoring function
+   - `getLeadTemperature()` - Converts score to Hot/Warm/Cold
 
-This **NEVER matched** because they're completely different UUIDs!
+2. **`/app/api/hub/leads/route.ts`** - MODIFIED - Uses shared utility:
+   - Imports `calculateQualityScore`, `getLeadTemperature` from `/lib/lead-scoring`
+   - Queries `franchise.ideal_candidate_profile` for financial requirements
+   - Passes buyer profile and requirements to scoring function
+   - Returns consistent `temperature`, `qualityScore`, `engagementTier`, `financialStatus`
 
-## Data Flow (Before Fix)
+3. **`/app/api/leads/engagement/route.ts`** - UNCHANGED (for now)
+   - Still has its own implementation with AI-enhanced insights
+   - TODO: Refactor to use shared utility
 
-```
-Buyer views FDD
-    ↓
-fdd_engagements INSERT (buyer_id = auth.users.id) ✅ Works
-    ↓
-Trigger fires: UPDATE lead_fdd_access WHERE buyer_id = {auth.users.id}
-    ↓
-NO MATCH! (lead_fdd_access.buyer_id = buyer_profiles.id) ❌
-    ↓
-lead_fdd_access.total_time_spent_seconds stays 0
-    ↓
-Dashboard reads 0 → Shows ❄️ Cold
-```
+4. **`/scripts/fix-engagement-sync-trigger.sql`** - Database trigger fix (previously created)
 
-## The Fix
+## Quality Score Algorithm
 
-### 1. Database Trigger (scripts/fix-engagement-sync-trigger.sql)
-- Fixed trigger to join through `buyer_profiles` to get correct ID
-- Backfills all existing stale records
+**Total: 100 points max**
 
-### 2. API Routes (already fixed)
-- `/api/hub/leads/route.ts` - Uses `buyer.user_id` for engagement lookups
-- Already deployed but won't help until DB trigger is fixed
+| Component | Points | Source |
+|-----------|--------|--------|
+| Base | 30 | Always awarded |
+| Engagement | 0-25 | Time spent tier |
+| Financial | 0-30 | Qualification status |
+| Experience | 0-15 | Background |
 
-## How to Apply
+### Engagement Tier Scoring
 
-**Run in Supabase SQL Editor:**
+| Tier | Time | Points |
+|------|------|--------|
+| high | 45+ min | 25 |
+| meaningful | 15-45 min | 18 |
+| partial | 5-15 min | 12 |
+| minimal | <5 min | 5 |
+| none | 0 min | 0 |
 
-```sql
--- Execute the full script:
--- scripts/fix-engagement-sync-trigger.sql
-```
+### Financial Qualification Scoring
 
-This will:
-1. Drop the broken trigger and function
-2. Create fixed function that joins through buyer_profiles
-3. Recreate trigger
-4. Backfill all existing records with correct totals
-5. Show verification query results
+| Status | Points | Condition |
+|--------|--------|-----------|
+| qualified | 30 | Meets all franchise requirements |
+| borderline | 20 | Close to requirements |
+| not_qualified | 5 | Below requirements |
+| unknown | 15 | No requirements or no buyer data |
 
-## Expected Results After Fix
+### Experience Scoring
 
-| Metric | Before | After |
-|--------|--------|-------|
-| Houston's `total_time_spent_seconds` | 0 | 5040 (1h 24m) |
-| Houston's Quality Score | 50 | ~90 |
-| Houston's Temperature | ❄️ Cold | 🔥 Hot |
+| Factor | Points |
+|--------|--------|
+| Management experience | +5 |
+| Owned business before | +5 |
+| 10+ years experience | +5 |
+| 5-9 years experience | +3 |
 
-## Verification Query
+### Temperature Thresholds
 
-After running the fix, this should show correct values:
+| Temperature | Score Range |
+|-------------|-------------|
+| 🔥 Hot | 85-100 |
+| 🟠 Warm | 70-84 |
+| ❄️ Cold | 0-69 |
 
-```sql
-SELECT 
-  bp.first_name || ' ' || bp.last_name AS buyer,
-  lfa.total_time_spent_seconds,
-  lfa.total_views
-FROM lead_fdd_access lfa
-JOIN buyer_profiles bp ON bp.id = lfa.buyer_id
-WHERE bp.email LIKE '%houston%' OR bp.first_name ILIKE '%houston%';
-```
+## Important Notes
 
-## Files Changed
+### Financial Qualification Difference
 
-1. `scripts/fix-engagement-sync-trigger.sql` - **NEW** - Database fix
-2. `app/api/hub/leads/route.ts` - **MODIFIED** - Uses correct ID for lookups
-3. `components/franchisor-dashboard.tsx` - **MODIFIED** - Temperature terminology
+The Dashboard API now queries `franchise.ideal_candidate_profile.financial_requirements` to do proper financial qualification. If a franchise doesn't have requirements configured, the score defaults to 15 points (benefit of doubt).
 
-## Future Prevention
+The Engagement API (`/api/leads/engagement`) has more sophisticated AI-enhanced financial assessment. This may still cause minor score differences until we fully consolidate.
 
-Added comments in code explaining the ID relationship:
+### ID Relationship (Critical)
+
 - `fdd_engagements.buyer_id` = `auth.users.id` (user_id)
 - `lead_fdd_access.buyer_id` = `buyer_profiles.id`
-- Always join through `buyer_profiles.user_id` when crossing tables
+- `buyer_profiles.user_id` = `auth.users.id`
+
+Always join through `buyer_profiles.user_id` when crossing tables.
+
+## Future Improvements
+
+1. **Consolidate engagement API** to use shared utility
+2. **Store score in database** via trigger when engagement changes
+3. **Cache scores** to avoid recalculating on every API call
+
+## Verification
+
+After deploying, verify Houston Cantwell shows consistent temperature:
+
+1. Dashboard table: Should show 🔥 Hot (or 🟠 Warm depending on financial qualification)
+2. LIR modal: Should show same temperature
+3. Scores should be within 5-10 points of each other
+
+## Deployment
+
+```bash
+cd ~/Downloads/duplicate-of-fdda-dvisor-platform-build_12_6_25
+git add lib/lead-scoring.ts app/api/hub/leads/route.ts docs/LEAD_TEMPERATURE_BUG_FIX.md
+git commit -m "fix: create shared lead scoring utility for consistent temperature"
+git push origin fix/lead-temperature-sync
+```

@@ -1,5 +1,6 @@
 import { getSupabaseRouteClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
+import { calculateQualityScore, getLeadTemperature, type EngagementData, type BuyerProfile } from "@/lib/lead-scoring"
 
 export async function GET() {
   try {
@@ -54,8 +55,8 @@ export async function GET() {
       isAdmin = teamMember.role === "owner" || teamMember.role === "admin"
     }
 
-    // Get franchises - admin sees all, regular franchisor sees only their own
-    let franchisesQuery = supabase.from("franchises").select("id, name, slug")
+    // Get franchises with their ideal_candidate_profile for financial requirements
+    let franchisesQuery = supabase.from("franchises").select("id, name, slug, ideal_candidate_profile")
     
     if (!isAdmin) {
       franchisesQuery = franchisesQuery.eq("franchisor_id", franchisorId)
@@ -76,6 +77,7 @@ export async function GET() {
     const { data: leadsRecords, error: leadsError } = await leadsQuery
 
     // Get all FDD access records for this franchisor's franchises
+    // Include buyer profile fields needed for comprehensive quality score calculation
     const { data: fddAccessRecords, error: accessError } = await supabase
       .from("lead_fdd_access")
       .select(
@@ -93,7 +95,14 @@ export async function GET() {
           buying_timeline,
           signup_source,
           created_at,
-          updated_at
+          updated_at,
+          liquid_assets_range,
+          net_worth_range,
+          funding_plans,
+          profile_completed_at,
+          management_experience,
+          has_owned_business,
+          years_of_experience
         )
       `,
       )
@@ -123,11 +132,13 @@ export async function GET() {
           questions_asked: 0,
           sections_viewed: [],
           last_activity: eng.created_at,
+          session_count: 0,
         })
       }
       const current = engagementMap.get(key)
       current.time_spent += eng.duration_seconds || 0
       current.questions_asked += eng.questions_list?.length || 0
+      current.session_count += 1
       if (eng.viewed_items) {
         current.sections_viewed = [...new Set([...current.sections_viewed, ...eng.viewed_items])]
       }
@@ -195,6 +206,31 @@ export async function GET() {
         const buyerState = buyer?.state_location || ""
         const buyerTimeline = invitation?.timeline || buyer?.buying_timeline || "3-6"
 
+        // Build engagement data for scoring
+        const engagementData: EngagementData = {
+          totalTimeSeconds: engagement?.time_spent || access?.total_time_spent_seconds || 0,
+          sessionCount: engagement?.session_count || access?.total_views || 1,
+          questionsAsked: engagement?.questions_asked || 0,
+          sectionsViewed: engagement?.sections_viewed || [],
+        }
+
+        // Build buyer profile for scoring
+        const buyerProfile: BuyerProfile | null = buyer ? {
+          liquid_assets_range: buyer.liquid_assets_range,
+          net_worth_range: buyer.net_worth_range,
+          funding_plans: buyer.funding_plans,
+          profile_completed_at: buyer.profile_completed_at,
+          management_experience: buyer.management_experience,
+          has_owned_business: buyer.has_owned_business,
+          years_of_experience: buyer.years_of_experience,
+        } : null
+
+        // Get franchise financial requirements
+        const financialRequirements = franchise?.ideal_candidate_profile?.financial_requirements || null
+
+        // Calculate quality score using shared utility
+        const scoreResult = calculateQualityScore(engagementData, buyerProfile, financialRequirements)
+
         return {
           id: access.id,
           invitation_id: invitation?.id || null, // ID in lead_invitations table for stage updates
@@ -215,12 +251,14 @@ export async function GET() {
           expiresAt: invitation?.expires_at || null,
           source: invitation?.source || buyer?.signup_source || "FDDHub",
           timeline: buyerTimeline,
-          // Calculate lead temperature based on quality score - syncs with Lead Intelligence modal
-          // Using "temperature" (Hot/Warm/Cold) instead of confusing "intent" (High/Medium/Low)
-          intent: calculateLeadTemperature(calculateQualityScore(access, engagement)),
-          temperature: calculateLeadTemperature(calculateQualityScore(access, engagement)),
+          // Use shared scoring utility for consistent temperature/intent
+          intent: scoreResult.temperature,
+          temperature: scoreResult.temperature,
           isNew: false,
-          qualityScore: calculateQualityScore(access, engagement),
+          qualityScore: scoreResult.score,
+          engagementTier: scoreResult.engagementTier,
+          financialStatus: scoreResult.financialStatus,
+          scoreBreakdown: scoreResult.breakdown,
           stage: invitation?.pipeline_stage?.name?.toLowerCase() || (invitation?.status === "signed_up" ? "engaged" : "inquiry"),
           stage_id: invitation?.stage_id || null,
           pipeline_stage: invitation?.pipeline_stage || null,
@@ -290,9 +328,13 @@ export async function GET() {
           expiresAt: inv.expires_at || null,
           source: inv.source || "Direct Inquiry",
           timeline: inv.timeline || "3-6",
-          intent: "Medium",
+          intent: "Cold",
+          temperature: "Cold",
           isNew: true,
-          qualityScore: 50,
+          qualityScore: 30, // Base score only for pending leads
+          engagementTier: "none" as const,
+          financialStatus: "unknown" as const,
+          scoreBreakdown: { base: 30, engagement: 0, financial: 0, experience: 0 },
           stage: inv.pipeline_stage?.name?.toLowerCase() || "inquiry",
           stage_id: inv.stage_id || null,
           pipeline_stage: inv.pipeline_stage || null,
@@ -321,33 +363,4 @@ export async function GET() {
     console.error("Error in leads API:", error)
     return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 })
   }
-}
-
-function calculateQualityScore(access: any, engagement: any): number {
-  let score = 50 // Base score
-
-  // Engagement scoring (40 points)
-  // Use engagement data if available, otherwise fall back to access record totals
-  const timeSpentSeconds = engagement?.time_spent || access?.total_time_spent_seconds || 0
-  const timeSpentMinutes = timeSpentSeconds / 60
-  score += Math.min(timeSpentMinutes * 2, 20) // Up to 20 points for time spent
-  
-  const questionsAsked = engagement?.questions_asked || 0
-  score += Math.min(questionsAsked * 4, 15) // Up to 15 points for questions
-  
-  const sectionsViewed = engagement?.sections_viewed?.length || 0
-  score += Math.min(sectionsViewed * 1, 5) // Up to 5 points for sections viewed
-
-  // Access frequency scoring (10 points)
-  score += Math.min((access?.total_views || 0) * 2, 10)
-
-  return Math.min(Math.round(score), 100)
-}
-
-// Calculate lead temperature based on quality score - syncs with Lead Intelligence modal's getLeadTemperature()
-// Replaces confusing "intent" terminology with clearer "temperature" (Hot/Warm/Cold)
-function calculateLeadTemperature(qualityScore: number): "Hot" | "Warm" | "Cold" {
-  if (qualityScore >= 85) return "Hot"   // 🔥 HOT LEAD threshold (matches modals.tsx)
-  if (qualityScore >= 70) return "Warm"  // WARM LEAD threshold (matches modals.tsx)
-  return "Cold"                           // COLD LEAD threshold
 }
