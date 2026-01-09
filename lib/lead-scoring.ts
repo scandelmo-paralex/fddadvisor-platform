@@ -88,6 +88,7 @@ export interface IdealCandidateConfig {
   financial_requirements: FinancialRequirements
   experience_requirements: ExperienceRequirements
   preferred_industries: string[]
+  preferred_skills: string[]  // NEW: Skills the franchisor prefers in candidates
   ownership_model: 'owner_operator' | 'semi_absentee' | 'either'
   disqualifiers: {
     require_felony_attestation: boolean
@@ -123,12 +124,62 @@ export const DEFAULT_IDEAL_CANDIDATE_CONFIG: IdealCandidateConfig = {
     min_years_experience: null
   },
   preferred_industries: [],
+  preferred_skills: [],  // NEW: Empty by default
   ownership_model: 'either',
   disqualifiers: {
     require_felony_attestation: true,
     require_bankruptcy_attestation: true
   }
 }
+
+// Available skills for franchisor selection (used in white-label settings UI)
+export const AVAILABLE_SKILLS = [
+  // Leadership & Management
+  "Team Management & Leadership",
+  "Multi-Unit Management",
+  "Staff Hiring & Training",
+  "Performance Management",
+  
+  // Sales & Business Development
+  "Sales & Business Development",
+  "B2B Sales",
+  "Networking & Relationship Building",
+  "Client Acquisition",
+  
+  // Operations
+  "Operations Management",
+  "Inventory Management",
+  "Quality Control",
+  "Process Improvement",
+  
+  // Financial
+  "Financial Management / P&L",
+  "Budgeting & Forecasting",
+  "Cost Control",
+  
+  // Customer-Facing
+  "Customer Service Excellence",
+  "Client Relationship Management",
+  "Conflict Resolution",
+  
+  // Marketing
+  "Marketing & Advertising",
+  "Social Media Marketing",
+  "Local Marketing & Community Engagement",
+  
+  // Industry-Specific
+  "Food Service / Restaurant Operations",
+  "Retail Management",
+  "Healthcare / Medical Background",
+  "Real Estate / Site Selection",
+  "Fitness / Wellness Industry",
+  "Home Services Experience",
+  
+  // Technical & Other
+  "Technology / Software Proficiency",
+  "Project Management",
+  "Compliance & Regulatory",
+]
 
 // Preset configurations for quick selection
 export const SCORING_PRESETS = {

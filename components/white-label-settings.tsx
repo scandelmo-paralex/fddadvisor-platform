@@ -33,6 +33,7 @@ import {
   DEFAULT_TEMPERATURE_THRESHOLDS,
   DEFAULT_IDEAL_CANDIDATE_CONFIG,
   SCORING_PRESETS,
+  AVAILABLE_SKILLS,
   type ScoringWeights,
   type TemperatureThresholds,
   type IdealCandidateConfig
@@ -337,6 +338,23 @@ export function WhiteLabelSettings({ franchiseId, franchiseName, onClose }: Whit
     })
   }, [])
 
+  const toggleSkill = useCallback((skill: string, checked: boolean) => {
+    setSettings(prev => {
+      const currentSkills = prev.ideal_candidate_config.preferred_skills || []
+      const newSkills = checked
+        ? [...currentSkills, skill]
+        : currentSkills.filter(s => s !== skill)
+      
+      return {
+        ...prev,
+        ideal_candidate_config: {
+          ...prev.ideal_candidate_config,
+          preferred_skills: newSkills
+        }
+      }
+    })
+  }, [])
+
   const updateOwnershipModel = useCallback((value: 'owner_operator' | 'semi_absentee' | 'either') => {
     setSettings(prev => ({
       ...prev,
@@ -592,6 +610,50 @@ export function WhiteLabelSettings({ franchiseId, franchiseName, onClose }: Whit
                 />
               ))}
             </div>
+          </div>
+
+          {/* Preferred Skills */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Briefcase className="h-4 w-4 text-indigo-600" />
+              <h4 className="font-medium">Preferred Skills</h4>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Select skills that are important for your ideal franchisee. AI will match these against the candidate's self-reported skills and experience.
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-64 overflow-y-auto p-2 border rounded-lg bg-muted/20">
+              {AVAILABLE_SKILLS.map(skill => (
+                <label key={skill} className="flex items-center gap-2 cursor-pointer">
+                  <Checkbox
+                    checked={settings.ideal_candidate_config.preferred_skills?.includes(skill) || false}
+                    onCheckedChange={(checked) => toggleSkill(skill, !!checked)}
+                  />
+                  <span className="text-sm">{skill}</span>
+                </label>
+              ))}
+            </div>
+            
+            {(settings.ideal_candidate_config.preferred_skills?.length || 0) > 0 && (
+              <div className="flex flex-wrap gap-2 pt-2">
+                <span className="text-xs text-muted-foreground">Selected:</span>
+                {settings.ideal_candidate_config.preferred_skills?.map(skill => (
+                  <span 
+                    key={skill} 
+                    className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-xs"
+                  >
+                    {skill}
+                    <button
+                      type="button"
+                      onClick={() => toggleSkill(skill, false)}
+                      className="hover:text-indigo-900 dark:hover:text-indigo-100"
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Ownership Model */}
