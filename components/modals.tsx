@@ -1215,8 +1215,8 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
                           </div>
                         )}
 
-                        {/* Experience & Engagement Fit */}
-                        <div className="grid gap-3 sm:grid-cols-2 mt-4">
+                        {/* Experience, Skills & Engagement Fit */}
+                        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 mt-4">
                           {displayLead.aiInsights.candidateFit.experienceFit && (
                             <div className="p-3 rounded bg-blue-50">
                               <div className="flex items-center justify-between mb-1">
@@ -1224,6 +1224,32 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
                                 <span className="text-sm font-bold text-blue-700">{displayLead.aiInsights.candidateFit.experienceFit.score}/100</span>
                               </div>
                               <p className="text-xs text-blue-800">{displayLead.aiInsights.candidateFit.experienceFit.assessment}</p>
+                            </div>
+                          )}
+                          {displayLead.aiInsights.candidateFit.skillsFit && (
+                            <div className="p-3 rounded bg-green-50">
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="text-sm font-medium text-green-900">Skills Fit</span>
+                                <span className="text-sm font-bold text-green-700">{displayLead.aiInsights.candidateFit.skillsFit.score}/100</span>
+                              </div>
+                              <p className="text-xs text-green-800">{displayLead.aiInsights.candidateFit.skillsFit.assessment}</p>
+                              {displayLead.aiInsights.candidateFit.skillsFit.matchedSkills && displayLead.aiInsights.candidateFit.skillsFit.matchedSkills.length > 0 && (
+                                <div className="mt-2 flex flex-wrap gap-1">
+                                  {displayLead.aiInsights.candidateFit.skillsFit.matchedSkills.slice(0, 3).map((skill: string, idx: number) => (
+                                    <span key={idx} className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded">✓ {skill}</span>
+                                  ))}
+                                  {displayLead.aiInsights.candidateFit.skillsFit.matchedSkills.length > 3 && (
+                                    <span className="text-xs text-green-600">+{displayLead.aiInsights.candidateFit.skillsFit.matchedSkills.length - 3} more</span>
+                                  )}
+                                </div>
+                              )}
+                              {displayLead.aiInsights.candidateFit.skillsFit.missingSkills && displayLead.aiInsights.candidateFit.skillsFit.missingSkills.length > 0 && (
+                                <div className="mt-1 flex flex-wrap gap-1">
+                                  {displayLead.aiInsights.candidateFit.skillsFit.missingSkills.slice(0, 2).map((skill: string, idx: number) => (
+                                    <span key={idx} className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded">Gap: {skill}</span>
+                                  ))}
+                                </div>
+                              )}
                             </div>
                           )}
                           {displayLead.aiInsights.candidateFit.engagementFit && (
