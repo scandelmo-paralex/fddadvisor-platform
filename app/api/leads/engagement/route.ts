@@ -621,46 +621,14 @@ export async function GET(request: NextRequest) {
 
     const accessedDate = engagements?.[0]?.created_at ? new Date(engagements[0].created_at).toLocaleDateString() : null
 
-    // Generate AI insights with ideal candidate profile matching
-    const aiInsights = await generateEnhancedAIInsights(
-      engagements,
-      sectionsViewed,
-      itemsViewed,
-      totalQuestionsAsked,
-      totalTimeSpent,
-      buyerProfile,
-      franchise,
-      invitation,
-      tier,
-    )
-
-    const buyerQualification = buyerProfile
-      ? {
-          ficoScoreRange: buyerProfile.fico_score_range,
-          liquidAssetsRange: buyerProfile.liquid_assets_range,
-          netWorthRange: buyerProfile.net_worth_range,
-          fundingPlans: buyerProfile.funding_plans,
-          linkedInUrl: buyerProfile.linkedin_url,
-          noFelonyAttestation: buyerProfile.no_felony_attestation,
-          noBankruptcyAttestation: buyerProfile.no_bankruptcy_attestation,
-          profileCompletedAt: buyerProfile.profile_completed_at,
-          yearsOfExperience: buyerProfile.years_of_experience,
-          managementExperience: buyerProfile.management_experience,
-          hasOwnedBusiness: buyerProfile.has_owned_business,
-          industryExperience: buyerProfile.industry_experience,
-          relevantSkills: buyerProfile.relevant_skills,
-        }
-      : null
-
-    // Calculate overall quality score using SHARED UTILITY for consistency
-    // This ensures the same score calculation as the dashboard API (/api/hub/leads)
-    const financialRequirements = franchise?.ideal_candidate_profile?.financial_requirements as SharedFinancialRequirements | null
-    
     // =======================================================================
-    // NEW: Load custom scoring configuration for this franchise
+    // Load custom configuration from white_label_settings FIRST
+    // This includes scoring weights, thresholds, AND ideal candidate config
+    // We need this BEFORE generating AI insights so it uses the right financial requirements
     // =======================================================================
     let customWeights: ScoringWeights | null = null
     let customThresholds: TemperatureThresholds | null = null
+    let customIdealCandidateConfig: any = null
     
     const { data: whiteLabelSettings } = await supabase
       .from("white_label_settings")
@@ -681,7 +649,63 @@ export async function GET(request: NextRequest) {
           ...(whiteLabelSettings.temperature_thresholds as TemperatureThresholds)
         }
       }
+      if (whiteLabelSettings.ideal_candidate_config) {
+        customIdealCandidateConfig = whiteLabelSettings.ideal_candidate_config
+      }
     }
+    
+    // PRIORITY: Use white_label_settings.ideal_candidate_config if available,
+    // otherwise fall back to franchise.ideal_candidate_profile
+    const financialRequirements = (
+      customIdealCandidateConfig?.financial_requirements ||
+      franchise?.ideal_candidate_profile?.financial_requirements
+    ) as SharedFinancialRequirements | null
+    
+    // Build merged ideal profile for AI insights (prefer custom config)
+    const mergedIdealProfile = customIdealCandidateConfig || franchise?.ideal_candidate_profile || null
+    
+    // Debug logging to verify which config is being used
+    console.log('[DEBUG] Financial requirements source:', 
+      customIdealCandidateConfig?.financial_requirements ? 'white_label_settings' : 'franchise.ideal_candidate_profile',
+      'Requirements:', financialRequirements
+    )
+    // =======================================================================
+
+    // Generate AI insights with ideal candidate profile matching
+    // Pass the merged ideal profile (custom config takes priority)
+    const aiInsights = await generateEnhancedAIInsights(
+      engagements,
+      sectionsViewed,
+      itemsViewed,
+      totalQuestionsAsked,
+      totalTimeSpent,
+      buyerProfile,
+      franchise,
+      invitation,
+      tier,
+      mergedIdealProfile, // NEW: Pass merged ideal profile with custom financial requirements
+    )
+
+    const buyerQualification = buyerProfile
+      ? {
+          ficoScoreRange: buyerProfile.fico_score_range,
+          liquidAssetsRange: buyerProfile.liquid_assets_range,
+          netWorthRange: buyerProfile.net_worth_range,
+          fundingPlans: buyerProfile.funding_plans,
+          linkedInUrl: buyerProfile.linkedin_url,
+          noFelonyAttestation: buyerProfile.no_felony_attestation,
+          noBankruptcyAttestation: buyerProfile.no_bankruptcy_attestation,
+          profileCompletedAt: buyerProfile.profile_completed_at,
+          yearsOfExperience: buyerProfile.years_of_experience,
+          managementExperience: buyerProfile.management_experience,
+          hasOwnedBusiness: buyerProfile.has_owned_business,
+          industryExperience: buyerProfile.industry_experience,
+          relevantSkills: buyerProfile.relevant_skills,
+        }
+      : null
+
+    // =======================================================================
+    // Calculate quality score using previously loaded config
     // =======================================================================
     
     const scoreResult = calculateQualityScore(
@@ -700,6 +724,9 @@ export async function GET(request: NextRequest) {
     const qualityScore = scoreResult.score
     const temperature = scoreResult.temperature // Also include temperature for consistency
 
+    // Build the weights to return (custom or defaults)
+    const appliedWeights = customWeights || DEFAULT_SCORING_WEIGHTS
+    
     return NextResponse.json({
       accessRecord,
       engagements,
@@ -707,6 +734,7 @@ export async function GET(request: NextRequest) {
       temperature, // Lead temperature (Hot/Warm/Cold) from shared utility
       scoreBreakdown: scoreResult.breakdown, // Detailed breakdown for debugging
       customScoringApplied: customWeights !== null, // Indicates if franchisor-specific scoring was used
+      scoringWeights: appliedWeights, // The actual weights used for scoring (custom or defaults)
       totalTimeSpent: formattedTimeSpent,
       totalTimeSpentSeconds: totalTimeSpent,
       averageSessionDuration: sessionCount > 0 ? Math.round(totalTimeSpent / sessionCount) : 0,
@@ -804,12 +832,14 @@ async function generateEnhancedAIInsights(
   franchise: any | null,
   invitation: any | null,
   tier: EngagementTier,
+  customIdealProfile?: any | null, // NEW: Custom ideal profile from white_label_settings takes priority
 ) {
   const sessionCount = engagements?.length || 0
   const totalMinutes = Math.floor(totalTimeSeconds / 60)
   
-  // Get ideal candidate profile from franchise
-  const idealProfile = franchise?.ideal_candidate_profile
+  // PRIORITY: Use custom ideal profile from white_label_settings if provided,
+  // otherwise fall back to franchise.ideal_candidate_profile
+  const idealProfile = customIdealProfile || franchise?.ideal_candidate_profile
   const financialReqs = idealProfile?.financial_requirements
   const idealCriteria = idealProfile?.ideal_criteria || []
   
