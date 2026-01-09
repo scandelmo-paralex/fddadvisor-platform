@@ -11,6 +11,10 @@ import {
   type EngagementTier,
   type BuyerProfile as SharedBuyerProfile,
   type FinancialRequirements as SharedFinancialRequirements,
+  type ScoringWeights,
+  type TemperatureThresholds,
+  DEFAULT_SCORING_WEIGHTS,
+  DEFAULT_TEMPERATURE_THRESHOLDS,
 } from "@/lib/lead-scoring"
 
 // Topic categories for question/engagement analysis
@@ -652,6 +656,34 @@ export async function GET(request: NextRequest) {
     // This ensures the same score calculation as the dashboard API (/api/hub/leads)
     const financialRequirements = franchise?.ideal_candidate_profile?.financial_requirements as SharedFinancialRequirements | null
     
+    // =======================================================================
+    // NEW: Load custom scoring configuration for this franchise
+    // =======================================================================
+    let customWeights: ScoringWeights | null = null
+    let customThresholds: TemperatureThresholds | null = null
+    
+    const { data: whiteLabelSettings } = await supabase
+      .from("white_label_settings")
+      .select("scoring_weights, temperature_thresholds, ideal_candidate_config")
+      .eq("franchise_id", accessRecord.franchise_id)
+      .single()
+    
+    if (whiteLabelSettings) {
+      if (whiteLabelSettings.scoring_weights) {
+        customWeights = {
+          ...DEFAULT_SCORING_WEIGHTS,
+          ...(whiteLabelSettings.scoring_weights as ScoringWeights)
+        }
+      }
+      if (whiteLabelSettings.temperature_thresholds) {
+        customThresholds = {
+          ...DEFAULT_TEMPERATURE_THRESHOLDS,
+          ...(whiteLabelSettings.temperature_thresholds as TemperatureThresholds)
+        }
+      }
+    }
+    // =======================================================================
+    
     const scoreResult = calculateQualityScore(
       {
         totalTimeSeconds: totalTimeSpent,
@@ -660,7 +692,9 @@ export async function GET(request: NextRequest) {
         sectionsViewed: sectionsViewed,
       },
       buyerProfile as SharedBuyerProfile | null,
-      financialRequirements
+      financialRequirements,
+      customWeights,      // NEW: Pass custom weights
+      customThresholds    // NEW: Pass custom thresholds
     )
     
     const qualityScore = scoreResult.score
@@ -672,6 +706,7 @@ export async function GET(request: NextRequest) {
       qualityScore, // Calculated using shared utility for consistency with dashboard
       temperature, // Lead temperature (Hot/Warm/Cold) from shared utility
       scoreBreakdown: scoreResult.breakdown, // Detailed breakdown for debugging
+      customScoringApplied: customWeights !== null, // Indicates if franchisor-specific scoring was used
       totalTimeSpent: formattedTimeSpent,
       totalTimeSpentSeconds: totalTimeSpent,
       averageSessionDuration: sessionCount > 0 ? Math.round(totalTimeSpent / sessionCount) : 0,

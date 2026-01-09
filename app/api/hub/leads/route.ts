@@ -1,6 +1,14 @@
 import { getSupabaseRouteClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
-import { calculateQualityScore, getLeadTemperature, type EngagementData, type BuyerProfile } from "@/lib/lead-scoring"
+import { 
+  calculateQualityScore, 
+  type EngagementData, 
+  type BuyerProfile,
+  type ScoringWeights,
+  type TemperatureThresholds,
+  DEFAULT_SCORING_WEIGHTS,
+  DEFAULT_TEMPERATURE_THRESHOLDS
+} from "@/lib/lead-scoring"
 
 export async function GET() {
   try {
@@ -67,6 +75,65 @@ export async function GET() {
     const franchiseIds = franchises?.map((f) => f.id) || []
     const franchiseMap = new Map(franchises?.map((f) => [f.id, f]) || [])
 
+    // ==========================================================================
+    // NEW: Load custom scoring configurations for all franchises (batch query)
+    // ==========================================================================
+    const scoringConfigMap = new Map<string, {
+      scoringWeights: ScoringWeights
+      temperatureThresholds: TemperatureThresholds
+    }>()
+
+    // Initialize all with defaults
+    for (const id of franchiseIds) {
+      scoringConfigMap.set(id, {
+        scoringWeights: DEFAULT_SCORING_WEIGHTS,
+        temperatureThresholds: DEFAULT_TEMPERATURE_THRESHOLDS
+      })
+    }
+
+    // Load custom configs where they exist
+    if (franchiseIds.length > 0) {
+      const { data: whiteLabelSettings } = await supabase
+        .from("white_label_settings")
+        .select("franchise_id, scoring_weights, temperature_thresholds, ideal_candidate_config")
+        .in("franchise_id", franchiseIds)
+
+      if (whiteLabelSettings) {
+        for (const settings of whiteLabelSettings) {
+          if (!settings.franchise_id) continue
+          
+          // Merge custom settings with defaults
+          scoringConfigMap.set(settings.franchise_id, {
+            scoringWeights: {
+              ...DEFAULT_SCORING_WEIGHTS,
+              ...(settings.scoring_weights as ScoringWeights || {})
+            },
+            temperatureThresholds: {
+              ...DEFAULT_TEMPERATURE_THRESHOLDS,
+              ...(settings.temperature_thresholds as TemperatureThresholds || {})
+            }
+          })
+
+          // Also merge ideal_candidate_config financial requirements into franchise data
+          // This allows white_label_settings to override franchise.ideal_candidate_profile
+          const franchise = franchiseMap.get(settings.franchise_id)
+          if (franchise && settings.ideal_candidate_config) {
+            const wlConfig = settings.ideal_candidate_config as any
+            if (wlConfig.financial_requirements) {
+              franchise.ideal_candidate_profile = {
+                ...franchise.ideal_candidate_profile,
+                financial_requirements: {
+                  ...(franchise.ideal_candidate_profile?.financial_requirements || {}),
+                  ...wlConfig.financial_requirements
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    // ==========================================================================
+
     // Get leads - admin sees all, regular franchisor sees only their own
     let leadsQuery = supabase.from("leads").select("*").order("created_at", { ascending: false })
     
@@ -102,7 +169,8 @@ export async function GET() {
           profile_completed_at,
           management_experience,
           has_owned_business,
-          years_of_experience
+          years_of_experience,
+          has_franchise_experience
         )
       `,
       )
@@ -223,13 +291,28 @@ export async function GET() {
           management_experience: buyer.management_experience,
           has_owned_business: buyer.has_owned_business,
           years_of_experience: buyer.years_of_experience,
+          has_franchise_experience: buyer.has_franchise_experience,
         } : null
 
         // Get franchise financial requirements
         const financialRequirements = franchise?.ideal_candidate_profile?.financial_requirements || null
 
-        // Calculate quality score using shared utility
-        const scoreResult = calculateQualityScore(engagementData, buyerProfile, financialRequirements)
+        // =======================================================================
+        // NEW: Get custom scoring config for this franchise
+        // =======================================================================
+        const scoringConfig = scoringConfigMap.get(access.franchise_id)
+        const customWeights = scoringConfig?.scoringWeights || null
+        const customThresholds = scoringConfig?.temperatureThresholds || null
+
+        // Calculate quality score using shared utility WITH CUSTOM WEIGHTS
+        const scoreResult = calculateQualityScore(
+          engagementData, 
+          buyerProfile, 
+          financialRequirements,
+          customWeights,      // NEW: Pass custom weights
+          customThresholds    // NEW: Pass custom thresholds
+        )
+        // =======================================================================
 
         return {
           id: access.id,
@@ -259,6 +342,8 @@ export async function GET() {
           engagementTier: scoreResult.engagementTier,
           financialStatus: scoreResult.financialStatus,
           scoreBreakdown: scoreResult.breakdown,
+          // NEW: Include whether custom scoring was used
+          customScoringApplied: customWeights !== null,
           stage: invitation?.pipeline_stage?.name?.toLowerCase() || (invitation?.status === "signed_up" ? "engaged" : "inquiry"),
           stage_id: invitation?.stage_id || null,
           pipeline_stage: invitation?.pipeline_stage || null,
@@ -310,6 +395,15 @@ export async function GET() {
         const invState = inv.state || ""
         const invLocation = invCity && invState ? `${invCity}, ${invState}` : invCity || invState || ""
 
+        // =======================================================================
+        // NEW: Get custom scoring config for pending leads too
+        // =======================================================================
+        const scoringConfig = scoringConfigMap.get(inv.franchise_id)
+        const customWeights = scoringConfig?.scoringWeights || DEFAULT_SCORING_WEIGHTS
+        // For pending leads, they get base score only (no engagement yet)
+        const baseScore = customWeights.base
+        // =======================================================================
+
         return {
           id: inv.id,
           invitation_id: inv.id, // For pending leads, id IS the invitation_id
@@ -331,10 +425,11 @@ export async function GET() {
           intent: "Cold",
           temperature: "Cold",
           isNew: true,
-          qualityScore: 20, // Base score only for pending leads (updated from 30)
+          qualityScore: baseScore, // Use custom base score
           engagementTier: "none" as const,
           financialStatus: "unknown" as const,
-          scoreBreakdown: { base: 20, engagement: 0, financial: 0, experience: 0 },
+          scoreBreakdown: { base: baseScore, engagement: 0, financial: 0, experience: 0 },
+          customScoringApplied: scoringConfig !== undefined,
           stage: inv.pipeline_stage?.name?.toLowerCase() || "inquiry",
           stage_id: inv.stage_id || null,
           pipeline_stage: inv.pipeline_stage || null,
