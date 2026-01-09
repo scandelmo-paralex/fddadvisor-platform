@@ -19,20 +19,20 @@ interface ModalProps {
 }
 
 function getQualityScoreColor(score: number): string {
-  if (score >= 80) return "text-emerald-500"
-  if (score >= 61) return "text-amber-500"
-  return "text-red-500"
+  if (score >= 80) return "text-emerald-500"  // Hot
+  if (score >= 60) return "text-amber-500"    // Warm
+  return "text-red-500"                       // Cold
 }
 
 function getQualityScoreLabel(score: number): string {
-  if (score >= 80) return "Excellent"
-  if (score >= 61) return "Good"
-  return "Fair"
+  if (score >= 80) return "Hot"
+  if (score >= 60) return "Warm"
+  return "Cold"
 }
 
 function getLeadTemperature(score: number): { label: string; color: string; bgColor: string } {
-  if (score >= 85) return { label: "🔥 HOT LEAD", color: "text-red-600", bgColor: "bg-red-100" }
-  if (score >= 70) return { label: "WARM LEAD", color: "text-amber-600", bgColor: "bg-amber-100" }
+  if (score >= 80) return { label: "🔥 HOT LEAD", color: "text-red-600", bgColor: "bg-red-100" }
+  if (score >= 60) return { label: "WARM LEAD", color: "text-amber-600", bgColor: "bg-amber-100" }
   return { label: "COLD LEAD", color: "text-blue-600", bgColor: "bg-blue-100" }
 }
 
@@ -744,27 +744,27 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
                           <p className="font-semibold">How Quality Score is Calculated:</p>
                           <ul className="text-sm space-y-1 list-disc list-inside">
                             <li>
-                              <strong>Engagement (40%):</strong> FDD downloads, Item 19 views, time on platform
+                              <strong>Engagement (35%):</strong> Time on platform, sessions, FDD sections viewed
                             </li>
                             <li>
-                              <strong>Financial Readiness (30%):</strong> Available capital vs. investment requirements
+                              <strong>Financial Fit (25%):</strong> Liquid capital & net worth vs. requirements
                             </li>
                             <li>
-                              <strong>Timeline (15%):</strong> Urgency and commitment level
+                              <strong>Experience (20%):</strong> Management experience, business ownership, years
                             </li>
                             <li>
-                              <strong>Experience (15%):</strong> Relevant industry background
+                              <strong>Base (20%):</strong> Verified lead in system
                             </li>
                           </ul>
                           <div className="mt-3 pt-2 border-t text-xs">
                             <p>
-                              <strong>80-100:</strong> Excellent - High conversion probability
+                              <strong>80-100:</strong> Hot - Prioritize immediate follow-up
                             </p>
                             <p>
-                              <strong>61-79:</strong> Good - Qualified lead, needs nurturing
+                              <strong>60-79:</strong> Warm - Ready for engagement
                             </p>
                             <p>
-                              <strong>0-60:</strong> Fair - Early stage, requires education
+                              <strong>0-59:</strong> Cold - Needs nurturing
                             </p>
                           </div>
                         </div>

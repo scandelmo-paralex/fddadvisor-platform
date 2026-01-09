@@ -131,6 +131,8 @@ cd ~/Downloads/duplicate-of-fdda-dvisor-platform-build_12_6_25
 git add lib/lead-scoring.ts
 git add app/api/hub/leads/route.ts
 git add scripts/sql/update-ace-handyman-ideal-profile.sql
+git add components/modals.tsx
+git add docs/LEAD_SCORING_V2_UPDATE.md
 
 git commit -m "feat: rebalance lead scoring to prioritize engagement over financials
 
@@ -164,11 +166,26 @@ git push origin fix/lead-temperature-sync
 
 ---
 
+### 4. `components/modals.tsx` - Lead Intelligence Modal
+
+- Updated `getLeadTemperature()` thresholds: 80+/60+ (was 85+/70+)
+- Updated `getQualityScoreColor()` thresholds: 80/60 (was 80/61)
+- Updated `getQualityScoreLabel()` to return "Hot/Warm/Cold" (was "Excellent/Good/Fair")
+- Updated tooltip to show correct scoring weights:
+  - Engagement (35%) - was 40%
+  - Financial Fit (25%) - was 30%  
+  - Experience (20%) - was 15%
+  - Base (20%) - was Timeline 15%
+- Updated score thresholds in tooltip: 80-100 Hot, 60-79 Warm, 0-59 Cold
+
+---
+
 ## Files Changed
 
 1. `lib/lead-scoring.ts` - Core scoring algorithm
 2. `app/api/hub/leads/route.ts` - Dashboard API (pending leads base score)
 3. `scripts/sql/update-ace-handyman-ideal-profile.sql` - New SQL script
+4. `components/modals.tsx` - Modal temperature thresholds and tooltip
 
 ---
 
