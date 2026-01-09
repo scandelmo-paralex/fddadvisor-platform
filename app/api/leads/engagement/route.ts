@@ -985,6 +985,9 @@ ${idealCriteria.map((c: any, i: number) => `${i+1}. **${c.name}** (Weight: ${c.w
 ### Preferred Backgrounds
 ${idealProfile.preferred_backgrounds?.join(', ') || 'Not specified'}
 
+### Preferred Skills
+${idealProfile.preferred_skills?.length > 0 ? idealProfile.preferred_skills.join(', ') : 'Not specified'}
+
 ### Ownership Model
 ${idealProfile.ownership_model || 'Not specified'}
 
@@ -1051,7 +1054,8 @@ IMPORTANT INSTRUCTIONS:
 3. If financial requirements are not met, clearly flag this as a BLOCKER
 4. Provide actionable, specific recommendations (not generic advice)
 5. Anticipate objections based on what they've viewed in the FDD
-6. ${linkedIn ? "Note that LinkedIn is available - recommend researching before the call" : ""}
+6. For skillsFit: Semantically match the buyer's Skills and Industry Background against the franchisor's Preferred Skills. A "strong match" is an exact or near-exact skill. A "partial match" is a related/transferable skill (e.g., "Sales" partially matches "Business Development"). Consider industry_experience as evidence of domain-relevant skills.
+7. ${linkedIn ? "Note that LinkedIn is available - recommend researching before the call" : ""}
 
 Return your analysis in this exact JSON structure:
 
@@ -1089,6 +1093,13 @@ Return your analysis in this exact JSON structure:
       "buyingSignals": ["<positive signals from their FDD engagement>"],
       "hesitationSignals": ["<concerns or hesitations indicated by behavior>"],
       "assessment": "<1-2 sentence assessment>"
+    },
+    "skillsFit": {
+      "score": <0-100>,
+      "strongMatches": ["<skills from buyer that directly match franchisor's preferred skills>"],
+      "partialMatches": ["<skills that are related or transferable to preferred skills>"],
+      "missingSkills": ["<preferred skills the buyer lacks or hasn't demonstrated>"],
+      "assessment": "<1-2 sentence assessment of skills alignment>"
     }
   },
   
