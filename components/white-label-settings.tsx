@@ -81,7 +81,7 @@ const AVAILABLE_INDUSTRIES = [
 
 // Years of experience options
 const EXPERIENCE_OPTIONS = [
-  { value: "", label: "No minimum" },
+  { value: "none", label: "No minimum" },
   { value: "1+", label: "1+ years" },
   { value: "3+", label: "3+ years" },
   { value: "5+", label: "5+ years" },
@@ -90,7 +90,7 @@ const EXPERIENCE_OPTIONS = [
 
 // Liquid capital options  
 const LIQUID_CAPITAL_OPTIONS = [
-  { value: "", label: "No minimum" },
+  { value: "none", label: "No minimum" },
   { value: 50000, label: "$50,000" },
   { value: 75000, label: "$75,000" },
   { value: 100000, label: "$100,000" },
@@ -108,7 +108,7 @@ const LIQUID_CAPITAL_OPTIONS = [
 
 // Net worth options
 const NET_WORTH_OPTIONS = [
-  { value: "", label: "No minimum" },
+  { value: "none", label: "No minimum" },
   { value: 100000, label: "$100,000" },
   { value: 200000, label: "$200,000" },
   { value: 300000, label: "$300,000" },
@@ -476,8 +476,8 @@ export function WhiteLabelSettings({ franchiseId, franchiseName, onClose }: Whit
               <div className="space-y-2">
                 <Label>Minimum Liquid Capital</Label>
                 <Select
-                  value={settings.ideal_candidate_config.financial_requirements.liquid_capital_min?.toString() || ""}
-                  onValueChange={(v) => updateFinancialRequirement('liquid_capital_min', v ? parseInt(v) : null)}
+                  value={settings.ideal_candidate_config.financial_requirements.liquid_capital_min?.toString() || "none"}
+                  onValueChange={(v) => updateFinancialRequirement('liquid_capital_min', v && v !== "none" ? parseInt(v) : null)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select minimum..." />
@@ -495,8 +495,8 @@ export function WhiteLabelSettings({ franchiseId, franchiseName, onClose }: Whit
               <div className="space-y-2">
                 <Label>Minimum Net Worth</Label>
                 <Select
-                  value={settings.ideal_candidate_config.financial_requirements.net_worth_min?.toString() || ""}
-                  onValueChange={(v) => updateFinancialRequirement('net_worth_min', v ? parseInt(v) : null)}
+                  value={settings.ideal_candidate_config.financial_requirements.net_worth_min?.toString() || "none"}
+                  onValueChange={(v) => updateFinancialRequirement('net_worth_min', v && v !== "none" ? parseInt(v) : null)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select minimum..." />
@@ -555,8 +555,8 @@ export function WhiteLabelSettings({ franchiseId, franchiseName, onClose }: Whit
             <div className="space-y-2 max-w-xs">
               <Label>Minimum Years of Experience</Label>
               <Select
-                value={settings.ideal_candidate_config.experience_requirements.min_years_experience || ""}
-                onValueChange={(v) => updateExperienceRequirement('min_years_experience', v || null)}
+                value={settings.ideal_candidate_config.experience_requirements.min_years_experience || "none"}
+                onValueChange={(v) => updateExperienceRequirement('min_years_experience', v && v !== "none" ? v : null)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select minimum..." />
