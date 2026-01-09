@@ -81,6 +81,12 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
   // Track if current user is a team member (recruiter can't access profile)
   const [userRole, setUserRole] = useState<"owner" | "admin" | "recruiter" | null>(null)
 
+  // Pipeline lead value from franchisor settings
+  const [pipelineLeadValue, setPipelineLeadValue] = useState(50000)
+  
+  // Company name from franchisor settings
+  const [companyName, setCompanyName] = useState<string | null>(null)
+
   // Fetch current user's role
   useEffect(() => {
     const fetchUserRole = async () => {
@@ -122,6 +128,30 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
     }
 
     fetchUserRole()
+  }, [])
+
+  // Fetch franchisor settings (including pipeline lead value and company name)
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch("/api/franchisor-settings")
+        if (response.ok) {
+          const data = await response.json()
+          if (data.pipeline_lead_value) {
+            setPipelineLeadValue(data.pipeline_lead_value)
+            console.log("[FranchisorDashboard] Pipeline lead value:", data.pipeline_lead_value)
+          }
+          if (data.company_name) {
+            setCompanyName(data.company_name)
+            console.log("[FranchisorDashboard] Company name:", data.company_name)
+          }
+        }
+      } catch (error) {
+        console.error("[FranchisorDashboard] Error fetching settings:", error)
+      }
+    }
+
+    fetchSettings()
   }, [])
 
   // For error toasts
@@ -208,8 +238,11 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
   // const [uploadedPageMapping, setUploadedPageMapping] = useState<{ [key: string]: number[] } | undefined>()
   // const [showUrlsModal, setShowUrlsModal] = useState(false)
 
-  // Helper function to determine if a lead is high intent (matching display logic)
-  const isHighIntent = (lead: Lead) => {
+  // Helper function to determine if a lead is hot (matching display logic)
+  const isHotLead = (lead: Lead) => {
+    // Check temperature field first, then fall back to intent
+    const temp = (lead as any).temperature
+    if (temp) return temp === "Hot"
     return lead.intent === "High" || lead.email === "spcandelmo@gmail.com"
   }
 
@@ -218,7 +251,7 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
     fddViews: leads.filter((l) => l.fddSendDate).length,
     item19Views: leads.filter((l) => l.fddSendDate && l.qualityScore >= 50).length,
     qualifiedLeads: leads.filter((l) => l.qualityScore >= 60 || l.intent !== "Low").length,
-    highIntent: leads.filter((l) => isHighIntent(l)).length,
+    hotLeads: leads.filter((l) => isHotLead(l)).length,
     newLeads: leads.filter((l) => l.isNew).length,
   }
 
@@ -248,9 +281,9 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
       trendUp: true,
     },
     {
-      label: "High Intent",
-      value: dynamicStats.highIntent,
-      key: "high-intent",
+      label: "🔥 Hot Leads",
+      value: dynamicStats.hotLeads,
+      key: "hot-leads",
       icon: Zap,
       trend: "+23%",
       trendUp: true,
@@ -272,8 +305,8 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
   const filteredLeads = leads.filter((lead) => {
     // Apply metric filter
     if (activeFilter) {
-      // Use isHighIntent helper to match display logic (includes spcandelmo@gmail.com override)
-      if (activeFilter === "high-intent" && !isHighIntent(lead)) return false
+      // Use isHotLead helper to match display logic (includes spcandelmo@gmail.com override)
+      if (activeFilter === "hot-leads" && !isHotLead(lead)) return false
       if (activeFilter === "new" && !lead.isNew) return false
       // Filter for leads who have viewed FDD (have fddSendDate and engagement)
       if (activeFilter === "views" && !lead.fddSendDate) return false
@@ -596,8 +629,9 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
         <div className="space-y-1">
           {" "}
           {/* Adjusted spacing */}
-          <h2 className="text-lg font-semibold text-blue-600">Wellbiz Brands</h2>{" "}
-          {/* Added subtle blue accent to company name */}
+          {companyName && (
+            <h2 className="text-lg font-semibold text-blue-600">{companyName}</h2>
+          )}
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-foreground">Lead Dashboard</h1>{" "}
             {/* Increased font size */}
@@ -704,7 +738,45 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
         })}
       </div>
       {view === "pipeline" ? (
-        <PipelineView leads={filteredLeads} onOpenModal={onOpenModal} onStageChange={handleStageChange} />
+        <PipelineView 
+          leads={filteredLeads} 
+          onOpenModal={onOpenModal} 
+          onStageChange={handleStageChange}
+          pipelineLeadValue={pipelineLeadValue}
+          onLeadStageUpdate={async (leadId: string, stageId: string, invitationId?: string) => {
+            // Use invitation_id if available (for accessLeads), otherwise use leadId (for pendingLeads)
+            const idForUpdate = invitationId || leadId
+            
+            // Call API to update lead stage
+            const response = await fetch(`/api/leads/${idForUpdate}/stage`, {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ stage_id: stageId }),
+            })
+            
+            if (!response.ok) {
+              const error = await response.json()
+              throw new Error(error.error || "Failed to update lead stage")
+            }
+            
+            const data = await response.json()
+            
+            // Update local state
+            setLeads((prevLeads) =>
+              prevLeads.map((lead) =>
+                lead.id === leadId
+                  ? {
+                      ...lead,
+                      stage: data.stage.name.toLowerCase(),
+                      stage_id: stageId,
+                      pipeline_stage: data.stage,
+                      daysInStage: 0,
+                    }
+                  : lead
+              )
+            )
+          }}
+        />
       ) : (
         <div className="space-y-6">
           {" "}
@@ -833,7 +905,7 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
                       FDD Status
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider w-[100px]">
-                      Intent
+                      Temperature
                     </th>
                     <th className="px-6 py-4 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider w-[130px] sticky right-0 bg-muted/40 border-l border-border/60">
                       Actions
@@ -943,18 +1015,29 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
                           )}
                         </td>
                         <td className="px-6 py-4">
-                          <Badge
-                            variant="secondary"
-                            className={`text-xs px-2.5 py-0.5 font-medium border ${
-                              lead.email === "spcandelmo@gmail.com" || lead.intent === "High"
-                                ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-                                : lead.intent === "Medium"
-                                  ? "bg-blue-500/10 text-blue-600 border-blue-500/20"
-                                  : "bg-gray-500/10 text-gray-600 border-gray-500/20"
-                            }`}
-                          >
-                            {lead.email === "spcandelmo@gmail.com" ? "High" : lead.intent}
-                          </Badge>
+                          {(() => {
+                            // Use temperature field if available, fallback to intent mapping
+                            const temp = (lead as any).temperature || 
+                              (lead.intent === "High" ? "Hot" : lead.intent === "Medium" ? "Warm" : "Cold")
+                            
+                            // Special override for demo account
+                            const displayTemp = lead.email === "spcandelmo@gmail.com" ? "Hot" : temp
+                            
+                            return (
+                              <Badge
+                                variant="secondary"
+                                className={`text-xs px-2.5 py-0.5 font-medium border ${
+                                  displayTemp === "Hot"
+                                    ? "bg-red-500/10 text-red-600 border-red-500/20"
+                                    : displayTemp === "Warm"
+                                      ? "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                                      : "bg-blue-500/10 text-blue-600 border-blue-500/20"
+                                }`}
+                              >
+                                {displayTemp === "Hot" ? "🔥 Hot" : displayTemp === "Warm" ? "🟠 Warm" : "❄️ Cold"}
+                              </Badge>
+                            )
+                          })()}
                         </td>
                         <td className="px-6 py-4 sticky right-0 bg-background group-hover:bg-muted/30 border-l border-border/40 transition-colors">
                           <div className="flex gap-1.5 justify-end">

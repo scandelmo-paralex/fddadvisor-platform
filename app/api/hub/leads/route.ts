@@ -1,5 +1,6 @@
 import { getSupabaseRouteClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
+import { calculateQualityScore, getLeadTemperature, type EngagementData, type BuyerProfile } from "@/lib/lead-scoring"
 
 export async function GET() {
   try {
@@ -54,8 +55,8 @@ export async function GET() {
       isAdmin = teamMember.role === "owner" || teamMember.role === "admin"
     }
 
-    // Get franchises - admin sees all, regular franchisor sees only their own
-    let franchisesQuery = supabase.from("franchises").select("id, name, slug")
+    // Get franchises with their ideal_candidate_profile for financial requirements
+    let franchisesQuery = supabase.from("franchises").select("id, name, slug, ideal_candidate_profile")
     
     if (!isAdmin) {
       franchisesQuery = franchisesQuery.eq("franchisor_id", franchisorId)
@@ -76,6 +77,7 @@ export async function GET() {
     const { data: leadsRecords, error: leadsError } = await leadsQuery
 
     // Get all FDD access records for this franchisor's franchises
+    // Include buyer profile fields needed for comprehensive quality score calculation
     const { data: fddAccessRecords, error: accessError } = await supabase
       .from("lead_fdd_access")
       .select(
@@ -93,7 +95,14 @@ export async function GET() {
           buying_timeline,
           signup_source,
           created_at,
-          updated_at
+          updated_at,
+          liquid_assets_range,
+          net_worth_range,
+          funding_plans,
+          profile_completed_at,
+          management_experience,
+          has_owned_business,
+          years_of_experience
         )
       `,
       )
@@ -106,11 +115,14 @@ export async function GET() {
     }
 
     // Get engagement data for all buyers
-    const buyerIds = fddAccessRecords?.map((r: any) => r.buyer_id).filter(Boolean) || []
+    // IMPORTANT: fdd_engagements.buyer_id stores auth.users.id (user_id), NOT buyer_profiles.id
+    // So we need to use buyer.user_id from the joined buyer_profiles data
+    const buyerUserIds = fddAccessRecords?.map((r: any) => r.buyer?.user_id).filter(Boolean) || []
 
-    const { data: engagements } = await supabase.from("fdd_engagements").select("*").in("buyer_id", buyerIds)
+    const { data: engagements } = await supabase.from("fdd_engagements").select("*").in("buyer_id", buyerUserIds)
 
-    // Create engagement map: buyer_id + franchise_id -> engagement data
+    // Create engagement map: user_id + franchise_id -> engagement data
+    // Note: Using user_id (auth.users.id) as the key since that's what fdd_engagements stores
     const engagementMap = new Map()
     engagements?.forEach((eng: any) => {
       const key = `${eng.buyer_id}_${eng.franchise_id}`
@@ -120,11 +132,13 @@ export async function GET() {
           questions_asked: 0,
           sections_viewed: [],
           last_activity: eng.created_at,
+          session_count: 0,
         })
       }
       const current = engagementMap.get(key)
       current.time_spent += eng.duration_seconds || 0
       current.questions_asked += eng.questions_list?.length || 0
+      current.session_count += 1
       if (eng.viewed_items) {
         current.sections_viewed = [...new Set([...current.sections_viewed, ...eng.viewed_items])]
       }
@@ -133,10 +147,21 @@ export async function GET() {
       }
     })
 
-    // Get invitation data
+    // Get invitation data with stage information
     // - Admin/Owner: sees all invitations for the franchisor
     // - Recruiter: sees only invitations they created
-    let invitationsQuery = supabase.from("lead_invitations").select("*").order("sent_at", { ascending: false })
+    let invitationsQuery = supabase.from("lead_invitations").select(`
+      *,
+      pipeline_stage:stage_id(
+        id,
+        name,
+        color,
+        position,
+        is_default,
+        is_closed_won,
+        is_closed_lost
+      )
+    `).order("sent_at", { ascending: false })
     
     if (isRecruiter && teamMemberId) {
       // Recruiters only see leads they created
@@ -165,7 +190,9 @@ export async function GET() {
         const buyer = access.buyer
         const franchise = franchiseMap.get(access.franchise_id)
         const invitation = invitationByEmailMap.get(buyer?.email)
-        const engagementKey = `${access.buyer_id}_${access.franchise_id}`
+        // IMPORTANT: Use buyer.user_id (auth.users.id) as the key, not access.buyer_id (buyer_profiles.id)
+        // This matches how fdd_engagements.buyer_id is stored
+        const engagementKey = `${buyer?.user_id}_${access.franchise_id}`
         const engagement = engagementMap.get(engagementKey)
 
         const buyerName =
@@ -179,8 +206,34 @@ export async function GET() {
         const buyerState = buyer?.state_location || ""
         const buyerTimeline = invitation?.timeline || buyer?.buying_timeline || "3-6"
 
+        // Build engagement data for scoring
+        const engagementData: EngagementData = {
+          totalTimeSeconds: engagement?.time_spent || access?.total_time_spent_seconds || 0,
+          sessionCount: engagement?.session_count || access?.total_views || 1,
+          questionsAsked: engagement?.questions_asked || 0,
+          sectionsViewed: engagement?.sections_viewed || [],
+        }
+
+        // Build buyer profile for scoring
+        const buyerProfile: BuyerProfile | null = buyer ? {
+          liquid_assets_range: buyer.liquid_assets_range,
+          net_worth_range: buyer.net_worth_range,
+          funding_plans: buyer.funding_plans,
+          profile_completed_at: buyer.profile_completed_at,
+          management_experience: buyer.management_experience,
+          has_owned_business: buyer.has_owned_business,
+          years_of_experience: buyer.years_of_experience,
+        } : null
+
+        // Get franchise financial requirements
+        const financialRequirements = franchise?.ideal_candidate_profile?.financial_requirements || null
+
+        // Calculate quality score using shared utility
+        const scoreResult = calculateQualityScore(engagementData, buyerProfile, financialRequirements)
+
         return {
           id: access.id,
+          invitation_id: invitation?.id || null, // ID in lead_invitations table for stage updates
           name: buyerName,
           email: buyerEmail,
           phone: buyerPhone,
@@ -198,14 +251,20 @@ export async function GET() {
           expiresAt: invitation?.expires_at || null,
           source: invitation?.source || buyer?.signup_source || "FDDHub",
           timeline: buyerTimeline,
-          // Hardcode Willie Nelson to Medium for demo
-          intent: buyerEmail === "willie@test.com" || buyerName.toLowerCase().includes("willie") 
-            ? "Medium" 
-            : engagement ? (engagement.questions_asked > 3 ? "High" : "Medium") : "Low",
+          // Use shared scoring utility for consistent temperature/intent
+          intent: scoreResult.temperature,
+          temperature: scoreResult.temperature,
           isNew: false,
-          qualityScore: calculateQualityScore(access, engagement),
-          stage: invitation?.status === "signed_up" ? "engaged" : "inquiry",
-          daysInStage: 0,
+          qualityScore: scoreResult.score,
+          engagementTier: scoreResult.engagementTier,
+          financialStatus: scoreResult.financialStatus,
+          scoreBreakdown: scoreResult.breakdown,
+          stage: invitation?.pipeline_stage?.name?.toLowerCase() || (invitation?.status === "signed_up" ? "engaged" : "inquiry"),
+          stage_id: invitation?.stage_id || null,
+          pipeline_stage: invitation?.pipeline_stage || null,
+          daysInStage: invitation?.stage_changed_at 
+            ? Math.floor((Date.now() - new Date(invitation.stage_changed_at).getTime()) / (1000 * 60 * 60 * 24))
+            : 0,
           verificationStatus: "unverified" as const,
           location: buyerCity && buyerState ? `${buyerCity}, ${buyerState}` : "",
           city: buyerCity,
@@ -253,6 +312,7 @@ export async function GET() {
 
         return {
           id: inv.id,
+          invitation_id: inv.id, // For pending leads, id IS the invitation_id
           name: inv.lead_name || "Unknown",
           email: inv.lead_email || "",
           phone: inv.lead_phone || "",
@@ -268,11 +328,19 @@ export async function GET() {
           expiresAt: inv.expires_at || null,
           source: inv.source || "Direct Inquiry",
           timeline: inv.timeline || "3-6",
-          intent: "Medium",
+          intent: "Cold",
+          temperature: "Cold",
           isNew: true,
-          qualityScore: 50,
-          stage: "inquiry",
-          daysInStage: 0,
+          qualityScore: 20, // Base score only for pending leads (updated from 30)
+          engagementTier: "none" as const,
+          financialStatus: "unknown" as const,
+          scoreBreakdown: { base: 20, engagement: 0, financial: 0, experience: 0 },
+          stage: inv.pipeline_stage?.name?.toLowerCase() || "inquiry",
+          stage_id: inv.stage_id || null,
+          pipeline_stage: inv.pipeline_stage || null,
+          daysInStage: inv.stage_changed_at 
+            ? Math.floor((Date.now() - new Date(inv.stage_changed_at).getTime()) / (1000 * 60 * 60 * 24))
+            : 0,
           verificationStatus: "unverified" as "unverified" | "verified" | "rejected",
           location: invLocation,
           city: invCity,
@@ -295,21 +363,4 @@ export async function GET() {
     console.error("Error in leads API:", error)
     return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 })
   }
-}
-
-function calculateQualityScore(access: any, engagement: any): number {
-  let score = 50 // Base score
-
-  // Engagement scoring (40 points)
-  if (engagement) {
-    const timeSpentMinutes = engagement.time_spent / 60
-    score += Math.min(timeSpentMinutes * 2, 20) // Up to 20 points for time spent
-    score += Math.min(engagement.questions_asked * 4, 15) // Up to 15 points for questions
-    score += Math.min((engagement.sections_viewed?.length || 0) * 1, 5) // Up to 5 points for sections viewed
-  }
-
-  // Access frequency scoring (10 points)
-  score += Math.min((access.total_views || 0) * 2, 10)
-
-  return Math.min(Math.round(score), 100)
 }

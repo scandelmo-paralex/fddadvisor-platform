@@ -12,6 +12,7 @@ import type { WhiteLabelSettings } from "@/lib/types/database"
 import { InvestmentModal } from "@/components/investment-modal"
 import { RevenueModal } from "@/components/revenue-modal"
 import { FDDViewer } from "@/components/fdd-viewer"
+import { FDDViewerTour, useFDDViewerTour } from "@/components/product-tour"
 import type { Franchise } from "@/lib/data"
 import { toast } from "sonner"
 
@@ -42,6 +43,9 @@ export default function WhiteLabelFDDPage() {
   const [activeModal, setActiveModal] = useState<string | null>(null)
   const [notes, setNotes] = useState<Note[]>([])
   const [fddId, setFddId] = useState<string | null>(null)
+
+  // Product tour controls
+  const { startTour, forceShow, onTourComplete } = useFDDViewerTour()
 
   // Fetch notes for this FDD
   const fetchNotes = useCallback(async (fddIdToFetch: string) => {
@@ -593,7 +597,18 @@ export default function WhiteLabelFDDPage() {
         onDeleteNote={handleDeleteNote}
         onUpdateEngagement={() => {}}
         showCoverOverlay={true}
+        onStartTour={startTour}
       />
+
+      {/* Product tour - auto-starts for first-time users */}
+      <FDDViewerTour 
+        franchiseName={franchise.name} 
+        forceShow={forceShow}
+        onComplete={onTourComplete}
+        onSkip={onTourComplete}
+      />
+
+
 
       {activeModal === "investment" && franchise && (
         <InvestmentModal franchise={franchise} onClose={handleCloseModal} />
