@@ -201,6 +201,7 @@ export function FDDAIChat({
       {!isOpen && (
         <Button
           onClick={() => setIsOpen(true)}
+          data-tour="ai-chat-button"
           className="fixed z-50 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 shadow-xl hover:shadow-2xl hover:scale-105 transition-all border-2 border-blue-400/20
             /* Mobile: bottom center, smaller */
             bottom-4 left-1/2 -translate-x-1/2 h-14 w-14
