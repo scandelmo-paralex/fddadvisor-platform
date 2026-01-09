@@ -744,18 +744,23 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
                           <p className="font-semibold">How Quality Score is Calculated:</p>
                           <ul className="text-sm space-y-1 list-disc list-inside">
                             <li>
-                              <strong>Engagement (35%):</strong> Time on platform, sessions, FDD sections viewed
+                              <strong>Engagement ({engagementData?.scoringWeights?.engagement ?? 35}%):</strong> Time on platform, sessions, FDD sections viewed
                             </li>
                             <li>
-                              <strong>Financial Fit (25%):</strong> Liquid capital & net worth vs. requirements
+                              <strong>Financial Fit ({engagementData?.scoringWeights?.financialFit ?? 25}%):</strong> Liquid capital & net worth vs. requirements
                             </li>
                             <li>
-                              <strong>Experience (20%):</strong> Management experience, business ownership, years
+                              <strong>Experience ({engagementData?.scoringWeights?.experience ?? 20}%):</strong> Management experience, business ownership, years
                             </li>
                             <li>
-                              <strong>Base (20%):</strong> Verified lead in system
+                              <strong>Base ({engagementData?.scoringWeights?.base ?? 20}%):</strong> Verified lead in system
                             </li>
                           </ul>
+                          {engagementData?.customScoringApplied && (
+                            <p className="text-xs text-muted-foreground italic mt-2">
+                              ✓ Custom scoring weights applied
+                            </p>
+                          )}
                           <div className="mt-3 pt-2 border-t text-xs">
                             <p>
                               <strong>80-100:</strong> Hot - Prioritize immediate follow-up
