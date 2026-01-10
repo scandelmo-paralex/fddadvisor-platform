@@ -290,19 +290,39 @@ export function parseFinancialRange(range: string | null | undefined): { min: nu
     }
   }
   
-  // Range: "$100K - $250K"
+  // Range: "$100K - $250K" or "$1-2M"
   const rangeMatch = cleanRange.match(/\$?(\d+)([km])?\s*[-–]\s*\$?(\d+)([km])?/i)
   if (rangeMatch) {
     let min = parseInt(rangeMatch[1])
     let max = parseInt(rangeMatch[3])
     
-    if (rangeMatch[2] === 'm') min *= 1000000
-    else if (rangeMatch[2] === 'k') min *= 1000
-    else if (min < 1000) min *= 1000
+    // Determine multipliers - if one side has a multiplier, apply context to the other
+    const minSuffix = rangeMatch[2]?.toLowerCase()
+    const maxSuffix = rangeMatch[4]?.toLowerCase()
     
-    if (rangeMatch[4] === 'm') max *= 1000000
-    else if (rangeMatch[4] === 'k') max *= 1000
-    else if (max < 1000) max *= 1000
+    // Get the explicit multiplier for max first (it's more likely to have suffix like "$1-2M")
+    let maxMultiplier = 1
+    if (maxSuffix === 'm') maxMultiplier = 1000000
+    else if (maxSuffix === 'k') maxMultiplier = 1000
+    else if (max < 1000) maxMultiplier = 1000 // Assume K if small number
+    
+    // For min: use explicit suffix if present, otherwise inherit from max context
+    // This handles "$1-2M" where min should also be millions
+    let minMultiplier = 1
+    if (minSuffix === 'm') minMultiplier = 1000000
+    else if (minSuffix === 'k') minMultiplier = 1000
+    else if (min < 1000) {
+      // No explicit suffix on min - inherit from max if max is in millions
+      // This fixes "$1-2M" being parsed as $1K-$2M instead of $1M-$2M
+      if (maxMultiplier === 1000000) {
+        minMultiplier = 1000000
+      } else {
+        minMultiplier = 1000 // Default to K for small numbers
+      }
+    }
+    
+    min *= minMultiplier
+    max *= maxMultiplier
     
     return { min, max }
   }
