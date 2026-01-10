@@ -874,6 +874,8 @@ async function generateEnhancedAIInsights(
     }
   }
 
+  // Only minimal tier gets template-based response
+  // partial/meaningful/high tiers go through AI generation below
   if (tier === "minimal") {
     return generateMinimalEngagementInsights(
       engagements,
@@ -886,20 +888,7 @@ async function generateEnhancedAIInsights(
     )
   }
 
-  if (tier === "partial") {
-    return generatePartialEngagementInsights(
-      engagements,
-      sectionsViewed,
-      buyerProfile,
-      franchise,
-      invitation,
-      totalMinutes,
-      sessionCount,
-      financialFit,
-    )
-  }
-
-  // Calculate engagement metrics for meaningful/high engagement
+  // Calculate engagement metrics for partial/meaningful/high engagement
   // Derive from actual data: section_name and viewed_items columns
   const allSectionsLower = sectionsViewed.map(s => String(s).toLowerCase())
   const allItemsLower = itemsViewed.map(i => String(i).toLowerCase())
@@ -940,10 +929,11 @@ async function generateEnhancedAIInsights(
       ? `$${(franchise.total_investment_min / 1000).toFixed(0)}K - $${(franchise.total_investment_max / 1000).toFixed(0)}K`
       : null
 
-  // Try AI generation for meaningful/high engagement
+  // Try AI generation for partial/meaningful/high engagement (5+ minutes)
+  // This ensures Skills Fit and full AI analysis is available for leads with real engagement
   const googleApiKey = process.env.GOOGLE_API_KEY
 
-  if (googleApiKey && (tier === "meaningful" || tier === "high")) {
+  if (googleApiKey && (tier === "partial" || tier === "meaningful" || tier === "high")) {
     try {
       const genAI = new GoogleGenerativeAI(googleApiKey)
       const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" })
@@ -1000,7 +990,7 @@ Location: ${buyerLocation || "Not provided"}
 Target Territory: ${targetLocation || "Not specified"}
 Buying Timeline: ${buyerTimeline || "Not specified"}
 Lead Source: ${buyerSource || "Direct"}
-Engagement Level: ${tier === "high" ? "HIGH - Very engaged prospect" : "MEANINGFUL - Solid engagement"}
+Engagement Level: ${tier === "high" ? "HIGH - Very engaged prospect" : tier === "meaningful" ? "MEANINGFUL - Solid engagement" : "PARTIAL - Early engagement, showing interest"}
 
 ### Financial Qualification (Self-Reported)
 - FICO Score Range: ${ficoScore || "Not provided"}
@@ -1126,7 +1116,7 @@ Return your analysis in this exact JSON structure:
   "recommendations": ["<5-6 specific recommendations>"],
   
   "engagementTier": "${tier}",
-  "tierMessage": "${tier === "high" ? "🔥 Hot lead - prioritize immediate follow-up" : "🟢 Warm lead - ready for deeper conversation"}"
+  "tierMessage": "${tier === "high" ? "🔥 Hot lead - prioritize immediate follow-up" : tier === "meaningful" ? "🟢 Warm lead - ready for deeper conversation" : "🟡 Early interest - nurture and educate"}"
 }
 
 Return ONLY valid JSON, no markdown formatting or code blocks.`
