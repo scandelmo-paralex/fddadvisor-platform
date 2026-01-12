@@ -1619,6 +1619,14 @@ export function FDDViewer({
           </div>
         </div>
 
+        {/* Educational Resources Disclaimer */}
+        <div className="flex items-start gap-3 p-4 rounded-lg bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/50 dark:border-blue-800/30">
+          <BookOpen className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+          <p className="text-sm text-blue-900 dark:text-blue-100 leading-relaxed">
+            <span className="font-medium">Educational Resources</span> — These resources are provided to help you review and understand your Franchise Disclosure Document. They do not modify, supplement, or amend the FDD in any way. The FDD remains the official disclosure document, and you should consult with a franchise attorney or financial advisor for professional guidance.
+          </p>
+        </div>
+
         {/* Featured Video Section */}
         <Card className="overflow-hidden border-slate-200 dark:border-slate-700">
           <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border-b border-slate-200 dark:border-slate-700">
