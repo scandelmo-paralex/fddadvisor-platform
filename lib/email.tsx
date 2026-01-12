@@ -185,6 +185,78 @@ export async function sendFDDEmail({
 /**
  * Send team member invitation email
  */
+/**
+ * Send contact email to a lead from franchisor
+ */
+export async function sendContactEmail({
+  to,
+  leadName,
+  franchiseName,
+  subject,
+  message,
+  senderName,
+  senderEmail,
+}: {
+  to: string
+  leadName: string
+  franchiseName: string
+  subject: string
+  message: string
+  senderName: string
+  senderEmail?: string
+}) {
+  try {
+    console.log("[v0] Sending contact email to:", to)
+
+    // Format message with proper line breaks for HTML
+    const formattedMessage = message.replace(/\n/g, "<br>")
+
+    const { data, error } = await resend.emails.send({
+      from: `${franchiseName} via FDDHub <noreply@invitations.fddhub.com>`,
+      to: [to],
+      replyTo: senderEmail || undefined,
+      subject: subject,
+      html: `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          </head>
+          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: #ffffff; padding: 30px; border: 1px solid #e5e7eb; border-radius: 10px;">
+              <p style="font-size: 16px; margin-bottom: 20px;">Hi ${leadName},</p>
+              
+              <div style="font-size: 16px; margin: 20px 0; white-space: pre-wrap;">
+                ${formattedMessage}
+              </div>
+              
+              <p style="font-size: 16px; margin-top: 30px;">Best regards,</p>
+              <p style="font-size: 16px; font-weight: 600; margin-top: 5px;">${senderName}</p>
+              <p style="font-size: 14px; color: #6b7280;">${franchiseName}</p>
+            </div>
+            
+            <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 12px;">
+              <p>Sent via FDDHub • <a href="https://fddhub.com" style="color: #9ca3af;">fddhub.com</a></p>
+            </div>
+          </body>
+        </html>
+      `,
+    })
+
+    if (error) {
+      console.error("[v0] Contact email send error:", error)
+      throw error
+    }
+
+    console.log("[v0] Contact email sent successfully:", data)
+    return { success: true, data }
+  } catch (error) {
+    console.error("[v0] Failed to send contact email:", error)
+    throw error
+  }
+}
+
 export async function sendTeamInvitationEmail({
   to,
   memberName,

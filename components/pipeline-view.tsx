@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { MapPin, Clock, TrendingUp, Mail, BarChart3, CheckCircle2, ShieldCheck, ShieldAlert, Loader2 } from "lucide-react"
+import { ContactLeadModal } from "@/components/contact-lead-modal"
 import type { Lead } from "@/lib/data"
 import type { PipelineStage } from "@/lib/types/database"
 import { SalesEligibilityInline } from "@/components/sales-eligibility-badge"
@@ -37,6 +38,7 @@ export function PipelineView({ leads, onOpenModal, onStageChange, onLeadStageUpd
   const [updatingLeadId, setUpdatingLeadId] = useState<string | null>(null)
   const [debugInfo, setDebugInfo] = useState<string | null>(null)
   const [pipelineLeadValue, setPipelineLeadValue] = useState(propLeadValue || 50000) // Use prop or default $50K
+  const [contactLead, setContactLead] = useState<Lead | null>(null)
   const { toast } = useToast()
 
   // Update local state when prop changes
@@ -319,7 +321,7 @@ export function PipelineView({ leads, onOpenModal, onStageChange, onLeadStageUpd
                     className="flex-1 h-8 text-xs gap-1.5 bg-transparent"
                     onClick={(e) => {
                       e.stopPropagation()
-                      /* Handle contact */
+                      setContactLead(lead)
                     }}
                   >
                     <Mail className="h-3.5 w-3.5" />
@@ -398,6 +400,19 @@ export function PipelineView({ leads, onOpenModal, onStageChange, onLeadStageUpd
           </div>
         ))}
       </div>
+
+      {/* Contact Lead Modal */}
+      {contactLead && (
+        <ContactLeadModal
+          isOpen={true}
+          onClose={() => setContactLead(null)}
+          lead={{
+            id: contactLead.id,
+            name: contactLead.name,
+            email: contactLead.email,
+          }}
+        />
+      )}
     </div>
   )
 }

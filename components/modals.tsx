@@ -1,6 +1,6 @@
 "use client"
 
-import { X, Info, CheckCircle2, Clock, Radio, User, Linkedin, AlertTriangle, TrendingUp, Target, MessageSquare, RefreshCw, Sparkles } from "lucide-react"
+import { X, Info, CheckCircle2, Clock, Radio, User, Linkedin, AlertTriangle, TrendingUp, Target, MessageSquare, RefreshCw, Sparkles, Mail, Send } from "lucide-react"
 import { SalesAssistantDrawer } from "@/components/sales-assistant"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -244,6 +244,7 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
   const [isAssistantOpen, setIsAssistantOpen] = useState(false)
   const [isInitialLoading, setIsInitialLoading] = useState(false)
   const [currentLeadId, setCurrentLeadId] = useState<string | null>(null)
+  const [contactHistory, setContactHistory] = useState<any[]>([])
 
   useEffect(() => {
     if (!isOpen || type !== "lead-intelligence" || !leadId) return
@@ -294,10 +295,23 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
       }
     }
 
+    const fetchContactHistory = async () => {
+      try {
+        const response = await fetch(`/api/hub/contact/${leadId}`)
+        if (response.ok) {
+          const data = await response.json()
+          setContactHistory(data.contacts || [])
+          console.log("[v0] Fetched contact history:", data.contacts)
+        }
+      } catch (error) {
+        console.error("[v0] Error fetching contact history:", error)
+      }
+    }
+
     // Always fetch fresh data when modal opens
     setIsInitialLoading(true)
     
-    Promise.all([fetchLeadData(), fetchEngagementData()]).finally(() => {
+    Promise.all([fetchLeadData(), fetchEngagementData(), fetchContactHistory()]).finally(() => {
       setIsInitialLoading(false)
     })
 
@@ -388,6 +402,12 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
       if (engagementResponse.ok) {
         const data = await engagementResponse.json()
         setEngagementData({ ...data, _leadId: leadId })
+      }
+      // Fetch fresh contact history
+      const contactResponse = await fetch(`/api/hub/contact/${leadId}`)
+      if (contactResponse.ok) {
+        const data = await contactResponse.json()
+        setContactHistory(data.contacts || [])
       }
       setLastUpdate(new Date())
     } catch (error) {
@@ -1504,6 +1524,49 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
                       ))}
                     </div>
                   )}
+                </div>
+              )}
+
+              {/* Contact History Section */}
+              {contactHistory && contactHistory.length > 0 && (
+                <div>
+                  <h3 className="mb-3 font-bold flex items-center gap-2">
+                    <Send className="h-5 w-5 text-primary" />
+                    Contact History
+                    <Badge variant="secondary" className="ml-2">
+                      {contactHistory.length} email{contactHistory.length !== 1 ? 's' : ''} sent
+                    </Badge>
+                  </h3>
+                  <div className="space-y-3">
+                    {contactHistory.map((contact: any, idx: number) => (
+                      <div key={contact.id || idx} className="rounded-lg border p-4 bg-slate-50">
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                              <Mail className="h-4 w-4 text-primary" />
+                            </div>
+                            <div>
+                              <p className="font-medium text-sm">{contact.sender_name}</p>
+                              <p className="text-xs text-muted-foreground">{contact.sender_email}</p>
+                            </div>
+                          </div>
+                          <span className="text-xs text-muted-foreground">
+                            {new Date(contact.created_at).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric',
+                              hour: 'numeric',
+                              minute: '2-digit'
+                            })}
+                          </span>
+                        </div>
+                        <div className="pl-10">
+                          <p className="font-medium text-sm mb-1">{contact.subject}</p>
+                          <p className="text-sm text-muted-foreground line-clamp-2">{contact.message}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 

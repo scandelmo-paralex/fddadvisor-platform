@@ -33,6 +33,7 @@ import { Badge } from "@/components/ui/badge"
 import { leads as initialLeads } from "@/lib/data"
 import { PipelineView } from "@/components/pipeline-view"
 import { ReceiptViewerModal } from "@/components/receipt-viewer-modal"
+import { ContactLeadModal } from "@/components/contact-lead-modal"
 import type { Lead } from "@/lib/data"
 import { SharedAccessManager } from "@/components/shared-access-manager" // DEPRECATED - moved to Company Settings
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select" // Import Select components
@@ -77,6 +78,7 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
   const [loading, setLoading] = useState(false) // Added loading state
   const [error, setError] = useState("") // Added error state
   const [showItemMappingModal, setShowItemMappingModal] = useState(false)
+  const [contactLead, setContactLead] = useState<Lead | null>(null)
 
   const [franchises, setFranchises] = useState<Array<{ id: string; name: string }>>([])
 
@@ -1073,22 +1075,12 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
                           <div className="flex gap-1.5 justify-end">
                             <Button
                               size="sm"
-                              variant={lead.fddSendDate ? "outline" : "default"}
-                              className={
-                                lead.fddSendDate
-                                  ? "h-8 w-8 p-0"
-                                  : "gap-1.5 bg-cta hover:bg-cta/90 text-cta-foreground h-8 px-3 text-xs shadow-sm"
-                              }
-                              onClick={() => handleSendFDD(lead)}
+                              variant="outline"
+                              className="h-8 w-8 p-0"
+                              onClick={() => setContactLead(lead)}
+                              title="Contact Lead"
                             >
-                              {lead.fddSendDate ? (
-                                <Mail className="h-4 w-4" />
-                              ) : (
-                                <>
-                                  <FileCheck className="h-3.5 w-3.5" />
-                                  Send FDD
-                                </>
-                              )}
+                              <Mail className="h-4 w-4" />
                             </Button>
                             <Button
                               size="sm"
@@ -1619,6 +1611,12 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
           </Card>
         </div>
       )}
+      {/* Contact Lead Modal */}
+      <ContactLeadModal
+        isOpen={!!contactLead}
+        onClose={() => setContactLead(null)}
+        lead={contactLead}
+      />
       {/* HIDDEN FOR DEMO - Quick action cards (redundant with filters)
       <div className="grid gap-4 md:grid-cols-3">
         <Card className="p-6 border-border/50 bg-gradient-to-br from-cta/5 to-transparent">
