@@ -486,11 +486,18 @@ export default function WhiteLabelFDDPage() {
       console.log("[v0] Transformed franchise - excluding analysis_url field")
       setFranchise(transformedFranchise)
 
-      const { data: whiteLabelData } = await supabase
+      const { data: whiteLabelData, error: whiteLabelError } = await supabase
         .from("white_label_settings")
         .select("*")
         .eq("franchise_id", franchiseData.id)
         .single()
+
+      console.log("[v0] White-label settings lookup:", {
+        franchiseId: franchiseData.id,
+        whiteLabelData,
+        whiteLabelError,
+        resources_video_url: whiteLabelData?.resources_video_url,
+      })
 
       if (whiteLabelData) {
         setWhiteLabelSettings(whiteLabelData)
