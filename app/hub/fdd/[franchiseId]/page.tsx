@@ -486,13 +486,14 @@ export default function WhiteLabelFDDPage() {
       console.log("[v0] Transformed franchise - excluding analysis_url field")
       setFranchise(transformedFranchise)
 
+      // Query buyer-safe branding view (excludes sensitive scoring/candidate config)
       const { data: whiteLabelData, error: whiteLabelError } = await supabase
-        .from("white_label_settings")
+        .from("buyer_franchise_branding")
         .select("*")
         .eq("franchise_id", franchiseData.id)
         .single()
 
-      console.log("[v0] White-label settings lookup:", {
+      console.log("[v0] Buyer branding lookup:", {
         franchiseId: franchiseData.id,
         whiteLabelData,
         whiteLabelError,
