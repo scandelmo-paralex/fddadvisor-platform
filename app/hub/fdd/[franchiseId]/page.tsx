@@ -487,18 +487,11 @@ export default function WhiteLabelFDDPage() {
       setFranchise(transformedFranchise)
 
       // Query buyer-safe branding view (excludes sensitive scoring/candidate config)
-      const { data: whiteLabelData, error: whiteLabelError } = await supabase
+      const { data: whiteLabelData } = await supabase
         .from("buyer_franchise_branding")
         .select("*")
         .eq("franchise_id", franchiseData.id)
         .single()
-
-      console.log("[v0] Buyer branding lookup:", {
-        franchiseId: franchiseData.id,
-        whiteLabelData,
-        whiteLabelError,
-        resources_video_url: whiteLabelData?.resources_video_url,
-      })
 
       if (whiteLabelData) {
         setWhiteLabelSettings(whiteLabelData)
@@ -549,50 +542,6 @@ export default function WhiteLabelFDDPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {whiteLabelSettings && (
-        <div
-          className="border-b py-4 px-6"
-          style={{
-            backgroundColor: whiteLabelSettings.primary_color + "10",
-            borderColor: whiteLabelSettings.primary_color + "30",
-          }}
-        >
-          <div className="container mx-auto flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              {whiteLabelSettings.logo_url && (
-                <img
-                  src={whiteLabelSettings.logo_url || "/placeholder.svg"}
-                  alt={franchise.name}
-                  className="h-12 w-auto object-contain"
-                />
-              )}
-              <div>
-                <h1 className="text-xl font-bold" style={{ color: whiteLabelSettings.primary_color }}>
-                  {whiteLabelSettings.header_text || `${franchise.name} Franchise Disclosure Document`}
-                </h1>
-                {whiteLabelSettings.contact_name && (
-                  <p className="text-sm text-muted-foreground">
-                    Contact: {whiteLabelSettings.contact_name}
-                    {whiteLabelSettings.contact_email && ` • ${whiteLabelSettings.contact_email}`}
-                    {whiteLabelSettings.contact_phone && ` • ${whiteLabelSettings.contact_phone}`}
-                  </p>
-                )}
-              </div>
-            </div>
-            <Button
-              onClick={() => router.push("/hub/my-fdds")}
-              variant="outline"
-              style={{
-                borderColor: whiteLabelSettings.primary_color,
-                color: whiteLabelSettings.primary_color,
-              }}
-            >
-              Back to My FDDs
-            </Button>
-          </div>
-        </div>
-      )}
-
       <FDDViewer
         franchiseId={franchise.id}
         franchise={franchise}

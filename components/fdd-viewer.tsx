@@ -1593,28 +1593,12 @@ export function FDDViewer({
     return null
   }
 
-  // Debug logging for white-label video settings
-  console.log("[v0] FDD Viewer - White-label settings for video:", {
-    whiteLabelSettings: whiteLabelSettings,
-    resources_video_url: whiteLabelSettings?.resources_video_url,
-    resources_video_title: whiteLabelSettings?.resources_video_title,
-    resources_video_description: whiteLabelSettings?.resources_video_description,
-  })
-
   // Get video settings from white-label or use defaults
   const customVideoUrl = whiteLabelSettings?.resources_video_url
   const customVideoId = customVideoUrl ? getYouTubeVideoId(customVideoUrl) : null
   const videoId = customVideoId || "LQpXxpnwEOA" // Default video ID
   const videoEmbedUrl = `https://www.youtube.com/embed/${videoId}`
   const videoWatchUrl = `https://www.youtube.com/watch?v=${videoId}`
-  
-  console.log("[v0] FDD Viewer - Video settings computed:", {
-    customVideoUrl,
-    customVideoId,
-    videoId,
-    videoEmbedUrl,
-    usingCustomVideo: !!customVideoId,
-  })
   
   const videoTitle = whiteLabelSettings?.resources_video_title || "FDD Review | Detailed Guide to Review FDD"
   const videoSubtitle = customVideoId ? franchise?.name : "Franchise Disclosure Document Explained"
