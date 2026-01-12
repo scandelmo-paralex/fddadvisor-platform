@@ -39,6 +39,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea" // Import Textarea
 import { Input } from "@/components/ui/input" // Added Input component
 import { FDDItemMappingEditor } from "@/components/fdd-item-mapping-editor"
+import { SalesEligibilityBadge } from "@/components/sales-eligibility-badge"
+import { calculateSalesEligibility } from "@/lib/compliance-utils"
 
 interface FranchisorDashboardProps {
   onOpenModal: (type: string, leadId?: string) => void
@@ -301,6 +303,7 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
   const [sourceFilter, setSourceFilter] = useState<Lead["source"] | "All">("All")
   const [verificationFilter, setVerificationFilter] = useState<"All" | "verified" | "unverified">("All")
   const [qualityFilter, setQualityFilter] = useState<"All" | "high" | "medium" | "low">("All")
+  const [salesEligibleFilter, setSalesEligibleFilter] = useState<"All" | "eligible" | "waiting">("All")
 
   const filteredLeads = leads.filter((lead) => {
     // Apply metric filter
@@ -325,6 +328,13 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
       if (qualityFilter === "high" && lead.qualityScore < 80) return false
       if (qualityFilter === "medium" && (lead.qualityScore < 60 || lead.qualityScore >= 80)) return false
       if (qualityFilter === "low" && lead.qualityScore >= 60) return false
+    }
+
+    // Apply sales eligibility filter
+    if (salesEligibleFilter !== "All") {
+      const eligibility = calculateSalesEligibility(lead.item23SignedAt)
+      if (salesEligibleFilter === "eligible" && !eligibility.isEligible) return false
+      if (salesEligibleFilter === "waiting" && (eligibility.isEligible || eligibility.daysRemaining === -1)) return false
     }
 
     return true
@@ -785,7 +795,7 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
             {" "}
             {/* Responsive layout */}
             <h2 className="text-lg font-semibold tracking-tight flex items-center gap-2">
-              {activeFilter || sourceFilter !== "All" || verificationFilter !== "All" || qualityFilter !== "All"
+              {activeFilter || sourceFilter !== "All" || verificationFilter !== "All" || qualityFilter !== "All" || salesEligibleFilter !== "All"
                 ? "Filtered Leads"
                 : "All Leads"}
               <Badge variant="secondary" className="ml-2 bg-muted text-muted-foreground">
@@ -851,8 +861,18 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
                   <option value="medium">Medium (60-79)</option>
                   <option value="low">Low (&lt;60)</option>
                 </select>
+                <div className="h-4 w-px bg-border/50 mx-1" />
+                <select
+                  className="h-8 px-2 text-sm bg-transparent border-none focus:ring-0 text-foreground font-medium cursor-pointer hover:text-cta transition-colors"
+                  value={salesEligibleFilter}
+                  onChange={(e) => setSalesEligibleFilter(e.target.value as "All" | "eligible" | "waiting")}
+                >
+                  <option value="All">Sales: All</option>
+                  <option value="eligible">✅ Eligible</option>
+                  <option value="waiting">🔒 Waiting</option>
+                </select>
               </div>
-              {(activeFilter || sourceFilter !== "All" || verificationFilter !== "All" || qualityFilter !== "All") && (
+              {(activeFilter || sourceFilter !== "All" || verificationFilter !== "All" || qualityFilter !== "All" || salesEligibleFilter !== "All") && (
                 <Button
                   variant="ghost"
                   size="sm"
@@ -861,6 +881,7 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
                     setSourceFilter("All")
                     setVerificationFilter("All")
                     setQualityFilter("All")
+                    setSalesEligibleFilter("All")
                   }}
                   className="text-muted-foreground hover:text-foreground h-9 px-2"
                 >
@@ -903,6 +924,9 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider w-[140px]">
                       FDD Status
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider w-[110px]">
+                      Sales Eligible
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider w-[100px]">
                       Temperature
@@ -1013,6 +1037,12 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
                           ) : (
                             <span className="text-xs text-muted-foreground/50 italic">Not sent</span>
                           )}
+                        </td>
+                        <td className="px-6 py-4">
+                          <SalesEligibilityBadge 
+                            receiptSignedAt={lead.item23SignedAt} 
+                            variant="compact"
+                          />
                         </td>
                         <td className="px-6 py-4">
                           {(() => {

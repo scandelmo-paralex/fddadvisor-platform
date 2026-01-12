@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { MapPin, Clock, TrendingUp, Mail, BarChart3, CheckCircle2, ShieldCheck, ShieldAlert, Loader2 } from "lucide-react"
 import type { Lead } from "@/lib/data"
 import type { PipelineStage } from "@/lib/types/database"
+import { SalesEligibilityInline } from "@/components/sales-eligibility-badge"
 import { useToast } from "@/hooks/use-toast"
 
 interface PipelineViewProps {
@@ -270,9 +271,12 @@ export function PipelineView({ leads, onOpenModal, onStageChange, onLeadStageUpd
                 </div>
 
                 <div className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-1 text-muted-foreground">
-                    <Clock className="h-3 w-3" />
-                    <span>{lead.daysInStage || 0}d in stage</span>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <Clock className="h-3 w-3" />
+                      <span>{lead.daysInStage || 0}d in stage</span>
+                    </div>
+                    <SalesEligibilityInline receiptSignedAt={lead.item23SignedAt} />
                   </div>
                   <Badge
                     variant="secondary"
