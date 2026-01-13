@@ -337,7 +337,14 @@ export async function GET() {
           // Use shared scoring utility for consistent temperature/intent
           intent: scoreResult.temperature,
           temperature: scoreResult.temperature,
-          isNew: false,
+          // isNew: true if created within the last 7 days
+          isNew: (() => {
+            const createdAt = invitation?.sent_at || access.created_at
+            if (!createdAt) return false
+            const sevenDaysAgo = new Date()
+            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+            return new Date(createdAt) > sevenDaysAgo
+          })(),
           qualityScore: scoreResult.score,
           engagementTier: scoreResult.engagementTier,
           financialStatus: scoreResult.financialStatus,
@@ -424,7 +431,14 @@ export async function GET() {
           timeline: inv.timeline || "3-6",
           intent: "Cold",
           temperature: "Cold",
-          isNew: true,
+          // isNew: true if invitation sent within the last 7 days
+          isNew: (() => {
+            const sentAt = inv.sent_at || inv.created_at
+            if (!sentAt) return true
+            const sevenDaysAgo = new Date()
+            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+            return new Date(sentAt) > sevenDaysAgo
+          })(),
           qualityScore: baseScore, // Use custom base score
           engagementTier: "none" as const,
           financialStatus: "unknown" as const,
