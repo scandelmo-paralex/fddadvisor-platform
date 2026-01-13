@@ -1612,11 +1612,13 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
         </div>
       )}
       {/* Contact Lead Modal */}
-      <ContactLeadModal
-        isOpen={!!contactLead}
-        onClose={() => setContactLead(null)}
-        lead={contactLead}
-      />
+      {contactLead && (
+        <ContactLeadModal
+          isOpen={true}
+          onClose={() => setContactLead(null)}
+          lead={contactLead}
+        />
+      )}
       {/* HIDDEN FOR DEMO - Quick action cards (redundant with filters)
       <div className="grid gap-4 md:grid-cols-3">
         <Card className="p-6 border-border/50 bg-gradient-to-br from-cta/5 to-transparent">

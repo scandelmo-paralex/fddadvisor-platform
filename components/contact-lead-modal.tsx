@@ -19,14 +19,18 @@ interface ContactLeadModalProps {
 }
 
 export function ContactLeadModal({ isOpen, onClose, lead }: ContactLeadModalProps) {
+  // Get first name safely with fallback
+  const firstName = lead?.name?.split(" ")[0] || "there"
+  
   const [subject, setSubject] = useState("Following up on your franchise inquiry")
   const [message, setMessage] = useState(
-    `Hi ${lead.name.split(" ")[0]},\n\nI wanted to follow up on your interest in our franchise opportunity.\n\nBest regards,\nYour Franchise Team`
+    `Hi ${firstName},\n\nI wanted to follow up on your interest in our franchise opportunity.\n\nBest regards,\nYour Franchise Team`
   )
   const [isSending, setIsSending] = useState(false)
   const { toast } = useToast()
 
-  if (!isOpen) return null
+  // Don't render if modal is closed or lead is missing
+  if (!isOpen || !lead) return null
 
   const handleSend = async () => {
     if (!subject.trim() || !message.trim()) {
