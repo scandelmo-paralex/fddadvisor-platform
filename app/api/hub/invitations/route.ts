@@ -34,6 +34,11 @@ export async function POST(request: Request) {
 
     const supabase = await createServerClient()
 
+    if (!supabase) {
+      console.error("[v0] Database not available")
+      return NextResponse.json({ error: "Database not available" }, { status: 500 })
+    }
+
     const {
       data: { user },
       error: authError,
@@ -85,6 +90,44 @@ export async function POST(request: Request) {
 
     console.log("[v0] Franchise verified:", franchise.name)
 
+    // =========================================================================
+    // NEW: Get default pipeline stage for this franchisor
+    // =========================================================================
+    let defaultStageId: string | null = null
+    
+    try {
+      // First try to get the explicitly marked default stage
+      const { data: defaultStage } = await supabase
+        .from("pipeline_stages")
+        .select("id")
+        .eq("franchisor_id", profile.id)
+        .eq("is_default", true)
+        .single()
+      
+      if (defaultStage) {
+        defaultStageId = defaultStage.id
+        console.log("[v0] Found default stage:", defaultStageId)
+      } else {
+        // Fall back to the first stage by position
+        const { data: firstStage } = await supabase
+          .from("pipeline_stages")
+          .select("id")
+          .eq("franchisor_id", profile.id)
+          .order("position", { ascending: true })
+          .limit(1)
+          .single()
+        
+        if (firstStage) {
+          defaultStageId = firstStage.id
+          console.log("[v0] Using first stage as default:", defaultStageId)
+        }
+      }
+    } catch (stageError) {
+      console.warn("[v0] Could not fetch default stage:", stageError)
+      // Continue without stage assignment - lead will still show in table
+    }
+    // =========================================================================
+
     const tokenArray = new Uint8Array(32)
     crypto.getRandomValues(tokenArray)
     const token = Array.from(tokenArray, (byte) => byte.toString(16).padStart(2, "0")).join("")
@@ -94,27 +137,39 @@ export async function POST(request: Request) {
     const expiresAt = new Date()
     expiresAt.setDate(expiresAt.getDate() + 14) // 14 days for FDD disclosure
 
+    // =========================================================================
+    // UPDATED: Include stage_id and stage_changed_at in invitation
+    // =========================================================================
+    const invitationData: Record<string, any> = {
+      franchisor_id: profile.id,
+      franchise_id,
+      lead_email,
+      lead_name,
+      lead_phone: lead_phone || null,
+      invitation_token: token,
+      invitation_message: invitation_message || null,
+      status: "sent",
+      sent_at: new Date().toISOString(),
+      expires_at: expiresAt.toISOString(),
+      source: source || "Direct Inquiry",
+      timeline: timeline || null,
+      city: city || null,
+      state: state || null,
+      target_location: target_location || null,
+      brand: franchise.name,
+      created_by: createdByTeamMemberId, // Track which team member sent this
+    }
+    
+    // Add stage_id if we found a default stage
+    if (defaultStageId) {
+      invitationData.stage_id = defaultStageId
+      invitationData.stage_changed_at = new Date().toISOString()
+      console.log("[v0] Assigning lead to stage:", defaultStageId)
+    }
+
     const { data: invitation, error: insertError } = await supabase
       .from("lead_invitations")
-      .insert({
-        franchisor_id: profile.id,
-        franchise_id,
-        lead_email,
-        lead_name,
-        lead_phone: lead_phone || null,
-        invitation_token: token,
-        invitation_message: invitation_message || null,
-        status: "sent",
-        sent_at: new Date().toISOString(),
-        expires_at: expiresAt.toISOString(),
-        source: source || "Direct Inquiry",
-        timeline: timeline || null,
-        city: city || null,
-        state: state || null,
-        target_location: target_location || null,
-        brand: franchise.name,
-        created_by: createdByTeamMemberId, // Track which team member sent this
-      })
+      .insert(invitationData)
       .select()
       .single()
 
@@ -123,7 +178,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Failed to create invitation: " + insertError.message }, { status: 500 })
     }
 
-    console.log("[v0] Invitation created:", invitation.id)
+    console.log("[v0] Invitation created:", invitation.id, "with stage_id:", invitation.stage_id)
+    // =========================================================================
 
     try {
       const { data: existingLead } = await supabase

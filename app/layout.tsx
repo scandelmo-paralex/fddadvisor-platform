@@ -7,6 +7,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Suspense } from "react"
 import { NotificationProvider } from "@/components/notification-provider"
 import { AppWrapper } from "@/components/app-wrapper"
+import { Toaster } from "@/components/ui/toaster"
 import { polyfillScript } from "@/lib/polyfill-script"
 import "./globals.css"
 
@@ -31,6 +32,7 @@ export default function RootLayout({
         <NotificationProvider>
           <AppWrapper>{children}</AppWrapper>
         </NotificationProvider>
+        <Toaster />
         <Suspense fallback={null}>
           <Analytics />
           <SpeedInsights />
