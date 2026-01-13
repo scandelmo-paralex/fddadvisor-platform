@@ -37,12 +37,31 @@ export async function POST(request: Request) {
       )
     }
 
+    console.log("[ContactAPI] Looking up franchisor profile for user:", user.id, "email:", user.email)
+    
+    // First, let's see ALL franchisor profiles to debug
+    const { data: allProfiles, error: allError } = await supabase
+      .from("franchisor_profiles")
+      .select("id, user_id, company_name")
+    
+    console.log("[ContactAPI] DEBUG - All franchisor_profiles visible:", {
+      count: allProfiles?.length || 0,
+      profiles: allProfiles?.map(p => ({ id: p.id, user_id: p.user_id, company: p.company_name })),
+      error: allError?.message
+    })
+    
     // Get franchisor profile to get company name and sender details
-    const { data: franchisorProfile } = await supabase
+    const { data: franchisorProfile, error: fpError } = await supabase
       .from("franchisor_profiles")
       .select("id, company_name, contact_name, contact_email")
       .eq("user_id", user.id)
       .single()
+
+    console.log("[ContactAPI] Direct franchisor_profiles lookup result:", { 
+      found: !!franchisorProfile, 
+      error: fpError?.message,
+      profileId: franchisorProfile?.id 
+    })
 
     // If not owner, check if team member
     let senderName = ""
@@ -57,21 +76,49 @@ export async function POST(request: Request) {
       senderEmail = franchisorProfile.contact_email || user.email || ""
       console.log("[ContactAPI] Franchisor owner:", { companyName, senderName })
     } else {
-      // Check team membership
-      const { data: teamMember } = await supabase
+      console.log("[ContactAPI] User is not direct owner, checking team membership...")
+      
+      // Check team membership - use franchisor_id to get the profile
+      const { data: teamMember, error: tmError } = await supabase
         .from("franchisor_team_members")
         .select(`
           first_name,
           last_name,
-          franchisor_id,
-          franchisor_profiles!inner(company_name, contact_email)
+          franchisor_id
         `)
         .eq("user_id", user.id)
         .eq("is_active", true)
         .single()
 
+      console.log("[ContactAPI] Team member lookup result:", { 
+        found: !!teamMember, 
+        error: tmError?.message,
+        franchisorId: teamMember?.franchisor_id 
+      })
+
       if (!teamMember) {
-        console.error("[ContactAPI] No franchisor profile found for user:", user.id)
+        console.error("[ContactAPI] No franchisor profile or team membership found for user:", user.id)
+        return NextResponse.json(
+          { error: "No franchisor profile found" },
+          { status: 403 }
+        )
+      }
+
+      // Now fetch the franchisor profile using franchisor_id
+      const { data: franchisorFromTeam, error: ftError } = await supabase
+        .from("franchisor_profiles")
+        .select("id, company_name, contact_email")
+        .eq("id", teamMember.franchisor_id)
+        .single()
+
+      console.log("[ContactAPI] Franchisor profile from team membership:", { 
+        found: !!franchisorFromTeam, 
+        error: ftError?.message,
+        companyName: franchisorFromTeam?.company_name 
+      })
+
+      if (!franchisorFromTeam) {
+        console.error("[ContactAPI] Could not find franchisor profile for team member's franchisor_id:", teamMember.franchisor_id)
         return NextResponse.json(
           { error: "No franchisor profile found" },
           { status: 403 }
@@ -79,8 +126,8 @@ export async function POST(request: Request) {
       }
 
       franchisorId = teamMember.franchisor_id
-      companyName = (teamMember.franchisor_profiles as any)?.company_name || "Your Franchise"
-      senderName = `${teamMember.first_name} ${teamMember.last_name}`.trim() || "Your Franchise Team"
+      companyName = franchisorFromTeam.company_name || "Your Franchise"
+      senderName = `${teamMember.first_name || ''} ${teamMember.last_name || ''}`.trim() || "Your Franchise Team"
       senderEmail = user.email || ""
       console.log("[ContactAPI] Team member:", { companyName, senderName })
     }
