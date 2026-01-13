@@ -1,6 +1,6 @@
 "use client"
 
-import { X, Info, CheckCircle2, Clock, Radio, User, Linkedin, AlertTriangle, TrendingUp, Target, MessageSquare, RefreshCw, Sparkles, Mail, Send } from "lucide-react"
+import { X, Info, CheckCircle2, Clock, Radio, User, Linkedin, AlertTriangle, TrendingUp, Target, MessageSquare, RefreshCw, Sparkles, Mail, Send, ChevronDown, ChevronUp } from "lucide-react"
 import { SalesAssistantDrawer } from "@/components/sales-assistant"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -245,6 +245,7 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
   const [isInitialLoading, setIsInitialLoading] = useState(false)
   const [currentLeadId, setCurrentLeadId] = useState<string | null>(null)
   const [contactHistory, setContactHistory] = useState<any[]>([])
+  const [expandedEmails, setExpandedEmails] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     if (!isOpen || type !== "lead-intelligence" || !leadId) return
@@ -1538,34 +1539,69 @@ export function Modal({ type, isOpen, onClose, leadId, franchiseId }: ModalProps
                     </Badge>
                   </h3>
                   <div className="space-y-3">
-                    {contactHistory.map((contact: any, idx: number) => (
-                      <div key={contact.id || idx} className="rounded-lg border p-4 bg-slate-50">
-                        <div className="flex items-start justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                              <Mail className="h-4 w-4 text-primary" />
+                    {contactHistory.map((contact: any, idx: number) => {
+                      const emailKey = contact.id || `email-${idx}`
+                      const isExpanded = expandedEmails.has(emailKey)
+                      const toggleExpand = () => {
+                        setExpandedEmails(prev => {
+                          const newSet = new Set(prev)
+                          if (newSet.has(emailKey)) {
+                            newSet.delete(emailKey)
+                          } else {
+                            newSet.add(emailKey)
+                          }
+                          return newSet
+                        })
+                      }
+                      return (
+                        <div key={emailKey} className="rounded-lg border p-4 bg-slate-50">
+                          <div className="flex items-start justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                                <Mail className="h-4 w-4 text-primary" />
+                              </div>
+                              <div>
+                                <p className="font-medium text-sm">{contact.sender_name}</p>
+                                <p className="text-xs text-muted-foreground">{contact.sender_email}</p>
+                              </div>
                             </div>
-                            <div>
-                              <p className="font-medium text-sm">{contact.sender_name}</p>
-                              <p className="text-xs text-muted-foreground">{contact.sender_email}</p>
-                            </div>
+                            <span className="text-xs text-muted-foreground">
+                              {new Date(contact.created_at).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric',
+                                hour: 'numeric',
+                                minute: '2-digit'
+                              })}
+                            </span>
                           </div>
-                          <span className="text-xs text-muted-foreground">
-                            {new Date(contact.created_at).toLocaleDateString('en-US', {
-                              month: 'short',
-                              day: 'numeric',
-                              year: 'numeric',
-                              hour: 'numeric',
-                              minute: '2-digit'
-                            })}
-                          </span>
+                          <div className="pl-10">
+                            <p className="font-medium text-sm mb-1">{contact.subject}</p>
+                            <p className={`text-sm text-muted-foreground whitespace-pre-wrap ${!isExpanded ? 'line-clamp-2' : ''}`}>
+                              {contact.message}
+                            </p>
+                            {contact.message && contact.message.length > 100 && (
+                              <button
+                                onClick={toggleExpand}
+                                className="flex items-center gap-1 text-xs text-primary hover:text-primary/80 mt-2 font-medium"
+                              >
+                                {isExpanded ? (
+                                  <>
+                                    <ChevronUp className="h-3 w-3" />
+                                    Show less
+                                  </>
+                                ) : (
+                                  <>
+                                    <ChevronDown className="h-3 w-3" />
+                                    Show full message
+                                  </>
+                                )}
+                              </button>
+                            )}
+                          </div>
                         </div>
-                        <div className="pl-10">
-                          <p className="font-medium text-sm mb-1">{contact.subject}</p>
-                          <p className="text-sm text-muted-foreground line-clamp-2">{contact.message}</p>
-                        </div>
-                      </div>
-                    ))}
+                      )
+                    })}
                   </div>
                 </div>
               )}

@@ -234,10 +234,12 @@ export async function sendContactEmail({
               <p style="font-size: 16px; margin-top: 30px;">Best regards,</p>
               <p style="font-size: 16px; font-weight: 600; margin-top: 5px;">${senderName}</p>
               <p style="font-size: 14px; color: #6b7280;">${franchiseName}</p>
+              ${senderEmail ? `<p style="font-size: 13px; color: #3b82f6; margin-top: 8px;">📧 Reply directly to this email to respond</p>` : ''}
             </div>
             
             <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 12px;">
               <p>Sent via FDDHub • <a href="https://fddhub.com" style="color: #9ca3af;">fddhub.com</a></p>
+              ${senderEmail ? `<p style="margin-top: 4px;">Replies go to: ${senderEmail}</p>` : ''}
             </div>
           </body>
         </html>
