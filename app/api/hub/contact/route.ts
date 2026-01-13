@@ -143,28 +143,115 @@ export async function POST(request: Request) {
     // Log the contact activity (optional - don't fail if table doesn't exist)
     if (leadId) {
       try {
-        const { error: logError } = await supabase
-          .from("lead_contact_log")
-          .insert({
-            invitation_id: leadId,
-            sender_user_id: user.id,
-            sender_name: senderName,
-            sender_email: senderEmail || user.email,
-            subject,
-            message,
-            recipient_email: to,
-            recipient_name: leadName,
-          })
-
-        if (logError) {
-          // Log error but don't fail the request - email was already sent
-          console.warn("[ContactAPI] Failed to log contact (table may not exist):", logError.message)
+        // The leadId might be from different sources:
+        // 1. lead_invitations.id (invitation_id) - this is what we need
+        // 2. lead_fdd_access.id - need to look up the invitation
+        // 3. Some other ID
+        
+        let invitationId = leadId
+        
+        // First, try to find if this is a valid invitation_id directly
+        const { data: directInvitation } = await supabase
+          .from("lead_invitations")
+          .select("id")
+          .eq("id", leadId)
+          .single()
+        
+        if (!directInvitation) {
+          console.log("[ContactAPI] leadId is not a direct invitation_id, searching for invitation...")
+          
+          // Try to find the invitation via lead_fdd_access (leadId might be lead_fdd_access.id)
+          const { data: access } = await supabase
+            .from("lead_fdd_access")
+            .select("buyer_id, franchise_id")
+            .eq("id", leadId)
+            .single()
+          
+          if (access) {
+            console.log("[ContactAPI] Found lead_fdd_access, looking up invitation by buyer_id:", access.buyer_id)
+            
+            // Find the invitation for this buyer/franchise combination
+            const { data: invitation } = await supabase
+              .from("lead_invitations")
+              .select("id")
+              .eq("buyer_id", access.buyer_id)
+              .eq("franchise_id", access.franchise_id)
+              .order("created_at", { ascending: false })
+              .limit(1)
+              .single()
+            
+            if (invitation) {
+              invitationId = invitation.id
+              console.log("[ContactAPI] Found invitation_id:", invitationId)
+            } else {
+              // Try by email as fallback
+              console.log("[ContactAPI] No invitation found by buyer_id, trying by email:", to)
+              const { data: invByEmail } = await supabase
+                .from("lead_invitations")
+                .select("id")
+                .eq("email", to)
+                .order("created_at", { ascending: false })
+                .limit(1)
+                .single()
+              
+              if (invByEmail) {
+                invitationId = invByEmail.id
+                console.log("[ContactAPI] Found invitation_id by email:", invitationId)
+              } else {
+                console.warn("[ContactAPI] Could not find invitation_id for contact log")
+                invitationId = null
+              }
+            }
+          } else {
+            // Last resort: try by email
+            console.log("[ContactAPI] No lead_fdd_access found, trying by email:", to)
+            const { data: invByEmail } = await supabase
+              .from("lead_invitations")
+              .select("id")
+              .eq("email", to)
+              .order("created_at", { ascending: false })
+              .limit(1)
+              .single()
+            
+            if (invByEmail) {
+              invitationId = invByEmail.id
+              console.log("[ContactAPI] Found invitation_id by email:", invitationId)
+            } else {
+              console.warn("[ContactAPI] Could not find invitation_id for contact log")
+              invitationId = null
+            }
+          }
         } else {
-          console.log("[ContactAPI] Contact logged for lead:", leadId)
+          console.log("[ContactAPI] leadId is a valid invitation_id:", leadId)
+        }
+        
+        // Only log if we found a valid invitation_id
+        if (invitationId) {
+          const { error: logError } = await supabase
+            .from("lead_contact_log")
+            .insert({
+              invitation_id: invitationId,
+              sender_user_id: user.id,
+              sender_name: senderName,
+              sender_email: senderEmail || user.email,
+              subject,
+              message,
+              recipient_email: to,
+              recipient_name: leadName,
+            })
+
+          if (logError) {
+            // Log error but don't fail the request - email was already sent
+            console.warn("[ContactAPI] Failed to log contact:", logError.message)
+          } else {
+            console.log("[ContactAPI] Contact logged for invitation:", invitationId)
+          }
+        } else {
+          console.warn("[ContactAPI] Skipping contact log - no valid invitation_id found")
         }
       } catch (logCatchError) {
         // Silently ignore if table doesn't exist
-        console.warn("[ContactAPI] Contact log table may not exist:", logCatchError)
+        console.warn("[ContactAPI] Contact log error:", logCatchError)
       }
     }
 
