@@ -2,6 +2,13 @@ import { NextResponse } from "next/server"
 import { createServerClient } from "@/lib/supabase/server"
 import { createServiceRoleClient } from "@/lib/supabase/service-role"
 
+// High engagement thresholds
+const HIGH_ENGAGEMENT_THRESHOLDS = {
+  duration_seconds: 600, // 10 minutes
+  viewed_items_count: 5, // 5+ items viewed
+  questions_count: 3, // 3+ questions asked
+}
+
 export async function POST(request: Request) {
   try {
     // Use createServerClient to get authenticated user (reads from cookies)
@@ -140,6 +147,17 @@ export async function POST(request: Request) {
         if (error) throw error
         result = data
         console.log("[v0] Updated engagement for buyer:", buyer_id, "duration:", time_spent, "viewedItems:", mergedViewedItems)
+        
+        // Check for high engagement and send notification
+        await checkAndNotifyHighEngagement(
+          supabase,
+          franchise_id,
+          buyer_id,
+          buyerProfile,
+          result?.duration_seconds || 0,
+          mergedViewedItems,
+          mergedQuestions
+        )
       } else {
         // Create new engagement - only use columns that exist!
         const engagementData: Record<string, any> = {
@@ -177,6 +195,17 @@ export async function POST(request: Request) {
         if (error) throw error
         result = data
         console.log("[v0] Created new engagement for buyer:", buyer_id, "duration:", time_spent, "fdd_id:", fdd_id)
+        
+        // Check for high engagement and send notification
+        await checkAndNotifyHighEngagement(
+          supabase,
+          franchise_id,
+          buyer_id,
+          buyerProfile,
+          result?.duration_seconds || 0,
+          viewed_items_array,
+          Array.isArray(questionsAsked) ? questionsAsked : []
+        )
       }
 
       return NextResponse.json({ success: true, engagement: result })
@@ -235,5 +264,115 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error("[v0] FDD engagement fetch error:", error)
     return NextResponse.json({ engagement: null })
+  }
+}
+
+/**
+ * Check if engagement meets high engagement thresholds and send notification
+ * Only sends notification once per lead per franchise (tracks via metadata)
+ */
+async function checkAndNotifyHighEngagement(
+  supabase: any,
+  franchise_id: string,
+  buyer_id: string,
+  buyerProfile: { email: string; first_name?: string; last_name?: string },
+  duration_seconds: number,
+  viewed_items: number[],
+  questions: string[]
+) {
+  try {
+    // Check if ANY threshold is met
+    const isHighEngagement = 
+      duration_seconds >= HIGH_ENGAGEMENT_THRESHOLDS.duration_seconds ||
+      viewed_items.length >= HIGH_ENGAGEMENT_THRESHOLDS.viewed_items_count ||
+      questions.length >= HIGH_ENGAGEMENT_THRESHOLDS.questions_count
+
+    if (!isHighEngagement) {
+      return // Not high engagement, skip
+    }
+
+    console.log("[v0] High engagement detected for buyer:", buyer_id, "franchise:", franchise_id)
+
+    // Get franchise info and franchisor user_id
+    const { data: franchise } = await supabase
+      .from("franchises")
+      .select("name, franchisor_id")
+      .eq("id", franchise_id)
+      .single()
+
+    if (!franchise?.franchisor_id) {
+      console.log("[v0] No franchisor_id found for franchise:", franchise_id)
+      return
+    }
+
+    // Get franchisor's user_id
+    const { data: franchisorProfile } = await supabase
+      .from("franchisor_profiles")
+      .select("user_id")
+      .eq("id", franchise.franchisor_id)
+      .single()
+
+    if (!franchisorProfile?.user_id) {
+      console.log("[v0] No user_id found for franchisor:", franchise.franchisor_id)
+      return
+    }
+
+    // Check if we already sent a high_engagement notification for this lead+franchise
+    const { data: existingNotification } = await supabase
+      .from("notifications")
+      .select("id")
+      .eq("user_id", franchisorProfile.user_id)
+      .eq("type", "high_engagement")
+      .contains("data", { buyer_id, franchise_id })
+      .limit(1)
+      .maybeSingle()
+
+    if (existingNotification) {
+      console.log("[v0] High engagement notification already sent for this lead+franchise")
+      return
+    }
+
+    // Build engagement summary for notification
+    const lead_name = `${buyerProfile.first_name || ''} ${buyerProfile.last_name || ''}`.trim() || buyerProfile.email
+    const minutes = Math.round(duration_seconds / 60)
+    
+    let engagementDetails: string[] = []
+    if (duration_seconds >= HIGH_ENGAGEMENT_THRESHOLDS.duration_seconds) {
+      engagementDetails.push(`${minutes} min viewing time`)
+    }
+    if (viewed_items.length >= HIGH_ENGAGEMENT_THRESHOLDS.viewed_items_count) {
+      engagementDetails.push(`${viewed_items.length} items reviewed`)
+    }
+    if (questions.length >= HIGH_ENGAGEMENT_THRESHOLDS.questions_count) {
+      engagementDetails.push(`${questions.length} questions asked`)
+    }
+
+    // Create high engagement notification using the create_notification function
+    const { error } = await supabase.rpc('create_notification', {
+      p_user_id: franchisorProfile.user_id,
+      p_type: 'high_engagement',
+      p_title: `🔥 Hot Lead: ${lead_name}`,
+      p_message: `${lead_name} is showing high engagement with your ${franchise.name} FDD: ${engagementDetails.join(', ')}. Consider reaching out now!`,
+      p_data: {
+        buyer_id,
+        franchise_id,
+        franchise_name: franchise.name,
+        lead_name,
+        lead_email: buyerProfile.email,
+        duration_seconds,
+        viewed_items_count: viewed_items.length,
+        questions_count: questions.length,
+        engagement_details: engagementDetails
+      },
+      p_franchisor_profile_id: franchise.franchisor_id
+    })
+
+    if (error) {
+      console.error("[v0] Error creating high engagement notification:", error)
+    } else {
+      console.log("[v0] High engagement notification created for franchisor:", franchisorProfile.user_id)
+    }
+  } catch (err) {
+    console.error("[v0] Error in checkAndNotifyHighEngagement:", err)
   }
 }

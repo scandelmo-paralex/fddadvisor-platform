@@ -158,6 +158,30 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
     fetchSettings()
   }, [])
 
+  // Check for sales-eligible leads (14-day period passed) and create notifications
+  useEffect(() => {
+    const checkSalesEligible = async () => {
+      try {
+        // Call the API endpoint to check and notify about sales-eligible leads
+        const response = await fetch("/api/notifications/check-sales-eligible", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        })
+        if (response.ok) {
+          const result = await response.json()
+          if (result.notified > 0) {
+            console.log(`[FranchisorDashboard] Notified about ${result.notified} sales-eligible leads`)
+          }
+        }
+      } catch (error) {
+        // Silent fail - this is a background check
+        console.log("[FranchisorDashboard] Sales eligible check skipped:", error)
+      }
+    }
+
+    checkSalesEligible()
+  }, [])
+
   // For error toasts
   const [showErrorToast, setShowErrorToast] = useState(false)
   const setErrorMessage = (message: string) => {

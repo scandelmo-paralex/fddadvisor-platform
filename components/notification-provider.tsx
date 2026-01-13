@@ -1,28 +1,43 @@
 "use client"
 
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
+import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react"
 import { createSupabaseBrowserClient } from "@/lib/supabase/client"
-import { Bell, X } from "lucide-react"
+import { Bell, X, UserPlus, FileText, FileCheck, ArrowRightLeft, MessageSquare, TrendingUp, Users } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 
+// Match the database schema
 export interface Notification {
   id: string
-  type: "lead_activity" | "high_quality" | "item19_view" | "question_asked" | "download" | "connect_request"
+  user_id: string
+  type: string // 'lead_signup', 'fdd_viewed', 'receipt_signed', 'high_engagement', 'ai_question', 'stage_change', 'team_change'
   title: string
-  message: string
-  leadId: string
-  leadName: string
-  timestamp: Date
+  message: string | null
+  data: {
+    invitation_id?: string
+    lead_name?: string
+    lead_email?: string
+    franchise_id?: string
+    franchise_name?: string
+    old_stage_name?: string
+    new_stage_name?: string
+    receipt_signed_at?: string
+    [key: string]: any
+  }
   read: boolean
+  read_at: string | null
+  created_at: string
+  franchisor_profile_id: string | null
 }
 
 interface NotificationContextType {
   notifications: Notification[]
   unreadCount: number
-  markAsRead: (id: string) => void
-  markAllAsRead: () => void
-  clearNotification: (id: string) => void
+  loading: boolean
+  markAsRead: (id: string) => Promise<void>
+  markAllAsRead: () => Promise<void>
+  clearNotification: (id: string) => Promise<void>
+  refreshNotifications: () => Promise<void>
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined)
@@ -35,163 +50,232 @@ export function useNotifications() {
   return context
 }
 
+// Get icon for notification type
+function getNotificationIcon(type: string) {
+  switch (type) {
+    case 'lead_signup':
+      return <UserPlus className="h-4 w-4 text-green-500" />
+    case 'fdd_viewed':
+      return <FileText className="h-4 w-4 text-blue-500" />
+    case 'receipt_signed':
+      return <FileCheck className="h-4 w-4 text-purple-500" />
+    case 'stage_change':
+      return <ArrowRightLeft className="h-4 w-4 text-orange-500" />
+    case 'ai_question':
+      return <MessageSquare className="h-4 w-4 text-cyan-500" />
+    case 'high_engagement':
+      return <TrendingUp className="h-4 w-4 text-yellow-500" />
+    case 'team_change':
+      return <Users className="h-4 w-4 text-indigo-500" />
+    default:
+      return <Bell className="h-4 w-4 text-cta" />
+  }
+}
+
 export function NotificationProvider({ children }: { children: ReactNode }) {
   const [notifications, setNotifications] = useState<Notification[]>([])
+  const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
+  // Fetch notifications from database
+  const fetchNotifications = useCallback(async () => {
     const supabase = createSupabaseBrowserClient()
-
     if (!supabase) {
-      console.log("[v0] Supabase client not available, skipping notification subscription")
+      console.log("[Notifications] Supabase client not available")
+      setLoading(false)
       return
     }
 
-    const channel = supabase
-      .channel("engagement_notifications")
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "engagement_events",
-        },
-        (payload) => {
-          console.log("[v0] New engagement event:", payload)
-          handleEngagementEvent(payload.new)
-        },
-      )
-      .subscribe()
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        console.log("[Notifications] No authenticated user")
+        setLoading(false)
+        return
+      }
 
-    return () => {
-      supabase.removeChannel(channel)
+      // Fetch recent notifications (last 50, ordered by created_at desc)
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(50)
+
+      if (error) {
+        console.error("[Notifications] Error fetching:", error)
+      } else {
+        console.log("[Notifications] Fetched:", data?.length || 0, "notifications")
+        setNotifications(data || [])
+      }
+    } catch (err) {
+      console.error("[Notifications] Fetch error:", err)
+    } finally {
+      setLoading(false)
     }
   }, [])
 
-  const handleEngagementEvent = async (event: any) => {
+  // Subscribe to realtime notifications
+  useEffect(() => {
     const supabase = createSupabaseBrowserClient()
-
     if (!supabase) {
-      console.log("[v0] Supabase client not available, skipping notification handling")
+      console.log("[Notifications] Supabase client not available, skipping subscription")
+      setLoading(false)
       return
     }
 
-    // Fetch lead details
-    const { data: lead } = await supabase
-      .from("leads")
-      .select("id, name, quality_score")
-      .eq("id", event.lead_id)
-      .single()
+    // Initial fetch
+    fetchNotifications()
 
-    if (!lead) return
+    // Get current user for subscription filter
+    const setupSubscription = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
 
-    let notification: Notification | null = null
+      console.log("[Notifications] Setting up realtime subscription for user:", user.id)
 
-    switch (event.event_type) {
-      case "fdd_viewed":
-        if (lead.quality_score >= 80) {
-          notification = {
-            id: `${event.id}-${Date.now()}`,
-            type: "high_quality",
-            title: "High-Quality Lead Viewing FDD",
-            message: `${lead.name} (Quality Score: ${lead.quality_score}) is viewing the FDD`,
-            leadId: lead.id,
-            leadName: lead.name,
-            timestamp: new Date(event.created_at),
-            read: false,
+      // Subscribe to new notifications for this user
+      const channel = supabase
+        .channel('notifications_realtime')
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'notifications',
+            filter: `user_id=eq.${user.id}`
+          },
+          (payload) => {
+            console.log("[Notifications] New notification received:", payload.new)
+            const newNotification = payload.new as Notification
+            
+            // Add to state (prepend to show newest first)
+            setNotifications(prev => [newNotification, ...prev])
+            
+            // Show toast
+            showToast(newNotification)
           }
-        }
-        break
-
-      case "item_viewed":
-        if (event.metadata?.item_number === 19) {
-          notification = {
-            id: `${event.id}-${Date.now()}`,
-            type: "item19_view",
-            title: "Lead Viewing Financial Performance",
-            message: `${lead.name} is viewing Item 19 (Financial Performance)`,
-            leadId: lead.id,
-            leadName: lead.name,
-            timestamp: new Date(event.created_at),
-            read: false,
+        )
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'notifications',
+            filter: `user_id=eq.${user.id}`
+          },
+          (payload) => {
+            console.log("[Notifications] Notification updated:", payload.new)
+            const updatedNotification = payload.new as Notification
+            
+            // Update in state
+            setNotifications(prev => 
+              prev.map(n => n.id === updatedNotification.id ? updatedNotification : n)
+            )
           }
-        }
-        break
+        )
+        .subscribe((status) => {
+          console.log("[Notifications] Subscription status:", status)
+        })
 
-      case "question_asked":
-        notification = {
-          id: `${event.id}-${Date.now()}`,
-          type: "question_asked",
-          title: "Lead Asked a Question",
-          message: `${lead.name} asked: "${event.metadata?.question?.substring(0, 50)}..."`,
-          leadId: lead.id,
-          leadName: lead.name,
-          timestamp: new Date(event.created_at),
-          read: false,
-        }
-        break
-
-      case "fdd_downloaded":
-        notification = {
-          id: `${event.id}-${Date.now()}`,
-          type: "download",
-          title: "Lead Downloaded FDD",
-          message: `${lead.name} downloaded the FDD`,
-          leadId: lead.id,
-          leadName: lead.name,
-          timestamp: new Date(event.created_at),
-          read: false,
-        }
-        break
-
-      case "connect_requested":
-        notification = {
-          id: `${event.id}-${Date.now()}`,
-          type: "connect_request",
-          title: "Lead Wants to Connect",
-          message: `${lead.name} requested to connect with you`,
-          leadId: lead.id,
-          leadName: lead.name,
-          timestamp: new Date(event.created_at),
-          read: false,
-        }
-        break
+      return () => {
+        console.log("[Notifications] Cleaning up subscription")
+        supabase.removeChannel(channel)
+      }
     }
 
-    if (notification) {
-      setNotifications((prev) => [notification!, ...prev])
-
-      showToast(notification)
+    const cleanup = setupSubscription()
+    
+    return () => {
+      cleanup.then(fn => fn?.())
     }
-  }
+  }, [fetchNotifications])
 
   const showToast = (notification: Notification) => {
-    // Toast will be handled by the NotificationToast component
     const event = new CustomEvent("show-notification-toast", { detail: notification })
     window.dispatchEvent(event)
   }
 
-  const markAsRead = (id: string) => {
-    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)))
+  const markAsRead = async (id: string) => {
+    const supabase = createSupabaseBrowserClient()
+    if (!supabase) return
+
+    // Optimistic update
+    setNotifications(prev => 
+      prev.map(n => n.id === id ? { ...n, read: true, read_at: new Date().toISOString() } : n)
+    )
+
+    // Update in database
+    const { error } = await supabase
+      .from('notifications')
+      .update({ read: true, read_at: new Date().toISOString() })
+      .eq('id', id)
+
+    if (error) {
+      console.error("[Notifications] Error marking as read:", error)
+      // Revert on error
+      fetchNotifications()
+    }
   }
 
-  const markAllAsRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))
+  const markAllAsRead = async () => {
+    const supabase = createSupabaseBrowserClient()
+    if (!supabase) return
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+
+    // Optimistic update
+    setNotifications(prev => 
+      prev.map(n => ({ ...n, read: true, read_at: new Date().toISOString() }))
+    )
+
+    // Update in database using the function
+    const { error } = await supabase.rpc('mark_all_notifications_read')
+
+    if (error) {
+      console.error("[Notifications] Error marking all as read:", error)
+      // Revert on error
+      fetchNotifications()
+    }
   }
 
-  const clearNotification = (id: string) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id))
+  const clearNotification = async (id: string) => {
+    const supabase = createSupabaseBrowserClient()
+    if (!supabase) return
+
+    // Optimistic update
+    setNotifications(prev => prev.filter(n => n.id !== id))
+
+    // Delete from database
+    const { error } = await supabase
+      .from('notifications')
+      .delete()
+      .eq('id', id)
+
+    if (error) {
+      console.error("[Notifications] Error deleting:", error)
+      // Revert on error
+      fetchNotifications()
+    }
   }
 
-  const unreadCount = notifications.filter((n) => !n.read).length
+  const refreshNotifications = async () => {
+    setLoading(true)
+    await fetchNotifications()
+  }
+
+  const unreadCount = notifications.filter(n => !n.read).length
 
   return (
     <NotificationContext.Provider
       value={{
         notifications,
         unreadCount,
+        loading,
         markAsRead,
         markAllAsRead,
         clearNotification,
+        refreshNotifications,
       }}
     >
       {children}
@@ -215,16 +299,20 @@ function NotificationToast() {
 
   if (!toast) return null
 
+  const leadName = toast.data?.lead_name || 'Someone'
+
   return (
     <div className="fixed bottom-4 right-4 z-50 animate-in slide-in-from-bottom-5">
-      <Card className="p-4 bg-cta/10 border-cta/20 shadow-lg max-w-md">
+      <Card className="p-4 bg-background border shadow-lg max-w-md">
         <div className="flex items-start gap-3">
-          <div className="rounded-lg bg-cta/10 p-2">
-            <Bell className="h-4 w-4 text-cta" />
+          <div className="rounded-lg bg-muted p-2">
+            {getNotificationIcon(toast.type)}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="font-medium text-sm text-cta">{toast.title}</p>
-            <p className="text-sm text-muted-foreground mt-1">{toast.message}</p>
+            <p className="font-medium text-sm">{toast.title}</p>
+            {toast.message && (
+              <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{toast.message}</p>
+            )}
           </div>
           <Button variant="ghost" size="icon" className="h-6 w-6 -mt-1 -mr-1" onClick={() => setToast(null)}>
             <X className="h-3 w-3" />
@@ -234,3 +322,6 @@ function NotificationToast() {
     </div>
   )
 }
+
+// Export the icon getter for use in other components
+export { getNotificationIcon }

@@ -337,52 +337,57 @@ export function Header({
                     </div>
                   ) : (
                     <div className="divide-y divide-border/50">
-                      {notifications.map((notification) => (
-                        <div
-                          key={notification.id}
-                          className={`p-4 hover:bg-muted/50 transition-colors cursor-pointer ${
-                            !notification.read ? "bg-cta/5" : ""
-                          }`}
-                          onClick={() => {
-                            markAsRead(notification.id)
-                            setShowNotifications(false)
-                            if (onNavigate) {
-                              onNavigate("franchisor-dashboard")
-                              setTimeout(() => {
-                                const event = new CustomEvent("open-lead-intelligence", {
-                                  detail: { leadId: notification.leadId },
-                                })
-                                window.dispatchEvent(event)
-                              }, 100)
-                            }
-                          }}
-                        >
-                          <div className="flex items-start justify-between gap-2 mb-1">
-                            <p className="text-sm font-medium">{notification.title}</p>
-                            {!notification.read && <div className="h-2 w-2 rounded-full bg-cta flex-shrink-0 mt-1" />}
+                      {notifications.map((notification) => {
+                        const createdAt = new Date(notification.created_at)
+                        const invitationId = notification.data?.invitation_id
+                        
+                        return (
+                          <div
+                            key={notification.id}
+                            className={`p-4 hover:bg-muted/50 transition-colors cursor-pointer ${
+                              !notification.read ? "bg-cta/5" : ""
+                            }`}
+                            onClick={() => {
+                              markAsRead(notification.id)
+                              setShowNotifications(false)
+                              if (onNavigate && invitationId) {
+                                onNavigate("franchisor-dashboard")
+                                setTimeout(() => {
+                                  const event = new CustomEvent("open-lead-intelligence", {
+                                    detail: { leadId: invitationId },
+                                  })
+                                  window.dispatchEvent(event)
+                                }, 100)
+                              }
+                            }}
+                          >
+                            <div className="flex items-start justify-between gap-2 mb-1">
+                              <p className="text-sm font-medium">{notification.title}</p>
+                              {!notification.read && <div className="h-2 w-2 rounded-full bg-cta flex-shrink-0 mt-1" />}
+                            </div>
+                            <p className="text-xs text-muted-foreground mb-2">{notification.message}</p>
+                            <div className="flex items-center justify-between">
+                              <p className="text-xs text-muted-foreground">
+                                {createdAt.toLocaleTimeString([], {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}
+                              </p>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-6 w-6"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  clearNotification(notification.id)
+                                }}
+                              >
+                                <X className="h-3 w-3" />
+                              </Button>
+                            </div>
                           </div>
-                          <p className="text-xs text-muted-foreground mb-2">{notification.message}</p>
-                          <div className="flex items-center justify-between">
-                            <p className="text-xs text-muted-foreground">
-                              {notification.timestamp.toLocaleTimeString([], {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })}
-                            </p>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-6 w-6"
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                clearNotification(notification.id)
-                              }}
-                            >
-                              <X className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
+                        )
+                      })}
                     </div>
                   )}
                 </Card>

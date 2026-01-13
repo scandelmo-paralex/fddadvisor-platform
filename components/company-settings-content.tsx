@@ -34,11 +34,12 @@ export function CompanySettingsContent({
     pipelineLeadValue: franchisorProfile?.pipeline_lead_value || 50000,
   })
 
-  const [notifications, setNotifications] = useState({
-    newLeads: true,
-    leadEngagement: true,
-    fddExpiration: true,
-  })
+  // Email notification preferences state - DISABLED: Email notifications not yet implemented
+  // const [notifications, setNotifications] = useState({
+  //   newLeads: true,
+  //   leadEngagement: true,
+  //   fddExpiration: true,
+  // })
 
   const [showSuccessToast, setShowSuccessToast] = useState(false)
   const [showErrorToast, setShowErrorToast] = useState(false)
@@ -347,7 +348,7 @@ export function CompanySettingsContent({
           )}
         </Card>
 
-        {/* Notifications */}
+        {/* Email Notifications - DISABLED: Feature not yet implemented
         <Card className="p-6 space-y-6 lg:col-span-2 border-border/60 shadow-sm">
           <div className="flex items-center gap-3 pb-4 border-b border-border/40">
             <div className="rounded-xl bg-cta/10 p-2.5">
@@ -400,6 +401,7 @@ export function CompanySettingsContent({
             </div>
           </div>
         </Card>
+        */}
 
         {/* Team Management */}
         <div className="lg:col-span-2">
