@@ -51,20 +51,44 @@ export async function POST(request: Request) {
 
     console.log("[v0] Authenticated user:", user.id)
 
-    const { data: profile, error: profileError } = await supabase
+    // First try to get franchisor profile directly (user is owner)
+    let { data: profile, error: profileError } = await supabase
       .from("franchisor_profiles")
       .select("id, company_name")
       .eq("user_id", user.id)
       .single()
 
+    // If not owner, check if user is a team member
     if (profileError || !profile) {
-      console.log("[v0] Profile fetch error:", profileError)
-      return NextResponse.json({ error: "Profile not found" }, { status: 404 })
+      console.log("[v0] User is not franchisor owner, checking team membership...")
+      
+      const { data: teamMemberCheck, error: tmError } = await supabase
+        .from("franchisor_team_members")
+        .select(`
+          id,
+          franchisor_id,
+          role,
+          franchisor_profiles!inner(id, company_name)
+        `)
+        .eq("user_id", user.id)
+        .eq("is_active", true)
+        .single()
+      
+      if (tmError || !teamMemberCheck) {
+        console.log("[v0] User not found as owner or team member:", tmError || profileError)
+        return NextResponse.json({ error: "Profile not found" }, { status: 404 })
+      }
+      
+      // Use the franchisor profile from team membership
+      profile = teamMemberCheck.franchisor_profiles as any
+      console.log("[v0] User is team member with role:", teamMemberCheck.role)
     }
 
     console.log("[v0] Franchisor profile ID:", profile.id)
 
     // Get the current user's team member record (for created_by tracking)
+    // This will find the record for both owners (who may have a team_member entry) and actual team members
+    let createdByTeamMemberId: string | null = null
     const { data: teamMember } = await supabase
       .from("franchisor_team_members")
       .select("id")
@@ -73,7 +97,9 @@ export async function POST(request: Request) {
       .eq("is_active", true)
       .single()
 
-    const createdByTeamMemberId = teamMember?.id || null
+    if (teamMember) {
+      createdByTeamMemberId = teamMember.id
+    }
     console.log("[v0] Created by team member:", createdByTeamMemberId)
 
     const { data: franchise, error: franchiseError } = await supabase

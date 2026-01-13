@@ -72,18 +72,44 @@ export function PipelineView({ leads, onOpenModal, onStageChange, onLeadStageUpd
 
   // Map leads to stages - handles both old string stage and new stage_id
   const getLeadsByStage = (stageId: string) => {
+    // Find the current stage being queried
+    const currentStage = stages.find(s => s.id === stageId)
+    
+    // Determine if this is the default/first stage
+    // First check is_default flag, then check if it's the lowest position
+    const sortedStages = [...stages].sort((a, b) => a.position - b.position)
+    const firstStage = sortedStages[0]
+    const isDefaultStage = currentStage?.is_default || (firstStage && firstStage.id === stageId)
+    
     return leads.filter((lead) => {
-      // Check if lead has stage_id (new system)
-      if ((lead as any).stage_id) {
-        return (lead as any).stage_id === stageId
+      const leadStageId = (lead as any).stage_id
+      
+      // Check if lead has stage_id (new system) - exact match
+      if (leadStageId) {
+        return leadStageId === stageId
       }
-      // Fall back to old stage string matching
-      const stage = stages.find(s => s.id === stageId)
-      if (stage) {
+      
+      // Lead has NO stage_id - put in default/first stage
+      if (!leadStageId && isDefaultStage) {
+        // But still check if lead.stage matches another stage name (legacy system)
+        const matchedByName = stages.find(s => 
+          s.name.toLowerCase() === lead.stage?.toLowerCase()
+        )
+        // If matched to a different stage by name, don't include here
+        if (matchedByName && matchedByName.id !== stageId) {
+          return false
+        }
+        // Otherwise include in default stage
+        return true
+      }
+      
+      // Fall back to old stage string matching for leads with legacy stage field
+      if (currentStage && lead.stage) {
         // Match by name (case-insensitive)
-        return lead.stage?.toLowerCase() === stage.name.toLowerCase()
+        return lead.stage.toLowerCase() === currentStage.name.toLowerCase()
       }
-      return lead.stage === stageId
+      
+      return false
     })
   }
 
