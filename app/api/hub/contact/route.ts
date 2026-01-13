@@ -39,21 +39,11 @@ export async function POST(request: Request) {
 
     console.log("[ContactAPI] Looking up franchisor profile for user:", user.id, "email:", user.email)
     
-    // First, let's see ALL franchisor profiles to debug
-    const { data: allProfiles, error: allError } = await supabase
-      .from("franchisor_profiles")
-      .select("id, user_id, company_name")
-    
-    console.log("[ContactAPI] DEBUG - All franchisor_profiles visible:", {
-      count: allProfiles?.length || 0,
-      profiles: allProfiles?.map(p => ({ id: p.id, user_id: p.user_id, company: p.company_name })),
-      error: allError?.message
-    })
-    
     // Get franchisor profile to get company name and sender details
+    // FIXED: column is "email" not "contact_email"
     const { data: franchisorProfile, error: fpError } = await supabase
       .from("franchisor_profiles")
-      .select("id, company_name, contact_name, contact_email")
+      .select("id, company_name, contact_name, email")
       .eq("user_id", user.id)
       .single()
 
@@ -73,21 +63,17 @@ export async function POST(request: Request) {
       franchisorId = franchisorProfile.id
       companyName = franchisorProfile.company_name || "Your Franchise"
       senderName = franchisorProfile.contact_name || "Your Franchise Team"
-      senderEmail = franchisorProfile.contact_email || user.email || ""
+      senderEmail = franchisorProfile.email || user.email || ""
       console.log("[ContactAPI] Franchisor owner:", { companyName, senderName })
     } else {
       console.log("[ContactAPI] User is not direct owner, checking team membership...")
       
       // Check team membership - use franchisor_id to get the profile
+      // FIXED: column is "full_name" not "first_name/last_name"
       const { data: teamMember, error: tmError } = await supabase
         .from("franchisor_team_members")
-        .select(`
-          first_name,
-          last_name,
-          franchisor_id
-        `)
+        .select("full_name, franchisor_id")
         .eq("user_id", user.id)
-        .eq("is_active", true)
         .single()
 
       console.log("[ContactAPI] Team member lookup result:", { 
@@ -105,9 +91,10 @@ export async function POST(request: Request) {
       }
 
       // Now fetch the franchisor profile using franchisor_id
+      // FIXED: column is "email" not "contact_email"
       const { data: franchisorFromTeam, error: ftError } = await supabase
         .from("franchisor_profiles")
-        .select("id, company_name, contact_email")
+        .select("id, company_name, email")
         .eq("id", teamMember.franchisor_id)
         .single()
 
@@ -127,7 +114,7 @@ export async function POST(request: Request) {
 
       franchisorId = teamMember.franchisor_id
       companyName = franchisorFromTeam.company_name || "Your Franchise"
-      senderName = `${teamMember.first_name || ''} ${teamMember.last_name || ''}`.trim() || "Your Franchise Team"
+      senderName = teamMember.full_name || "Your Franchise Team"
       senderEmail = user.email || ""
       console.log("[ContactAPI] Team member:", { companyName, senderName })
     }
