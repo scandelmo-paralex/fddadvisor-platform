@@ -1,28 +1,37 @@
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
-import { cookies } from "next/headers"
+import { getSupabaseRouteClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = createRouteHandlerClient({ cookies })
+    const { id } = await params
+    
+    const supabase = await getSupabaseRouteClient()
+    
+    if (!supabase) {
+      console.error("[ContactHistory] Database not available")
+      return NextResponse.json(
+        { error: "Database not available" },
+        { status: 500 }
+      )
+    }
     
     // Get authenticated user
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     
     if (authError || !user) {
+      console.error("[ContactHistory] Auth error:", authError)
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
       )
     }
 
-    const invitationId = params.id
+    console.log("[ContactHistory] Fetching contact history for invitation:", id)
 
     // Fetch contact history for this lead
-    // RLS policies will handle access control
     const { data: contacts, error } = await supabase
       .from("lead_contact_log")
       .select(`
@@ -33,7 +42,7 @@ export async function GET(
         message,
         created_at
       `)
-      .eq("invitation_id", invitationId)
+      .eq("invitation_id", id)
       .order("created_at", { ascending: false })
 
     if (error) {
@@ -43,6 +52,8 @@ export async function GET(
         { status: 500 }
       )
     }
+
+    console.log("[ContactHistory] Found", contacts?.length || 0, "contact records")
 
     return NextResponse.json({
       contacts: contacts || [],
