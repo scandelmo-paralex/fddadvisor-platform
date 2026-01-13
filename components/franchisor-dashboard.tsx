@@ -26,6 +26,7 @@ import {
   Clock,
   FileSignature,
   Loader2,
+  Search,
 } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -46,6 +47,28 @@ import { calculateSalesEligibility } from "@/lib/compliance-utils"
 interface FranchisorDashboardProps {
   onOpenModal: (type: string, leadId?: string) => void
   onNavigateToProfile: () => void // Added navigation to profile
+}
+
+// Search hook for filtering leads
+function useLeadSearch(leads: Lead[], searchQuery: string) {
+  return leads.filter((lead) => {
+    if (!searchQuery.trim()) return true
+    
+    const query = searchQuery.toLowerCase()
+    const searchableFields = [
+      lead.name,
+      lead.email,
+      lead.brand,
+      lead.city,
+      lead.state,
+      lead.location,
+      lead.phone,
+    ]
+    
+    return searchableFields.some(
+      (field) => field && field.toLowerCase().includes(query)
+    )
+  })
 }
 
 export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: FranchisorDashboardProps) {
@@ -79,6 +102,9 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
   const [error, setError] = useState("") // Added error state
   const [showItemMappingModal, setShowItemMappingModal] = useState(false)
   const [contactLead, setContactLead] = useState<Lead | null>(null)
+  
+  // Search state
+  const [searchQuery, setSearchQuery] = useState("")
 
   const [franchises, setFranchises] = useState<Array<{ id: string; name: string }>>([])
 
@@ -331,7 +357,10 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
   const [qualityFilter, setQualityFilter] = useState<"All" | "high" | "medium" | "low">("All")
   const [salesEligibleFilter, setSalesEligibleFilter] = useState<"All" | "eligible" | "waiting">("All")
 
-  const filteredLeads = leads.filter((lead) => {
+  // Apply search filter first
+  const searchedLeads = useLeadSearch(leads, searchQuery)
+  
+  const filteredLeads = searchedLeads.filter((lead) => {
     // Apply metric filter
     if (activeFilter) {
       // Use isHotLead helper to match display logic (includes spcandelmo@gmail.com override)
@@ -661,7 +690,7 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
     <div className="space-y-8 pb-12 max-w-[1600px] mx-auto">
       {" "}
       {/* Added max-width for large screens */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-1">
           {" "}
           {/* Adjusted spacing */}
@@ -673,6 +702,26 @@ export function FranchisorDashboard({ onOpenModal, onNavigateToProfile }: Franch
             {/* Increased font size */}
             <p className="text-sm text-muted-foreground mt-1">Track and manage your franchise leads</p>
           </div>
+        </div>
+        {/* Search Bar */}
+        <div className="relative w-full md:w-80">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+          <Input
+            placeholder="Search leads..."
+            className="pl-9 pr-9 h-10 bg-muted/50 border-border/50 focus-visible:ring-2 focus-visible:ring-cta transition-all duration-200"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          {searchQuery && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 hover:bg-accent/50 transition-all duration-200"
+              onClick={() => setSearchQuery("")}
+            >
+              <X className="h-3 w-3" />
+            </Button>
+          )}
         </div>
         <div className="flex gap-3">
           {" "}
